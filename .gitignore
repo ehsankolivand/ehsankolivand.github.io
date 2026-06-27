@@ -1,0 +1,8 @@
+# Internal working material — not part of the public site
+research/
+
+# macOS / editor cruft
+.DS_Store
+*.log
+*.tmp
+*.swp
