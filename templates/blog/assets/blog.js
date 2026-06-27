@@ -92,6 +92,9 @@
     // would be intercepted and their styling overwritten.
     var navLinks = Array.prototype.slice.call(root.querySelectorAll("[data-topcats] [data-cat]"));
     var cards = Array.prototype.slice.call(root.querySelectorAll('main [data-card][data-cat]'));
+    // Remember each card's layout display (grid for featured, flex for grid cards) so
+    // filtering can restore it. Blanking style.display would erase the inline layout.
+    cards.forEach(function (card) { card.__display = card.style.display; });
     var currentFilter = "All";
     function syncCats(f) {
       navLinks.forEach(function (b) { var on = b.getAttribute("data-cat") === f; b.style.color = on ? "#34E6A0" : "#9FB0AA"; b.style.background = on ? "rgba(52,230,160,0.08)" : "transparent"; });
@@ -100,7 +103,7 @@
       currentFilter = f;
       cards.forEach(function (card) {
         var show = (f === "All" || card.getAttribute("data-cat") === f);
-        card.style.display = show ? "" : "none";
+        card.style.display = show ? card.__display : "none";
       });
       syncCats(f);
     }
