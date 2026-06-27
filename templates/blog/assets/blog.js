@@ -87,7 +87,10 @@
 
     /* ---------- category nav: active state + filtering (index = progressive enhancement) ---------- */
     var isIndex = !!root.querySelector('[data-screen-label="Blog Index"]');
-    var navLinks = Array.prototype.slice.call(root.querySelectorAll("[data-cat]"));
+    // IMPORTANT: only the header nav carries filter links. Post cards also have
+    // data-cat (for filtering) but must NOT be treated as nav links, or their click
+    // would be intercepted and their styling overwritten.
+    var navLinks = Array.prototype.slice.call(root.querySelectorAll("[data-topcats] [data-cat]"));
     var cards = Array.prototype.slice.call(root.querySelectorAll('main [data-card][data-cat]'));
     var currentFilter = "All";
     function syncCats(f) {
