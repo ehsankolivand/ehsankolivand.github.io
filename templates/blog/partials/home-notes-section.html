@@ -1,0 +1,23 @@
+<section id="sec-notes" data-screen-label="Writing" aria-labelledby="notes-h" style="position:relative; z-index:2; max-width:1120px; margin:0 auto; padding:clamp(70px,11vw,140px) clamp(20px,6vw,96px) clamp(40px,6vw,70px);">
+      <style>
+        #sec-notes [data-homenote]{ transition:transform .4s cubic-bezier(.2,0,0,1), box-shadow .4s, border-color .4s, background .4s; }
+        #sec-notes [data-homenote]:hover{ transform:translateY(-5px); box-shadow:0 26px 64px rgba(0,0,0,0.5); border-color:rgba(52,230,160,0.4); }
+        #sec-notes [data-homenote]:hover [data-cardglow]{ opacity:1; }
+        #sec-notes [data-homenote]:hover [data-cardarrow]{ transform:translate(3px,-1px); }
+        #sec-notes [data-morelink]:hover{ transform:translateY(-2px); box-shadow:0 14px 34px rgba(52,230,160,0.35); }
+      </style>
+      <noscript><style>#sec-notes [data-reveal]{opacity:1!important;transform:none!important;}</style></noscript>
+      <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; color:#34E6A0; text-transform:uppercase;">
+        <span style="width:26px; height:1px; background:#34E6A0;"></span>04 — Writing
+      </div>
+      <h2 id="notes-h" data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .08s, transform .9s cubic-bezier(.2,0,0,1) .08s; margin:22px 0 6px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(28px,4.4vw,52px); letter-spacing:-0.02em;">Field notes</h2>
+      <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .14s, transform .9s cubic-bezier(.2,0,0,1) .14s; margin:0 0 44px; color:#9FB0AA; font-size:clamp(15px,1.7vw,17px);">Long-form notes on Jetpack Compose, clean architecture, and the agentic tooling I build — straight from the blog.</p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr)); gap:18px;">
+        {{CARDS}}
+      </div>
+
+      <div data-reveal="" style="opacity:0; transform:translateY(20px); transition:opacity .8s cubic-bezier(.2,0,0,1), transform .8s cubic-bezier(.2,0,0,1); margin-top:36px;">
+        <a data-morelink="" href="/blog/" style="display:inline-flex; align-items:center; gap:10px; padding:13px 24px; border-radius:14px; background:linear-gradient(135deg,#34E6A0,#18A06A); color:#04130D; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:14.5px; text-decoration:none; transition:transform .4s cubic-bezier(.2,0,0,1), box-shadow .4s;">Read all notes <span style="display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%; background:rgba(4,19,13,0.18); font-size:14px;">→</span></a>
+      </div>
+    </section>

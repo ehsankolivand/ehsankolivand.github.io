@@ -1,0 +1,10 @@
+# Canonical category set for the blog — the SINGLE place to declare categories.
+# Order here = order in the index navigation (after the always-present "All").
+# `name`    : the value posts reference in their `category:` frontmatter (stable key).
+# `label`   : display text in the nav + post chips (defaults to name).
+# `palette` : optional chip color, "mint" or "sand". Defaults to mint for
+#             Tooling/Compose and sand otherwise (matches the existing design).
+- { name: Compose,      label: Compose }
+- { name: Architecture, label: Architecture }
+- { name: Tooling,      label: Tooling }
+- { name: Crypto,       label: Crypto }

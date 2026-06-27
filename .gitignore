@@ -1,8 +1,18 @@
 # Internal working material — not part of the public site
 research/
 
+# Private, local-only docs — never committed, never served (visible only on your machine)
+readme.html
+
 # macOS / editor cruft
 .DS_Store
 *.log
 *.tmp
 *.swp
+
+# Generated build artifact (the assembled, deployable site) — never committed (Principle IV)
+_site/
+
+# Python
+__pycache__/
+*.pyc
