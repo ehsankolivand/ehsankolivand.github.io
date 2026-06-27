@@ -49,6 +49,7 @@
 
   <!-- ===== TOP STATUS BAR ===== -->
   <header style="position:fixed; top:0; left:0; right:0; z-index:120; display:flex; align-items:center; justify-content:space-between; padding:14px clamp(16px,4vw,48px); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:linear-gradient(180deg, rgba(7,9,10,0.72), rgba(7,9,10,0));">
+    <div style="display:flex; align-items:center; gap:14px;">
     <div data-logo="" title="✦ tap me a few times…" style="display:flex; align-items:center; gap:11px; cursor:pointer; user-select:none; -webkit-user-select:none;">
       <div style="position:relative; width:30px; height:30px; border-radius:9px; background:linear-gradient(140deg,#34E6A0,#18A06A); display:grid; place-items:center; box-shadow:0 6px 18px rgba(52,230,160,0.30);">
         <div style="width:13px; height:13px; border-radius:50%; background:#07090A;"></div>
@@ -56,6 +57,8 @@
         <div style="position:absolute; width:5px; height:5px; border-radius:50%; background:#07090A; top:6px; right:8px;"></div>
       </div>
       <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:.02em; font-size:15px;">Ehsan<span style="color:#34E6A0;">.</span>log</span>
+    </div>
+      <a href="/" data-home="" data-ripple="" data-magnetic="" aria-label="Back to portfolio home" style="display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:11px; color:#9FB0AA; font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:500; text-decoration:none; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); transition:color .25s, background .25s, border-color .25s;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9"/></svg>Home</a>
     </div>
     <nav data-topcats="" style="display:flex; align-items:center; gap:4px;">
       {{NAV_ITEMS}}

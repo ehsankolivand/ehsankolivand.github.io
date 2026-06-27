@@ -124,6 +124,19 @@
       applyFilter(hm ? decodeURIComponent(hm[1]) : "All");
     }
 
+    /* ---------- "Home" link (back to portfolio) hover ---------- */
+    var homeLink = root.querySelector("[data-home]");
+    if (homeLink) {
+      homeLink.addEventListener("pointerenter", function () {
+        homeLink.style.color = "#EDF2EF"; homeLink.style.background = "rgba(255,255,255,0.07)";
+        homeLink.style.borderColor = "rgba(52,230,160,0.35)";
+      });
+      homeLink.addEventListener("pointerleave", function () {
+        homeLink.style.color = "#9FB0AA"; homeLink.style.background = "rgba(255,255,255,0.04)";
+        homeLink.style.borderColor = "rgba(255,255,255,0.10)";
+      });
+    }
+
     /* ---------- reading-progress bar ---------- */
     (function readingBar() {
       var se = document.scrollingElement || document.documentElement;
