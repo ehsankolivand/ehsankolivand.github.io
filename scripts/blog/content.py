@@ -6,6 +6,7 @@ unknown category, duplicate slug, bad dates.
 from __future__ import annotations
 import re
 import math
+import unicodedata
 import datetime as dt
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -26,7 +27,11 @@ _SLUG_RE = re.compile(r"[^a-z0-9]+")
 
 
 def slugify(text: str) -> str:
-    s = _SLUG_RE.sub("-", text.strip().lower()).strip("-")
+    # Transliterate accented/Latin-script chars to ASCII first (NFKD decomposes e.g.
+    # Turkish ş→s, ö→o, café→cafe) so non-ASCII titles yield meaningful slugs instead of
+    # collapsing to "post". Scripts with no ASCII form still fall back (use an explicit slug).
+    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    s = _SLUG_RE.sub("-", ascii_text.strip().lower()).strip("-")
     return s or "post"
 
 
@@ -94,7 +99,7 @@ def load_categories(path: Path) -> list[Category]:
             f"{path}: categories.yml is required (declares the canonical category set, "
             "ordering, and labels). Create it before building."
         )
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    data = yaml.safe_load(path.read_text(encoding="utf-8-sig"))
     if not isinstance(data, list) or not data:
         raise ContentError(f"{path}: categories.yml must be a non-empty YAML list of mappings.")
     cats: list[Category] = []
@@ -157,9 +162,21 @@ def extract_related(body: str) -> tuple[str, list[str]]:
             i -= 1
             continue
         if _RELATED_HEADING.match(line):
+            # The related block is bounded below this heading. Stop scanning here so a
+            # legitimate link list higher in the body isn't swallowed; absorb only the
+            # delimiter (separators / blank lines) directly above the heading.
             cut = i
             i -= 1
-            continue
+            while i >= 0:
+                above = lines[i].strip()
+                if above in ("---", "***", "___"):
+                    cut = i
+                    i -= 1
+                elif above == "":
+                    i -= 1
+                else:
+                    break
+            break
         # a link-bearing line (list item or bare): only treat as related if it is
         # essentially just link(s).
         bullet = re.sub(r"^[-*+]\s+", "", line)
@@ -221,6 +238,29 @@ class Post:
         return display_date(self.date)
 
 
+def _cover_int(value, source: str, field: str) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        raise ContentError(f"{source}: cover '{field}' must be an integer (got {value!r}).")
+
+
+def _require_media_file(src: str, source: str, label: str) -> None:
+    """Ensure an author image path resolves to a real file under content/blog/assets/.
+
+    Mirrors the build's media resolution (config.media_url): a content-relative path,
+    optionally prefixed with `assets/`, is copied from content/blog/assets/<rel>. A
+    missing file would ship a broken <img> and a broken og:image silently."""
+    rel = src.strip().lstrip("./")
+    if rel.startswith("assets/"):
+        rel = rel[len("assets/"):]
+    if not (config.CONTENT_DIR / "assets" / rel).is_file():
+        raise ContentError(
+            f"{source}: {label} '{src}' does not exist under content/blog/assets/ "
+            f"(expected file: assets/{rel})."
+        )
+
+
 def _parse_cover(meta_cover, source: str) -> Cover:
     if meta_cover is None:
         return Cover(kind="code", glyph="{ }", caption="")
@@ -241,8 +281,8 @@ def _parse_cover(meta_cover, source: str) -> Cover:
                 raise ContentError(f"{source}: image cover requires 'alt' (accessibility/SEO).")
             return Cover(
                 kind="image", src=src, alt=alt,
-                width=int(meta_cover.get("width", 1200)),
-                height=int(meta_cover.get("height", 630)),
+                width=_cover_int(meta_cover.get("width", 1200), source, "width"),
+                height=_cover_int(meta_cover.get("height", 630), source, "height"),
             )
         return Cover(
             kind="code",
@@ -254,12 +294,13 @@ def _parse_cover(meta_cover, source: str) -> Cover:
 
 def load_post(path: Path, categories: list[Category], base_url: str) -> Post:
     source = path.name
-    meta, raw_body = parse_frontmatter(path.read_text(encoding="utf-8"), source)
+    meta, raw_body = parse_frontmatter(path.read_text(encoding="utf-8-sig"), source)
 
     def req(key, *alts):
         for k in (key, *alts):
-            if meta.get(k) not in (None, ""):
-                return meta[k]
+            v = meta.get(k)
+            if v is not None and str(v).strip() != "":
+                return v
         raise ContentError(f"{source}: required frontmatter '{key}' is missing.")
 
     title = str(req("title")).strip()
@@ -288,11 +329,19 @@ def load_post(path: Path, categories: list[Category], base_url: str) -> Post:
         slug = slugify(slug)
 
     cover = _parse_cover(meta.get("cover"), source)
+    if cover.kind == "image":
+        _require_media_file(cover.src, source, "cover image")
+        if not cover.alt:
+            cover.alt = title  # bare-path cover has no alt: derive from the title (a11y/SEO)
     if not cover.caption and cover.kind == "code":
         cover.caption = f"// {category.lower()} · {slug}"
 
     read_time = str(meta.get("readTime") or compute_read_time(raw_body)).strip()
-    draft = bool(meta.get("draft", False))
+    draft_raw = meta.get("draft", False)
+    if isinstance(draft_raw, str):
+        draft = draft_raw.strip().lower() in ("true", "1", "yes", "on")
+    else:
+        draft = bool(draft_raw)
 
     canonical = str(meta.get("canonical") or config.abs_url(base_url, f"{config.BLOG_PATH}{slug}/")).strip()
     og_description = str(meta.get("ogDescription") or meta.get("socialDescription") or excerpt).strip()
@@ -300,6 +349,11 @@ def load_post(path: Path, categories: list[Category], base_url: str) -> Post:
     image = str(meta.get("image") or (cover.src if cover.kind == "image" else "")).strip()
 
     body, related_slugs = extract_related(raw_body)
+    if body.strip() == "":
+        raise ContentError(
+            f"{source}: post body is empty (no content after the frontmatter / "
+            "related-links block). A note must have a body."
+        )
 
     return Post(
         source=path, title=title, date=date, updated=updated, category=category,
@@ -312,7 +366,9 @@ def load_post(path: Path, categories: list[Category], base_url: str) -> Post:
 def load_posts(content_dir: Path, categories: list[Category], base_url: str,
                include_drafts: bool = False) -> list[Post]:
     posts: list[Post] = []
-    for path in sorted(content_dir.glob("*.md")):
+    md_files = [p for p in content_dir.iterdir()
+                if p.is_file() and p.suffix.lower() in (".md", ".markdown")]
+    for path in sorted(md_files):
         if path.name.lower() in ("readme.md",):
             continue
         post = load_post(path, categories, base_url)
@@ -329,11 +385,20 @@ def load_posts(content_dir: Path, categories: list[Category], base_url: str,
             )
         by_slug[p.slug] = p
 
-    # newest first (stable: by date desc, then slug for determinism)
-    posts.sort(key=lambda p: (p.date, p.slug), reverse=True)
+    # newest first: date descending, slug ascending as a deterministic tiebreak (only the
+    # date is reversed — a plain reverse=True would also flip the slug order)
+    posts.sort(key=lambda p: (-p.date.toordinal(), p.slug))
 
-    # resolve related links
-    title_index = {slugify(p.title): p for p in posts}
+    # resolve related links (explicit slug via by_slug is preferred over a title match)
+    title_index: dict[str, Post] = {}
+    for p in posts:
+        ts = slugify(p.title)
+        existing = title_index.get(ts)
+        if existing is not None:
+            print(f"WARNING: title-slug collision '{ts}' between {existing.source.name} and "
+                  f"{p.source.name}; a title-based related link may resolve to the wrong post.")
+            continue
+        title_index[ts] = p
     for p in posts:
         resolved: list[Post] = []
         for s in p.related_slugs:

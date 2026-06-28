@@ -10,7 +10,7 @@ from functools import lru_cache
 from . import config
 from . import seo
 from .content import tag_style, Post, Category
-from .markdown_render import render as render_markdown, esc, esc_attr
+from .markdown_render import render as render_markdown, esc, esc_attr, sub_tokens
 
 
 @lru_cache(maxsize=None)
@@ -24,9 +24,9 @@ def _partial(name: str) -> str:
 
 
 def _fill(text: str, **tokens) -> str:
-    for k, v in tokens.items():
-        text = text.replace("{{" + k + "}}", v)
-    return text
+    # single-pass substitution (see markdown_render.sub_tokens): a substituted value
+    # containing `{{OTHER}}` is never re-scanned, so author text can't hijack a later token.
+    return sub_tokens(text, tokens)
 
 
 # --------------------------------------------------------------------------- #
@@ -44,16 +44,16 @@ def render_nav(categories: list[Category], active: str = "All") -> str:
         bg = "rgba(52,230,160,0.08)" if on else "transparent"
         items.append(_fill(_partial("nav-item.html"),
                            HREF=esc_attr(href), CAT=esc_attr(name),
+                           ARIA=' aria-current="true"' if on else "",
                            COLOR=color, BG=bg, LABEL=esc(label)))
     return "\n      ".join(items)
 
 
 def assemble(head: str, main: str, categories: list[Category], active: str = "All") -> str:
-    page = _tpl("base.html")
-    page = page.replace("{{HEAD}}", head)
-    page = page.replace("{{NAV_ITEMS}}", render_nav(categories, active))
-    page = page.replace("{{MAIN}}", main)
-    return page
+    # one single-pass fill so HEAD/NAV/MAIN substitute together (a value containing
+    # `{{MAIN}}` etc. can't be re-scanned into a later slot).
+    return _fill(_tpl("base.html"),
+                 HEAD=head, NAV_ITEMS=render_nav(categories, active), MAIN=main)
 
 
 # --------------------------------------------------------------------------- #
@@ -83,13 +83,16 @@ def _card_tokens(post: Post, cats_by_name: dict[str, Category]) -> dict:
 
 
 def render_featured(post: Post, cats_by_name: dict[str, Category]) -> str:
-    tpl = _partial("featured-card.html")
-    tpl = tpl.replace("{{COVER}}", render_cover(post, "featured"))
-    return _fill(tpl, **_card_tokens(post, cats_by_name))
+    # COVER substituted in the same single pass as the card tokens, so a cover glyph
+    # containing `{{TITLE}}` can't be re-scanned into the title slot.
+    return _fill(_partial("featured-card.html"),
+                 COVER=render_cover(post, "featured"), **_card_tokens(post, cats_by_name))
 
 
-def render_grid_card(post: Post, cats_by_name: dict[str, Category]) -> str:
-    return _fill(_partial("grid-card.html"), **_card_tokens(post, cats_by_name))
+def render_grid_card(post: Post, cats_by_name: dict[str, Category], homenote: bool = False) -> str:
+    return _fill(_partial("grid-card.html"),
+                 HOMENOTE=' data-homenote=""' if homenote else "",
+                 **_card_tokens(post, cats_by_name))
 
 
 def render_more_note(post: Post, cats_by_name: dict[str, Category]) -> str:
@@ -110,7 +113,7 @@ def render_more_notes_section(related: list[Post], cats_by_name: dict[str, Categ
 # Pages
 # --------------------------------------------------------------------------- #
 _EMPTY_GRID = (
-    '<p style="grid-column:1/-1; font-family:\'JetBrains Mono\',monospace; color:#66756F; '
+    '<p style="grid-column:1/-1; font-family:\'JetBrains Mono\',monospace; color:#828D86; '
     'font-size:14px;">// no notes published yet — check back soon.</p>'
 )
 
@@ -121,11 +124,7 @@ def render_home_notes(posts: list[Post], categories: list[Category], limit: int 
     Returns the <section> HTML to inject between the homepage markers."""
     cats_by_name = {c.name: c for c in categories}
     top = posts[:limit]
-    cards = "\n        ".join(
-        render_grid_card(p, cats_by_name).replace(
-            '<a data-card="" data-ripple=""', '<a data-card="" data-homenote="" data-ripple=""', 1)
-        for p in top
-    )
+    cards = "\n        ".join(render_grid_card(p, cats_by_name, homenote=True) for p in top)
     return _fill(_partial("home-notes-section.html"), CARDS=cards)
 
 
@@ -139,7 +138,7 @@ def render_index_page(posts: list[Post], categories: list[Category], base_url: s
     else:
         featured_html = ""
         grid_html = _EMPTY_GRID
-    main = main.replace("{{FEATURED}}", featured_html).replace("{{GRID}}", grid_html)
+    main = _fill(main, FEATURED=featured_html, GRID=grid_html)
     head = seo.head_for_index(posts, base_url)
     return assemble(head, main, categories, active="All")
 

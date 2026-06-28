@@ -3,13 +3,15 @@
 
 Reads content/blog/*.md (+ categories.yml) and templates/blog/*, writes a complete
 site to --out (default _site): portfolio + root companions copied verbatim, blog index
-and one static page per post, regenerated sitemap, and .nojekyll.
+and one static page per post, regenerated sitemap, and .nojekyll. The copied portfolio
+index.html has only its managed "Field notes" region (between the <!--LATEST-NOTES:*-->
+markers) deterministically regenerated from the latest posts; everything outside that
+region is byte-for-byte identical to source and the repo source file is never modified.
 
 Deterministic: same inputs -> byte-identical outputs (Constitution: GitHub Pages only).
 """
 from __future__ import annotations
 import argparse
-import datetime as dt
 import re
 import shutil
 import struct
@@ -33,27 +35,38 @@ def image_size(path: Path):
         data = path.read_bytes()
     except OSError:
         return None
-    if data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR":
-        w, h = struct.unpack(">II", data[16:24])
-        return int(w), int(h)
-    if data[:3] == b"\xff\xd8\xff":  # JPEG
-        i = 2
-        n = len(data)
-        while i < n:
-            if data[i] != 0xFF:
-                i += 1
-                continue
-            marker = data[i + 1]
-            if marker in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
-                          0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
-                h, w = struct.unpack(">HH", data[i + 5:i + 9])
-                return int(w), int(h)
-            seg = struct.unpack(">H", data[i + 2:i + 4])[0]
-            i += 2 + seg
+    n = len(data)
+    try:
+        if data[:8] == b"\x89PNG\r\n\x1a\n" and data[12:16] == b"IHDR":
+            if n < 24:
+                return None
+            w, h = struct.unpack(">II", data[16:24])
+            return int(w), int(h)
+        if data[:3] == b"\xff\xd8\xff":  # JPEG
+            i = 2
+            while i + 1 < n:               # need data[i] and data[i+1]
+                if data[i] != 0xFF:
+                    i += 1
+                    continue
+                marker = data[i + 1]
+                if marker in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
+                              0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
+                    if i + 9 > n:
+                        return None
+                    h, w = struct.unpack(">HH", data[i + 5:i + 9])
+                    return int(w), int(h)
+                if i + 4 > n:
+                    return None
+                seg = struct.unpack(">H", data[i + 2:i + 4])[0]
+                i += 2 + seg
+            return None
+        if data[:6] in (b"GIF87a", b"GIF89a"):
+            if n < 10:
+                return None
+            w, h = struct.unpack("<HH", data[6:10])
+            return int(w), int(h)
+    except (struct.error, IndexError):
         return None
-    if data[:6] in (b"GIF87a", b"GIF89a"):
-        w, h = struct.unpack("<HH", data[6:10])
-        return int(w), int(h)
     return None
 
 
@@ -78,6 +91,17 @@ def main(argv=None) -> int:
 
     base_url = args.base_url
     out = Path(args.out).resolve()
+    # Safety: step 2 below rmtree's `out`. Refuse to delete the repo root / an ancestor or any
+    # directory that holds source, so a misconfig like `--out .` can't recursively wipe the project.
+    if out == config.REPO_ROOT or out in config.REPO_ROOT.parents:
+        raise SystemExit(f"ERROR: refusing to build into {out} (repo root or an ancestor); "
+                         "use a dedicated build dir like _site.")
+    if out.exists():
+        source_markers = [m for m in (".git", "scripts", "templates", "content", "specs")
+                          if (out / m).exists()]
+        if source_markers:
+            raise SystemExit(f"ERROR: refusing to delete {out} — it looks like a source directory "
+                             f"(contains {', '.join(source_markers)}); use a build dir like _site.")
     blog_out = out / "blog"
     media_out = blog_out / "assets" / "media"
 
@@ -100,8 +124,16 @@ def main(argv=None) -> int:
             copied.append(name)
         else:
             missing.append(name)
-    if not (out / ".nojekyll").exists():
-        (out / ".nojekyll").write_text("", encoding="utf-8")
+    # .nojekyll: single source of truth — always written (not in the copy allowlist) so
+    # Pages serves files verbatim even if the repo root lacks it.
+    (out / ".nojekyll").write_text("", encoding="utf-8")
+    required_missing = [n for n in config.ROOT_REQUIRED if n in missing]
+    if required_missing:
+        raise SystemExit(
+            "ERROR: missing required root companion file(s): " + ", ".join(required_missing) +
+            " (Constitution V/VII: robots.txt, site.webmanifest, the favicon set, and "
+            "og-image.png MUST be reused). Add them to the repo root before building."
+        )
 
     # 3b. Auto-sync the homepage "Field notes" section (latest 3 posts) between markers.
     idx_path = out / "index.html"
@@ -126,15 +158,34 @@ def main(argv=None) -> int:
     if src_assets.exists():
         copytree(src_assets, media_out)
 
-    # image resolver for body images: public url + intrinsic dimensions (no CLS)
+    # image resolver for body images: public url + intrinsic dimensions (no CLS).
+    # Fails loud if the src resolves outside the copied content/blog/assets/ tree (a path
+    # that would otherwise 404 in production with no build error).
     def image_resolver(src: str, alt: str):
         url = config.media_url(src)
         rel = src.strip().lstrip("./")
         if rel.startswith("assets/"):
             rel = rel[len("assets/"):]
-        size = image_size(src_assets / rel)
+        src_path = src_assets / rel
+        if not src_path.is_file():
+            raise content.ContentError(
+                f"body image '{src}' not found under content/blog/assets/ "
+                f"(expected file: assets/{rel}). Author images must live in content/blog/assets/."
+            )
+        size = image_size(src_path)
         w, h = size if size else (1200, 675)
         return url, w, h
+
+    # 5b. Measure image covers (like body images) for accurate intrinsic dimensions;
+    #     keep frontmatter/default dims if the format is unmeasurable (svg/webp/avif).
+    for post in posts:
+        if post.cover.kind == "image":
+            rel = post.cover.src.strip().lstrip("./")
+            if rel.startswith("assets/"):
+                rel = rel[len("assets/"):]
+            size = image_size(src_assets / rel)
+            if size:
+                post.cover.width, post.cover.height = size
 
     # 6. Render post pages
     for post in posts:
@@ -147,9 +198,10 @@ def main(argv=None) -> int:
     (blog_out / "index.html").write_text(
         render.render_index_page(posts, cats, base_url), encoding="utf-8")
 
-    # 8. Regenerate sitemap
+    # 8. Regenerate sitemap (deterministic: dates from frontmatter + configured portfolio date)
     (out / "sitemap.xml").write_text(
-        sitemap.build_sitemap(posts, base_url, today=dt.date.today()), encoding="utf-8")
+        sitemap.build_sitemap(posts, base_url, portfolio_lastmod=config.PORTFOLIO_LASTMOD),
+        encoding="utf-8")
 
     # 9. Report
     print(f"Built {len(posts)} post(s) into {out}")

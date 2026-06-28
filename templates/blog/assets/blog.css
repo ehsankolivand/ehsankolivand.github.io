@@ -491,7 +491,10 @@
   ::selection{ background:rgba(52,230,160,0.28); color:#EDF2EF; }
   #blog-root *::-webkit-scrollbar{ width:10px; height:10px; }
   #blog-root *::-webkit-scrollbar-thumb{ background:#1F2B27; border-radius:8px; }
-  @keyframes composeIn{ from{ opacity:0; filter:blur(14px); transform:translateY(26px) scale(.965);} to{ opacity:1; filter:blur(0); transform:none;} }
+  /* Visible keyboard focus (WCAG 2.4.7): links use inline `all:unset`, which also clears the
+     outline, so restore it with !important on :focus-visible (loses to inline otherwise). */
+  #blog-root a:focus-visible{ outline:2px solid #34E6A0 !important; outline-offset:2px !important; }
+  @keyframes composeIn{ from{ opacity:0; transform:translateY(26px) scale(.965);} to{ opacity:1; transform:none;} }
   @keyframes meshDrift{ 0%{ transform:translate(-4%,-2%) scale(1.05);} 50%{ transform:translate(4%,3%) scale(1.12);} 100%{ transform:translate(-4%,-2%) scale(1.05);} }
   @keyframes meshDrift2{ 0%{ transform:translate(3%,2%) scale(1.1);} 50%{ transform:translate(-5%,-3%) scale(1.04);} 100%{ transform:translate(3%,2%) scale(1.1);} }
   @keyframes rippleExp{ to{ transform:scale(3.4); opacity:0; } }
@@ -509,6 +512,6 @@
   @keyframes handShake{ 0%,100%{ transform:rotate(8deg) scaleX(2.4) translateY(0);} 50%{ transform:rotate(8deg) scaleX(2.4) translateY(-3px);} }
   @keyframes confettiFall{ 0%{ opacity:0; transform:translateY(-20px) rotate(0);} 10%{ opacity:1;} 100%{ opacity:0; transform:translateY(100vh) rotate(var(--cr));} }
   @keyframes partyHue{ 0%{ filter:hue-rotate(0deg) saturate(1);} 50%{ filter:hue-rotate(160deg) saturate(1.45);} 100%{ filter:hue-rotate(360deg) saturate(1);} }
-  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; } }
+  @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } *{ animation-duration:.001ms !important; animation-delay:0s !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; transition-delay:0s !important; } }
   @media (max-width: 820px){ [data-topcats]{ display:none !important; } }
   @media (max-width: 760px){ [data-herocue]{ display:none !important; } }

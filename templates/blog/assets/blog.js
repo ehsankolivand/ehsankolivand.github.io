@@ -97,7 +97,7 @@
     cards.forEach(function (card) { card.__display = card.style.display; });
     var currentFilter = "All";
     function syncCats(f) {
-      navLinks.forEach(function (b) { var on = b.getAttribute("data-cat") === f; b.style.color = on ? "#34E6A0" : "#9FB0AA"; b.style.background = on ? "rgba(52,230,160,0.08)" : "transparent"; });
+      navLinks.forEach(function (b) { var on = b.getAttribute("data-cat") === f; b.style.color = on ? "#34E6A0" : "#9FB0AA"; b.style.background = on ? "rgba(52,230,160,0.08)" : "transparent"; if (on) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current"); });
     }
     function applyFilter(f) {
       currentFilter = f;

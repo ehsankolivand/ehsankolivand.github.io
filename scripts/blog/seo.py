@@ -25,6 +25,12 @@ def _favicons_and_manifest() -> list[str]:
 
 
 def _common(lines: list[str]) -> list[str]:
+    # preload the display fonts (latin Space Grotesk 700 for the hero + Manrope 400 for body)
+    # so the woff2 isn't discovered only after CSS parse (reduces FOUT / LCP delay).
+    lines.append('<link rel="preload" href="/blog/assets/fonts/cd62414e-f827-4a9e-9096-c4e987c5e31d.woff2"'
+                 ' as="font" type="font/woff2" crossorigin>')
+    lines.append('<link rel="preload" href="/blog/assets/fonts/e088d297-3e2c-443b-99f1-1773b8dcf254.woff2"'
+                 ' as="font" type="font/woff2" crossorigin>')
     # stylesheet + reduced-motion-safe no-JS reveal fallback (keeps content visible
     # without JavaScript; reveal animation is JS progressive enhancement only).
     lines.append('<link rel="stylesheet" href="/blog/assets/blog.css">')
@@ -39,7 +45,7 @@ def _jsonld(obj) -> str:
 
 
 def head_for_post(post, base_url: str, category_label: str) -> str:
-    title = f"{post.title} — Ehsan.log"
+    title = f"{post.title} — {config.SITE_BRAND}"
     desc = post.excerpt
     canonical = post.canonical
     if post.image:
@@ -63,7 +69,7 @@ def head_for_post(post, base_url: str, category_label: str) -> str:
     L.append(f'<meta property="og:url" content="{_esc(canonical)}">')
     L.append(f'<meta property="og:image" content="{_esc(image_abs)}">')
     L.append(f'<meta property="og:site_name" content="{_esc(config.SITE_NAME)}">')
-    L.append(f'<meta property="og:locale" content="{config.LOCALE}">')
+    L.append(f'<meta property="og:locale" content="{config.OG_LOCALE}">')
     L.append(f'<meta property="article:published_time" content="{post.date.isoformat()}">')
     L.append(f'<meta property="article:modified_time" content="{post.updated.isoformat()}">')
     L.append(f'<meta property="article:section" content="{_esc(category_label)}">')
@@ -86,7 +92,7 @@ def head_for_post(post, base_url: str, category_label: str) -> str:
         "datePublished": post.date.isoformat(),
         "dateModified": post.updated.isoformat(),
         "author": {"@type": "Person", "name": config.AUTHOR_NAME,
-                   "jobTitle": config.AUTHOR_ROLE, "url": base_url},
+                   "jobTitle": config.AUTHOR_ROLE, "url": config.abs_url(base_url, "/")},
         "publisher": {"@type": "Person", "name": config.AUTHOR_NAME},
         "mainEntityOfPage": {"@type": "WebPage", "@id": canonical},
         "articleSection": category_label,
@@ -114,7 +120,7 @@ def head_for_index(posts, base_url: str) -> str:
     L.append(f'<meta property="og:url" content="{_esc(canonical)}">')
     L.append(f'<meta property="og:image" content="{_esc(image_abs)}">')
     L.append(f'<meta property="og:site_name" content="{_esc(config.SITE_NAME)}">')
-    L.append(f'<meta property="og:locale" content="{config.LOCALE}">')
+    L.append(f'<meta property="og:locale" content="{config.OG_LOCALE}">')
     L.append('<meta name="twitter:card" content="summary_large_image">')
     L.append(f'<meta name="twitter:title" content="{_esc(title)}">')
     L.append(f'<meta name="twitter:description" content="{_esc(desc)}">')
@@ -124,7 +130,7 @@ def head_for_index(posts, base_url: str) -> str:
     blog_posts = [{
         "@type": "BlogPosting",
         "headline": p.title,
-        "url": config.abs_url(base_url, p.url),
+        "url": p.canonical,  # honor per-post canonical override (consistent with og:url)
         "datePublished": p.date.isoformat(),
         "author": {"@type": "Person", "name": config.AUTHOR_NAME},
     } for p in posts]
@@ -145,7 +151,7 @@ def head_for_index(posts, base_url: str) -> str:
             {
                 "@type": "WebSite",
                 "name": config.SITE_NAME,
-                "url": base_url,
+                "url": config.abs_url(base_url, "/"),
             },
         ],
     }))

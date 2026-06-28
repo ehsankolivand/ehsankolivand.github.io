@@ -3,7 +3,9 @@
 
 Asserts the success criteria on the built _site/: content + SEO in static HTML, single
 <h1>, valid JSON-LD, complete index links + sitemap, no template tokens, and the
-portfolio index.html byte-identical to the repo copy. Exit non-zero on any failure.
+portfolio index.html byte-identical to the repo copy OUTSIDE the managed "Field notes"
+region (the <!--LATEST-NOTES:*--> markers, which the build regenerates from the latest
+posts). Exit non-zero on any failure.
 """
 from __future__ import annotations
 import argparse
@@ -70,8 +72,11 @@ def main(argv=None) -> int:
                     ok(bool(obj.get(fld)), f"{p.slug}: JSON-LD missing {fld}")
             except json.JSONDecodeError as e:
                 ok(False, f"{p.slug}: JSON-LD invalid: {e}")
-        # a chunk of body text present (crawlable content, not just chrome)
-        ok(len(re.findall(r"<p [^>]*>", h)) >= 1, f"{p.slug}: no rendered body paragraphs")
+        # rendered body content present, scoped to the body container so the dek <p>
+        # can't satisfy it (every body block partial carries data-reveal)
+        mbody = re.search(r"<!-- body blocks -->(.*?)<!-- end / signature -->", h, re.S)
+        ok(bool(mbody) and "data-reveal" in mbody.group(1),
+           f"{p.slug}: no rendered body content in the body container")
         # related "more notes" resolve to real anchors when declared
         if p.related:
             for r in p.related:
@@ -100,25 +105,35 @@ def main(argv=None) -> int:
 
     # ---- portfolio: unchanged OUTSIDE the managed "Field notes" section; ----
     # ---- inside, the latest 3 posts + a /blog/ link are present. ----
+    # Stays consistent with build_blog.py, which injects only when index.html exists,
+    # carries both markers, AND there are posts — and otherwise prints a NOTE and
+    # succeeds. Verify mirrors that tolerance (and never crashes on an absent index).
     START, END = "<!--LATEST-NOTES:START-->", "<!--LATEST-NOTES:END-->"
-    out_idx = (out / "index.html").read_text(encoding="utf-8") if (out / "index.html").exists() else ""
-    repo_idx = (repo / "index.html").read_text(encoding="utf-8")
+    out_idx_path, repo_idx_path = out / "index.html", repo / "index.html"
+    if not repo_idx_path.exists():
+        print("  NOTE: repo index.html absent; skipping portfolio comparison")
+    elif not out_idx_path.exists():
+        ok(False, "portfolio index.html present in repo but missing from output")
+    else:
+        out_idx = out_idx_path.read_text(encoding="utf-8")
+        repo_idx = repo_idx_path.read_text(encoding="utf-8")
 
-    def strip_region(s: str) -> str:
-        i, j = s.find(START), s.find(END)
-        return (s[:i] + s[j + len(END):]) if (i != -1 and j != -1) else s
+        def strip_region(s: str) -> str:
+            i, j = s.find(START), s.find(END)
+            return (s[:i] + s[j + len(END):]) if (i != -1 and j != -1) else s
 
-    ok(strip_region(out_idx) == strip_region(repo_idx),
-       "portfolio index.html changed OUTSIDE the managed notes section")
-    m = re.search(re.escape(START) + r"(.*?)" + re.escape(END), out_idx, re.S)
-    ok(bool(m), "homepage: LATEST-NOTES markers missing in _site/index.html")
-    if m:
-        region = m.group(1)
-        for p in posts[:3]:
-            ok(f'href="/blog/{p.slug}/"' in region, f"homepage: missing latest-post card link to {p.slug}")
-        ok('href="/blog/"' in region, "homepage: missing 'Read all notes' link to /blog/")
-        ok(region.count("data-homenote") >= min(3, len(posts)),
-           "homepage: expected 3 note cards in the section")
+        ok(strip_region(out_idx) == strip_region(repo_idx),
+           "portfolio index.html changed OUTSIDE the managed notes section")
+        m = re.search(re.escape(START) + r"(.*?)" + re.escape(END), out_idx, re.S)
+        if m and posts:
+            region = m.group(1)
+            for p in posts[:3]:
+                ok(f'href="/blog/{p.slug}/"' in region, f"homepage: missing latest-post card link to {p.slug}")
+            ok('href="/blog/"' in region, "homepage: missing 'Read all notes' link to /blog/")
+            ok(region.count("data-homenote") >= min(3, len(posts)),
+               "homepage: expected 3 note cards in the section")
+        elif posts and not m:
+            print("  NOTE: index.html has no LATEST-NOTES markers; homepage notes not injected (build tolerates this)")
 
     # ---- assets ----
     ok((out / "blog/assets/blog.css").exists(), "missing blog.css")
@@ -126,6 +141,9 @@ def main(argv=None) -> int:
     fonts = list((out / "blog/assets/fonts").glob("*.woff2")) if (out / "blog/assets/fonts").exists() else []
     ok(len(fonts) >= 1, "missing self-hosted fonts")
     ok((out / ".nojekyll").exists(), "missing .nojekyll")
+    # required SEO/branding companions (Constitution V/VII)
+    for name in config.ROOT_REQUIRED:
+        ok((out / name).exists(), f"missing required root companion file: {name}")
 
     # ---- report ----
     print(f"verify_build: {checks} checks, {len(errors)} failure(s)")
