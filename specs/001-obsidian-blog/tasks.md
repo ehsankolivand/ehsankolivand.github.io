@@ -46,7 +46,7 @@ Single-project static-site generator: `content/blog/` (author surface), `templat
 
 ### Design extraction (from `Ehsan Koolivand - Blog.html`, verbatim — Principle III)
 
-- [x] T005 Extract the design shell into `templates/blog/base.html`: doctype + `<head>` with SEO slot tokens (`{{HEAD_*}}`), the body shell (ambient background, custom cursor, scroll-reactor, `header` with `Ehsan.log` wordmark + `nav data-topcats`), a `{{MAIN}}` slot, and a deferred `<script src="/blog/assets/blog.js">`. Preserve all inline styles. Remove the dc-runtime script + `data-dc-script`.
+- [x] T005 Extract the design shell into `templates/blog/base.html`: doctype + `<head>` with SEO slot tokens (`{{HEAD_*}}`), the body shell (ambient background, custom cursor, scroll-reactor, `header` with `Ehsan.kolivand` wordmark + `nav data-topcats`), a `{{MAIN}}` slot, and a deferred `<script src="/blog/assets/blog.js">`. Preserve all inline styles. Remove the dc-runtime script + `data-dc-script`.
 - [x] T006 [P] Extract the index `<main>` (hero, featured `sc-if`, grid `sc-for`) into `templates/blog/index.html` with generator tokens, styles verbatim
 - [x] T007 [P] Extract the article `<main>` (back link, header, author block, cover, body `sc-for`, end signature, more-notes `sc-for`) into `templates/blog/article.html` with generator tokens, styles verbatim
 - [x] T008 [P] Extract the two `<style>` blocks into `templates/blog/assets/blog.css`; rewrite every `@font-face` `src` UUID to `/blog/assets/fonts/<uuid>.woff2`; keep `font-display: swap`

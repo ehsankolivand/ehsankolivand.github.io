@@ -7,12 +7,12 @@ placeholder maps to Post/Category/Site data so design fidelity is preserved.
 ## base.html (head + shell)
 
 Provides the document, `<head>` SEO slots, the body shell (ambient background, custom cursor,
-scroll-reactor, `header` with `Ehsan.log` wordmark + category `nav`), a `{{MAIN}}` slot, and a
+scroll-reactor, `header` with `Ehsan.kolivand` wordmark + category `nav`), a `{{MAIN}}` slot, and a
 deferred `<script src="/blog/assets/blog.js">`. Head slots filled per page:
 
 | Slot | Source |
 |------|--------|
-| `<title>` | post: `"<title> — Ehsan.log"`; index: `"Ehsan.log — Field Notes"` |
+| `<title>` | post: `"<title> — Ehsan.kolivand"`; index: `"Ehsan.kolivand — Field Notes"` |
 | `<meta name="description">` | post: `excerpt`; index: blog tagline |
 | `<link rel="canonical">` | `canonical` or derived absolute URL |
 | `og:*` / `twitter:*` | title, description, url, image (cover image or site og-image), `og:type=article` for posts |

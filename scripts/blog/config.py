@@ -22,7 +22,7 @@ BLOG_MEDIA = "/blog/assets/media/"        # copied author images (covers + body)
 
 AUTHOR_NAME = "Ehsan Kolivand"
 AUTHOR_ROLE = "Senior Android Engineer"
-SITE_BRAND = "Ehsan.log"                   # short brand/wordmark (post <title> suffix)
+SITE_BRAND = "Ehsan.kolivand"              # short brand/wordmark (post <title> suffix)
 SITE_NAME = f"{SITE_BRAND} — Field Notes"  # full site name (index <title>, og:site_name)
 BLOG_TAGLINE = (
     "Long-form notes on Jetpack Compose, clean architecture, and building agentic "

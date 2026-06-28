@@ -1,4 +1,4 @@
-/* Ehsan.log — progressive enhancement for the static blog.
+/* Ehsan.kolivand — progressive enhancement for the static blog.
  * Ported from the original design's interaction logic (dc-script) to dependency-free
  * vanilla JS that operates on the already-rendered static DOM. It renders NO content:
  * every post, link, and piece of text is present in the HTML without this file

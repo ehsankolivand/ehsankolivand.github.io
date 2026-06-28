@@ -77,7 +77,7 @@ Declared in `content/blog/categories.yml` (ordered).
 | `authorName` | `Ehsan Kolivand` |
 | `authorRole` | `Senior Android Engineer` |
 | `authorLocation` | `Istanbul` |
-| `siteName` | `Ehsan.log — Field Notes` |
+| `siteName` | `Ehsan.kolivand — Field Notes` |
 | `defaultOgImage` | `/og-image.png` |
 | `locale` | `en` |
 
