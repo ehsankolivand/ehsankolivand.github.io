@@ -15,10 +15,12 @@ permissions:
   pages: write
   id-token: write
 
-# Allow one concurrent deployment; cancel in-progress runs for the same ref.
+# Allow one concurrent Pages deployment; do NOT cancel an in-flight run — GitHub's
+# recommended Pages pattern lets a running deployment finish rather than interrupting it
+# mid-upload (the next push then deploys after it completes).
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:

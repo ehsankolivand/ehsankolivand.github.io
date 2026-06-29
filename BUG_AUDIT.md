@@ -110,7 +110,7 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Low — documentation drift; not served, doesn't affect the build.
   - **Suggested fix**: Update the code-fence section to document the info-string (language / `title=` / `{n}`) and replace the seed-slug example with current slugs.
 
-- [ ] **BUG-014 — `h3`/`h4` body headings render with the identical visual style to `h2`.**
+- [ ] **BUG-014 — `h3`/`h4` body headings render with the identical visual style to `h2`.** _Not a bug (accepted design limitation / Principle III): the canonical design bundle has no distinct article-body sub-heading style — its only `<h3>` is a grid-card title (`font-size:20px`), and all article section headings use the single `clamp(22px,3vw,30px)` style block-h2.html reproduces. Semantics + anchors are already correct (real `<h3>`/`<h4>` tags, unique ids). Adding level-scaled sizes would invent a non-design style, and heading hierarchy is NOT among the v1.4.0 sanctioned body-content styling exceptions (code/callouts/footnotes/line-emphasis/quote-table). No code change._
   - **What**: All body headings are filled through one partial (`block-h2.html`) that hardcodes the h2 style; only the semantic tag varies (`<h2>`/`<h3>`/`<h4>`). So `###`/`####` have correct semantics but no visual size/weight hierarchy.
   - **Why it's a bug**: Readers get no visual sub-heading distinction; a long post's structure is flattened visually. (May be an accepted limitation of the single-heading-style design, hence Low.)
   - **Where**: `scripts/blog/markdown_render.py:525` (one partial for all levels) + `templates/blog/partials/block-h2.html`.
@@ -133,10 +133,10 @@ _(none found — the build is green on current content and no defect breaks the 
 
 ### Minor nits (non-blocking, noted for completeness)
 
-- **Wordmark casing inconsistency**: `config.SITE_BRAND`/`base.html` use `Ehsan.kolivand` (lower-case `k`), while `site.webmanifest` `short_name` is `Ehsan.Kolivand` (capital `K`). Cosmetic branding drift.
-- **CI concurrency**: `.github/workflows/deploy.yml` puts both `build` and `deploy` in one `pages` group with `cancel-in-progress: true`; GitHub's recommended Pages pattern uses `cancel-in-progress: false` for the deploy so an in-flight deployment isn't interrupted by a new push. Low risk (the next run redeploys).
-- **`copytree` would copy stray `.DS_Store`/editor files** if any ever appear under `templates/blog/assets/` or `content/blog/assets/` (no filter); none present today.
-- **`image_size` JPEG scanner** doesn't special-case standalone markers (RST/`0xD0-0xD9`); a non-standard JPEG could mis-measure (best-effort, build-time only; no committed image content exercises it).
+- **Wordmark casing inconsistency**: `config.SITE_BRAND`/`base.html` use `Ehsan.kolivand` (lower-case `k`), while `site.webmanifest` `short_name` is `Ehsan.Kolivand` (capital `K`). Cosmetic branding drift. — **FIXED**: `site.webmanifest` `short_name` → `Ehsan.kolivand`, matching the wordmark used everywhere else.
+- **CI concurrency**: `.github/workflows/deploy.yml` puts both `build` and `deploy` in one `pages` group with `cancel-in-progress: true`; GitHub's recommended Pages pattern uses `cancel-in-progress: false` for the deploy so an in-flight deployment isn't interrupted by a new push. Low risk (the next run redeploys). — **FIXED**: set `cancel-in-progress: false` (matches GitHub's official Pages workflow).
+- **`copytree` would copy stray `.DS_Store`/editor files** if any ever appear under `templates/blog/assets/` or `content/blog/assets/` (no filter); none present today. — **FIXED**: `copytree` now skips `.DS_Store`/`Thumbs.db`/`desktop.ini` + `*~`/`*.swp`/`*.swo`; covered by `tests/test_build_blog.py`.
+- **`image_size` JPEG scanner** doesn't special-case standalone markers (RST/`0xD0-0xD9`); a non-standard JPEG could mis-measure (best-effort, build-time only; no committed image content exercises it). — **FIXED**: the JPEG marker walk now skips standalone markers (`0x01`, `0xD0-0xD9`) without reading a length and realigns on `0xFF` fill bytes; covered by `tests/test_build_blog.py`.
 
 ---
 
