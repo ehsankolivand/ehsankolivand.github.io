@@ -103,7 +103,7 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Low — requires no blank line after the table and a `|` in the following line.
   - **Suggested fix**: End the table at a line that is not itself pipe-delimited in table shape, or require a blank line / treat a line with no leading-or-trailing pipe context as prose.
 
-- [ ] **BUG-013 — Author guide (`content/blog/README.md`) is stale for feature 004 and references deleted seed posts.**
+- [x] **BUG-013 — Author guide (`content/blog/README.md`) is stale for feature 004 and references deleted seed posts.** _Fixed: the fenced-code section now documents the 004 info string (bare-word language + supported languages/aliases, `title=` filename label, `{n}` line-emphasis, and the legacy-caption fallback), mentions callouts + footnotes, and the related-links example now uses current slugs (`speakloop-…`, `telegram-…`). README is not built, so no build impact._
   - **What**: The README still says fenced code blocks use "the text after the backticks is the code-card caption" and never documents 004's syntax highlighting (a bare-word first token is now the language, e.g. ` ```kotlin `, with optional `title="…"` filename + `{n}` line-emphasis). It also uses deleted seed slugs (`mvi-that-scales`, `spec-driven-android`) in its related-links example.
   - **Why it's a bug**: The single author-facing guide misdescribes current behavior — an author following it won't know they can request highlighting, and may be surprised that ` ```python ` now shows a "python" label. The example slugs point at posts that no longer exist.
   - **Where**: `content/blog/README.md:32-41` (code-fence description/example), `:48-49` (seed slugs).

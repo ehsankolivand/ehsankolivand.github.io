@@ -30,23 +30,34 @@ You never touch generated HTML.
    ```
 
    Then write the body in normal Markdown: `## headings`, paragraphs, **bold**, *italic*,
-   `inline code`, [links](https://example.com), lists, > blockquotes, images
-   `![alt](assets/pic.png)`, and fenced code blocks where the text after the backticks is
-   the code-card caption:
+   `inline code`, [links](https://example.com), lists, tables, > blockquotes, images
+   `![alt](assets/pic.png)`, Obsidian callouts (`> [!note]`, `> [!tip]`, `> [!warning]`, …),
+   and footnotes (`a claim[^1]` plus a matching `[^1]: the note` line).
+
+   Fenced code blocks read an **info string** after the opening backticks:
 
    ````
-   ```// StaggeredColumn.kt
+   ```kotlin title="StaggeredColumn.kt" {2,5-7}
    @Composable fun StaggeredColumn(...) { ... }
    ```
    ````
+
+   - the first bare word is the **language** for syntax highlighting — `kotlin`, `java`,
+     `python`, `bash`, `json`, `yaml`, `html`/`xml`, `js`, `ts`, `sql` (and aliases like
+     `kt`, `py`, `sh`); an unknown language just renders as escaped, unhighlighted code;
+   - `title="…"` (or `file=`/`filename=`) adds a **filename label** on the code card;
+   - `{2,5-7}` **emphasizes** those 1-based lines;
+   - if the first token is *not* a bare language word (e.g. it starts with `//` or contains a
+     space), the whole info string is treated as the **caption** — so the old
+     ` ```// StaggeredColumn.kt ` caption style still works unchanged.
 
 2. **Link a few related posts at the very end** (these become the "More notes" cards):
 
    ```
    ---
    ## More notes
-   - [[mvi-that-scales]]
-   - [[spec-driven-android]]
+   - [[speakloop-offline-interview-practice]]
+   - [[telegram-topic-export-markdown-jsonl]]
    ```
 
    Use Obsidian wikilinks `[[slug]]` (or `[[slug|Label]]`), or markdown links to
