@@ -1,6 +1,23 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version change: 1.1.0 → 1.2.0
+Bump rationale: Adds Principle VIII (Machine-Readable Discovery & Single-Source
+  Publishing) — a NON-NEGOTIABLE rule codifying the always-apply invariants this
+  GEO/publishing feature introduces: build-generated machine surfaces (an Atom feed and
+  an llms.txt that list every published post), a single unified structured-data identity
+  shared by the portfolio and the blog (one canonical Person, referenced by stable @id),
+  one-note single-commit publishing where every derived artifact regenerates
+  deterministically at build time, and the invariant that no committed source file may
+  carry internal links to content that does not exist (verifier-enforced). MINOR: a new
+  principle is ADDED; no existing principle is removed or weakened. Also extends the
+  Additional Constraints (machine-readable surfaces, derived-artifact determinism) and
+  the Development Workflow Verification gate (new Definition-of-Done checks).
+  Templates reviewed and remain compatible (generic Constitution Check references this
+  file): ✅ plan-template.md, ✅ spec-template.md, ✅ tasks-template.md,
+  ✅ .claude/skills/speckit-*/SKILL.md.
+
+----- Prior entry -----
 Version change: 1.0.0 → 1.1.0
 Bump rationale: Principle VII reworded to document the one bounded exception the build
   has always implemented — the managed "Field notes" region in the deployed homepage
@@ -168,6 +185,37 @@ The existing portfolio and its prior SEO work MUST stay intact.
 Rationale: The portfolio is live and already optimized; the blog is additive and must not
 regress it.
 
+### VIII. Machine-Readable Discovery & Single-Source Publishing (NON-NEGOTIABLE)
+
+The site MUST be maximally discoverable and citable by search engines and AI/generative
+engines, and publishing MUST stay a single-commit action whose every derived artifact is
+build-generated and self-consistent.
+
+- **Machine-readable surfaces**: The build MUST generate, as static files, a standards-
+  compliant syndication feed (Atom) that lists every published post and an `llms.txt`
+  that enumerates the published posts with titles, absolute URLs, and one-line summaries.
+  These are generated from the same Obsidian content as the pages — never hand-maintained.
+- **Unified structured identity**: Author and site identity MUST be expressed as one
+  canonical entity shared by the portfolio and the blog. Blog structured data MUST
+  reference the portfolio's canonical Person and WebSite by stable `@id`
+  (`…/#person`, `…/#website`) so engines resolve the portfolio and blog as a single
+  entity rather than duplicates.
+- **Single-source, single-commit publishing**: Publishing or updating a post MUST require
+  editing/committing exactly one Markdown note. Every derived artifact — post pages, the
+  blog index, `sitemap.xml`, the Atom feed, `llms.txt`, and the homepage "Field notes"
+  region — MUST regenerate deterministically at build time from that content, with no
+  second manual edit and no `today()`-style nondeterminism.
+- **No dangling committed links**: No committed source file (including the portfolio
+  `index.html`) may contain an internal link to a blog post or page that does not exist.
+  Committed source MUST NOT carry stale/404-bound internal links between builds; the
+  Definition-of-Done verifier MUST assert this.
+
+Rationale: Discoverability for AI assistants and search engines is the entire reason this
+site is static; feeds and an accurate `llms.txt` are the cheapest durable citation
+surfaces, a unified identity prevents the knowledge graph from splitting the same person
+into two, and a one-commit flow with no dangling links is what keeps publishing safe and
+the served site always correct.
+
 ## Additional Constraints & Technology Guardrails
 
 - **Hosting**: GitHub Pages (user/org site served at root). Canonical base URL:
@@ -175,11 +223,16 @@ regress it.
 - **URL layout**: Blog index at `/blog/`; each post at `/blog/<slug>/` (clean URLs).
   Shared assets under `/blog/assets/`. Root-absolute paths are used so links and assets
   resolve at any page depth.
+- **Machine-readable surfaces**: Beyond the HTML pages, the deployable site MUST ship
+  `sitemap.xml`, an Atom feed (`/blog/feed.xml`), and `llms.txt`, all build-generated from
+  the Obsidian content. Pages MUST link the feed via `<link rel="alternate">` autodiscovery.
 - **Build tooling**: A single static generator that runs with tooling available for free
   in GitHub Actions (no paid services, no server). Dependencies MUST be minimal and
   pinned; the build MUST be reproducible in CI.
 - **Determinism**: Same content in → same HTML out. The generator MUST be deterministic so
-  diffs are reviewable and the build is idempotent.
+  diffs are reviewable and the build is idempotent. This applies to every derived artifact
+  (pages, `sitemap.xml`, Atom feed, `llms.txt`, homepage "Field notes" region): all dates
+  come from frontmatter or configured constants, never from `today()`.
 - **No client-only content**: see Principle I. The progressive-enhancement script is the
   only client JS and is optional to the page's meaning.
 - **Out of scope**: backend, database, server-side runtime, paid service, comment system,
@@ -197,8 +250,11 @@ regress it.
 - **Verification before done**: The implementation is "done" only when the build runs
   successfully and the generated index and an example post are verified to contain their
   content and SEO tags in the static HTML (Principle I & V), the existing portfolio is
-  byte-unchanged outside the managed "Field notes" region (Principle VII), and the design
-  matches the source (Principle III).
+  byte-unchanged outside the managed "Field notes" region (Principle VII), the design
+  matches the source (Principle III), the Atom feed and `llms.txt` are present and list
+  every published post, structured data references the canonical Person/WebSite `@id`,
+  and no committed source file carries an internal link to a nonexistent page
+  (Principle VIII). These checks are encoded in the post-build verifier.
 - **No silent degradation**: A build error MUST be fixed at the root cause or reported
   honestly; a feature MUST NOT be disabled or a principle weakened to silence an error.
 - **Example content**: At least one real example post authored as an Obsidian note MUST
@@ -223,4 +279,4 @@ for what the blog system MUST and MUST NOT do.
   `research.md`, and `quickstart.md`; those documents MUST defer to this constitution on
   any conflict.
 
-**Version**: 1.1.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-28
+**Version**: 1.2.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-29

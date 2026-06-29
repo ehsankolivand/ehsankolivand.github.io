@@ -1,6 +1,6 @@
 <!-- SPECKIT START -->
-Active feature: Obsidian-Vault-Driven Blog (`001-obsidian-blog`).
-Plan: `specs/001-obsidian-blog/plan.md` (read this first for tech stack, structure, and design-extraction approach).
-Constitution: `.specify/memory/constitution.md` (7 non-negotiable principles — SEO-static generation, GitHub Pages only, design fidelity, Obsidian single source, per-page SEO/GEO, a11y+CWV, non-destructive to portfolio).
-Stack: Python 3.11+ static generator (PyYAML + an in-house, stdlib-only Markdown renderer — no Markdown library) rendering Obsidian markdown into design templates extracted from the bundled blog design; deploys to GitHub Pages via Actions. Author surface: `content/blog/`. Design source: `templates/blog/`. Never edit generated HTML or the portfolio `index.html`.
+Active feature: Best-in-Class SEO + GEO with One-Commit Publishing (`002-seo-geo-publish`).
+Plan: `specs/002-seo-geo-publish/plan.md` (read first for the approach + Constitution Check; contracts in `specs/002-seo-geo-publish/contracts/`). Prior feature: `specs/001-obsidian-blog/plan.md` (the blog generator itself).
+Constitution: `.specify/memory/constitution.md` (v1.2.0, 8 non-negotiable principles — SEO-static generation, GitHub Pages only, design fidelity, Obsidian single source, per-page SEO/GEO, a11y+CWV, non-destructive to portfolio, and **VIII machine-readable discovery & single-source publishing**).
+Stack: Python 3.11+ static generator (PyYAML + an in-house, stdlib-only Markdown renderer — no Markdown library) rendering Obsidian markdown into design templates extracted from the bundled blog design; deploys to GitHub Pages via Actions. Author surface: `content/blog/`. Design source: `templates/blog/`. Generator: `scripts/blog/` (now incl. `feed.py` Atom + `llms.py`). Build `scripts/build_blog.py`, verify `scripts/verify_build.py` (DoD gate). Never edit generated HTML; the portfolio `index.html` is touched only inside its `<!--LATEST-NOTES:*-->` markers.
 <!-- SPECKIT END -->
