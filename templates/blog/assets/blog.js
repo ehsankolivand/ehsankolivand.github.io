@@ -170,6 +170,9 @@
       var shout = reactorEl.querySelector("[data-reactor-shout]");
       var spd = reactorEl.querySelector("[data-reactor-speed]");
       var sweat = reactorEl.querySelector("[data-reactor-sweat]");
+      var cap = reactorEl.querySelector("[data-reactor-cap]");        // grad cap that springs onto the head
+      var tassel = reactorEl.querySelector("[data-reactor-tassel]");
+      var capY = 0, capV = 0, capReady = false;                       // spring state for the cap's vertical lag
       var SHOUTS = ["eep!", "wheee!", "wobble!", "so fast!", "aaa~", "hold on!", "catch me!"];
       var lastY = window.scrollY, rawv = 0, sv = 0, blink = 0, rx = 0;
       window.addEventListener("scroll", function () { var y = window.scrollY; rawv = y - lastY; lastY = y; }, { passive: true });
@@ -180,6 +183,19 @@
         var vh = window.innerHeight, top = 0.15, span = 0.70;
         rider.style.top = ((top + prog * span) * vh) + "px";
         fillR.style.height = (prog * span * vh) + "px";
+        /* grad cap: a damped spring that follows the head's vertical travel, lagging on a
+           fast scroll and then settling centered back on the crown. It reads the SAME scroll
+           math the rider uses (no extra scroll listener), so it can never fight it. */
+        if (cap) {
+          var capTarget = (top + prog * span) * vh - 36; // seat the cap box (h22) ~3px onto the crown (rider top −17)
+          if (!capReady) { capY = capTarget; capV = 0; capReady = true; } // no first-frame jump
+          capV += (capTarget - capY) * 0.12;             // spring stiffness (pull toward the head)
+          capV *= 0.78;                                  // damping → one gentle overshoot, then rest
+          capY += capV;
+          var capRot = Math.max(-13, Math.min(13, capV * 0.5)); // tilt into the motion; 0 at rest
+          cap.style.transform = "translate3d(0," + capY.toFixed(2) + "px,0) rotate(" + capRot.toFixed(2) + "deg)";
+          if (tassel) tassel.style.transform = "rotate(" + Math.max(-32, Math.min(32, -capV * 2.2)).toFixed(2) + "deg)";
+        }
         var inst = Math.min(1, Math.abs(sv) / 44);
         rx = Math.max(inst, rx * 0.988);
         var s = rx, dir = sv >= 0 ? 1 : -1;

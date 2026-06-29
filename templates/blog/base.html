@@ -45,6 +45,24 @@
         </div>
       </div>
     </div>
+    <!-- ===== GRADUATION CAP — rides on the mascot's head with a springy scroll-lag (BLOG ONLY) =====
+         Decorative chrome, drawn inline like the rest of the mascot, in the design's own palette.
+         It is a sibling AFTER the rider so it paints on top of the head; aria-hidden via the
+         [data-reactor] ancestor; pointer-events:none; absolutely positioned so it never affects
+         layout (no CLS). The vertical spring-follow + tilt + tassel swing are applied in blog.js.
+         Hidden entirely under prefers-reduced-motion / mobile (the whole [data-reactor] is set to
+         display:none there) — so reduced-motion users get no cap and no animation, exactly like the
+         existing mascot. NOTE: this lives only in the blog template; the portfolio index.html has its
+         own separate, untouched mascot. -->
+    <div data-reactor-cap="" style="position:absolute; right:6px; top:0; width:40px; height:22px; transform-origin:50% 100%; will-change:transform; pointer-events:none;">
+      <div style="position:absolute; left:50%; top:14px; transform:translateX(-50%); width:23px; height:8px; border-radius:6px 6px 5px 5px; background:linear-gradient(180deg,#0e1d16,#070f0b); box-shadow:inset 0 1px 0 rgba(125,240,194,0.28);"></div>
+      <div style="position:absolute; left:50%; top:2px; width:22px; height:22px; transform:translateX(-50%) scaleY(0.6) rotate(45deg); border-radius:4px; background:linear-gradient(135deg,#13281d,#070f0b); border:1px solid rgba(125,240,194,0.55); box-shadow:0 4px 10px rgba(0,0,0,0.55);"></div>
+      <div style="position:absolute; left:50%; top:11px; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#7DF0C2; box-shadow:0 0 5px rgba(52,230,160,0.7);"></div>
+      <div data-reactor-tassel="" style="position:absolute; left:50%; top:11px; margin-left:13px; transform-origin:top center; will-change:transform;">
+        <span style="position:absolute; top:0; left:-1px; width:2px; height:15px; border-radius:2px; background:linear-gradient(180deg,#E7D2A6,#c9a869);"></span>
+        <span style="position:absolute; top:14px; left:50%; transform:translateX(-50%); width:5.5px; height:8px; border-radius:3px 3px 4px 4px; background:linear-gradient(180deg,#E7D2A6,#b8945a); box-shadow:0 0 5px rgba(231,210,166,0.45);"></span>
+      </div>
+    </div>
   </div>
 
   <!-- ===== TOP STATUS BAR ===== -->

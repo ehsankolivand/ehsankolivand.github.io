@@ -82,6 +82,29 @@ unchanged: zero-padded `display_date` (matches the design source), table-row abs
 (GFM-conformant), and single-style `h3`/`h4` (the design has no distinct sub-heading style; outside the v1.4.0
 sanctioned-styling set). **[confirmed — implemented + verified this pass]**
 
+A small **blog-only chrome embellishment (2026-06-29)** then added a **graduation cap (mortarboard)** to the
+blog's **scroll-reactor mascot** — the green companion that rides the right-hand scroll-progress line — on the
+blog index **and** every article page, with a **springy scroll-lag**: on a fast scroll the head moves first and
+the cap trails a beat behind, overshoots once, then **settles centered back on the crown**. It is scoped
+**strictly to the blog**: the cap markup lives only in `templates/blog/base.html` (inline-styled like the rest of
+the mascot, in the design's own palette — dark board, mint `#7DF0C2` button/edge, sand `#E7D2A6` tassel) and its
+motion only in `templates/blog/assets/blog.js`; the portfolio `index.html` carries its **own separate, untouched
+mascot** and loads none of the blog assets (no external `<script>`/`<link>` at all), so built `_site/index.html`
+stays **byte-identical outside the managed region** (verifier "portfolio intact"; **0** cap refs in the portfolio
+output). The cap is a sibling of `[data-reactor-bot]` inside the already-`aria-hidden`, `pointer-events:none`,
+`display:none`-by-default `[data-reactor]`; its vertical follow is a **damped spring driven inside the existing
+reactor `requestAnimationFrame` loop** (it reads the *same* `(0.15 + prog*0.70)*vh` scroll math the rider uses —
+no second scroll listener to fight), using compositor-friendly `transform` only → **no CLS, no focus trap, no new
+dependency**. **`prefers-reduced-motion` (and width ≤760px) hide the whole reactor — cap included — via the
+existing `applyResp()` `display:none` + the `if (reactorEl && !reduce)` animation gate**, exactly matching the
+existing mascot (confirmed at runtime: reactor `display:block` normally vs `display:none` under the reduce flag).
+**No new spec/feature**, and the test/verifier counts are unchanged (still **103 / 318**; the change is covered by
+the existing portfolio byte-identity + determinism gates, not by a new check). This is an intentional,
+user-authorized embellishment of *blog chrome* slightly beyond strict design-bundle reproduction (Principle III),
+deliberately bounded to the blog and leaving the Principle-VII-protected portfolio mascot untouched.
+**[confirmed — verified: build + verifier (318/0) + determinism diff + headless screenshots of index & article
++ spring numeric sim + reduced-motion runtime DOM check]**
+
 ---
 
 ## 2. Purpose and goals
@@ -195,7 +218,8 @@ Then CI runs **`scripts/verify_build.py`** (Definition-of-Done gate) and, if gre
 ### Design templates (`templates/blog/`)
 
 - `base.html` — `<head>` with `{{HEAD}}` slot + body shell (ambient background, custom cursor,
-  scroll-reactor mascot, fixed header with `{{NAV_ITEMS}}`, "Home"→portfolio link) + `{{MAIN}}` +
+  scroll-reactor mascot **(now wearing a blog-only graduation cap, `[data-reactor-cap]`/`[data-reactor-tassel]`,
+  with a spring scroll-lag)**, fixed header with `{{NAV_ITEMS}}`, "Home"→portfolio link) + `{{MAIN}}` +
   deferred `<script src="/blog/assets/blog.js">`. **[confirmed]**
 - `index.html` — blog index `<main>`: hero ("Field Notes."), `{{FEATURED}}`, `{{GRID}}`. **[confirmed]**
 - `article.html` — post `<main>`: back link, category chip, date/read-time, single `<h1>{{TITLE}}`,
@@ -209,8 +233,9 @@ Then CI runs **`scripts/verify_build.py`** (Definition-of-Done gate) and, if gre
 `blog.js` features **[confirmed — read inventory]**: hero-reveal safety net, ink ripple, magnetic
 custom cursor (desktop), scroll reveals, magnetic pull + card hover, **category nav active-state +
 client-side filtering** (layered over already-present crawlable links), Home-link hover,
-reading-progress bar, scroll-reactor companion, "Bit" hero companion handshake, logo-tap×5 confetti
-easter egg.
+reading-progress bar, scroll-reactor companion **(+ graduation-cap damped-spring follow: lag on fast scroll,
+one overshoot, settles centered on the head; same rAF loop, no extra scroll listener)**, "Bit" hero companion
+handshake, logo-tap×5 confetti easter egg.
 
 ---
 
