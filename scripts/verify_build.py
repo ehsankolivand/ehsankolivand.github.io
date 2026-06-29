@@ -19,8 +19,34 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from blog import config, content, markdown_render  # noqa: E402
 
-TOKEN_RE = re.compile(r"\{\{[A-Za-z_][^}]*\}\}|<sc-(?:if|for)\b")
 _LINK_SLUG_RE = re.compile(r'href="/blog/([^"/]+)/"')  # captures <slug> from /blog/<slug>/ links
+
+
+def _template_token_names() -> set:
+    """Names of the `{{TOKEN}}` slots that actually appear in the design templates/partials.
+
+    These are the ONLY tokens the build substitutes, so they are the only ones whose survival in
+    a built page is a real "unfilled slot" defect. Author body text such as `{{user}}`, `{{count}}`,
+    or `{{ctx.value}}` (Handlebars/Mustache/Angular interpolation — realistic on a dev-tooling blog)
+    is intentionally preserved verbatim by the renderer's single-pass substitution (sub_tokens) and
+    is NOT in this set, so it no longer trips a false "unresolved template tokens" failure (BUG-011)."""
+    names: set = set()
+    tdir = config.TEMPLATES_DIR
+    if tdir.exists():
+        for f in sorted(tdir.rglob("*.html")):
+            names.update(re.findall(r"\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}", f.read_text(encoding="utf-8")))
+    return names
+
+
+# A built page must contain NONE of the design's own template-slot tokens (an unfilled slot is a
+# DoD failure) and none of the bundle's `<sc-if>`/`<sc-for>` runtime directives. Scoping the scan
+# to the real slot vocabulary lets legitimate author `{{interpolation}}` content render without
+# a false positive, while a genuinely-forgotten slot like `{{TITLE}}` still fails (BUG-011).
+_TEMPLATE_TOKENS = _template_token_names()
+TOKEN_RE = re.compile(
+    (r"\{\{(?:" + "|".join(re.escape(n) for n in sorted(_TEMPLATE_TOKENS)) + r")\}\}|"
+     if _TEMPLATE_TOKENS else "")
+    + r"<sc-(?:if|for)\b")
 
 
 def _all_jsonld(h):
