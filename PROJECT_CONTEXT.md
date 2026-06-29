@@ -64,10 +64,23 @@ has an **isolated stdlib `unittest` suite** (`tests/`, 71 tests) plus an extende
 `blog.css` classes under `#blog-root`, the design's existing palette/fonts only, no portfolio/chrome
 change). **[confirmed — implemented + verified this cycle]**
 
-Current state: **working and verified**. A fresh build produces 3 posts; the renderer unit suite passes
-**71 tests** and the verifier passes **318 checks, 0 failures** (was 273 after 003, 163 after 002, 90
-before). The double-build output is byte-identical (deterministic). **[confirmed — ran tests + build +
-verify + determinism diff]**
+Current state: **working and verified**. A fresh build produces 3 posts; the renderer/SEO/build unit
+suite passes **103 tests** (was 71 after 004; **+32 in the 2026-06-29 bug-fix pass**) and the verifier
+passes **318 checks, 0 failures** (was 273 after 003, 163 after 002, 90 before). The double-build output
+is byte-identical (deterministic). **[confirmed — ran tests + build + verify + determinism diff]**
+
+A **bug-fix pass (2026-06-29, `BUG_AUDIT.md`)** then hardened the generator without changing the design or
+adding any dependency: it closed a JSON-LD `</script>` breakout (escape `<`/`>`/`&` for `<script>` context
+in `seo._jsonld`), an embedded-control URL-allow-list bypass (`java\x00script:` now rejected in
+`_is_safe_url`), a GFM table false-positive (a `|`-bearing paragraph above a `---` no longer becomes a
+table — header/delimiter cell counts must match), and three fail-loud gaps (`tags:` scalar, unvalidated
+content-relative `image:`, and a too-broad verifier token scan that rejected legitimate author `{{user}}`
+interpolation). It also fixed smaller correctness/consistency items (related-link trailing-rule preservation,
+feed `id`/`link` honoring per-post `canonical`, image-dim default, stray-file copy filter, JPEG standalone
+markers, stale README/hero/wordmark/CI). Three audited items were re-verified as **not bugs** and left
+unchanged: zero-padded `display_date` (matches the design source), table-row absorption of pipe-bearing prose
+(GFM-conformant), and single-style `h3`/`h4` (the design has no distinct sub-heading style; outside the v1.4.0
+sanctioned-styling set). **[confirmed — implemented + verified this pass]**
 
 ---
 
@@ -111,7 +124,7 @@ verify + determinism diff]**
 | Language | Python | **3.11+** required; CI pins **3.12.7**; local observed **3.12.7** | `plan.md`, `.github/workflows/deploy.yml`, `python3 --version` | confirmed |
 | Only third-party dep | **PyYAML** | **==6.0.1** (pinned) | `requirements.txt` | confirmed |
 | Markdown rendering | **in-house, stdlib-only** renderer (NO Markdown library); **004**: + vendored `highlight.py` (10-language syntax highlighter), callouts, footnotes | — | `scripts/blog/markdown_render.py`, `scripts/blog/highlight.py` | confirmed |
-| Renderer tests **(004, NEW)** | stdlib **`unittest`** suite (NO third-party test dep); `python -m unittest discover -s tests` | — | `tests/test_markdown_render.py`, `tests/test_highlight.py` (71 tests) | confirmed |
+| Renderer/SEO/build tests **(004; expanded 2026-06-29)** | stdlib **`unittest`** suite (NO third-party test dep); `python -m unittest discover -s tests` | — | `tests/test_{markdown_render,highlight,seo,content,feed,render,verify_token_scan,build_blog}.py` (**103 tests**) | confirmed |
 | Stdlib used | `pathlib, html, re, datetime, json, xml(implicit), unicodedata, struct, math, dataclasses, argparse, shutil, functools` | stdlib | generator modules | confirmed |
 | Templating | hand-rolled `{{TOKEN}}` single-pass substitution (no Jinja) | — | `markdown_render.sub_tokens`, `render.py` | confirmed |
 | Fonts | 15 self-hosted **woff2** (JetBrains Mono, Manrope, Space Grotesk); **54** `@font-face` rules | — | `templates/blog/assets/blog.css`, `fonts/` | confirmed |
@@ -292,7 +305,8 @@ python -m http.server -d _site 8080                # preview http://localhost:80
 Trigger: push to `main` (+ `workflow_dispatch`). Job `build`: checkout → setup-python 3.12.7 →
 `pip install -r requirements.txt` → `python scripts/build_blog.py --out _site` →
 `python scripts/verify_build.py --out _site` → upload `_site` artifact. Job `deploy`: `deploy-pages`.
-Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, pages:write, id-token:write`.
+Concurrency group `pages`, **`cancel-in-progress: false`** (2026-06-29 nit: GitHub's recommended Pages
+pattern — don't interrupt an in-flight deployment). Permissions: `contents:read, pages:write, id-token:write`.
 
 ### Configuration / "env vars" and secrets
 
@@ -305,11 +319,14 @@ Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, page
 
 ### Tests
 
-- **Renderer unit tests (004, NEW)**: a stdlib **`unittest`** suite (`tests/test_markdown_render.py`
-  + `tests/test_highlight.py`, **71 tests**, no third-party dep) covers the renderer's security
-  guarantees (escaping, URL allow-list, token-injection) + behaviors (lists, tables, code
-  highlighting + filename + line-emphasis + fallback, callouts, footnotes, heading anchors); run
-  `python -m unittest discover -s tests`; CI runs it before build/verify.
+- **Renderer/SEO/build unit tests (004, NEW; expanded 2026-06-29)**: a stdlib **`unittest`** suite
+  (**103 tests**, no third-party dep) covers the renderer's security guarantees (escaping, URL allow-list
+  incl. embedded-control bypass, token-injection) + behaviors (lists, tables incl. the cell-count rule,
+  code highlighting + filename + line-emphasis + fallback, callouts, footnotes, heading anchors), plus the
+  bug-fix pass: `test_seo.py` (JSON-LD `<script>` safety + `_post_image` absolute/relative), `test_content.py`
+  (`tags`/`image:` fail-loud + `extract_related`), `test_feed.py` (canonical), `test_render.py` (nav URL-encode),
+  `test_verify_token_scan.py` (template-token vocabulary), `test_build_blog.py` (JPEG markers + stray-file
+  filter); run `python -m unittest discover -s tests`; CI runs it before build/verify.
 - The post-build **`scripts/verify_build.py`** integration gate remains the Definition-of-Done, a
   smoke/integration verifier. Baseline checks: per-post
   content + SEO + JSON-LD parse + single `<h1>` + no stray tokens; index links; sitemap completeness;
@@ -333,9 +350,10 @@ Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, page
   per-language highlighting + verbatim coverage, unknown-language fallback, the filename label +
   line-emphasis, callouts (known/unknown), footnotes (incl. no dangling anchor), table edge cases,
   and the security guarantees (+45 checks). **[confirmed]**
-- Observed result on current content: **318 verifier checks, 0 failures, 3 posts** + **71 renderer
-  unit tests, 0 failures** (verifier was 273 post-003, 163 post-002, 90 pre-002); double-build output
-  byte-identical (deterministic). **[confirmed — ran tests + build + verify + determinism diff]**
+- Observed result on current content: **318 verifier checks, 0 failures, 3 posts** + **103 unit
+  tests, 0 failures** (verifier was 273 post-003, 163 post-002, 90 pre-002; tests were 71 post-004);
+  double-build output byte-identical (deterministic). **[confirmed — ran tests + build + verify +
+  determinism diff]**
 
 ---
 
@@ -500,6 +518,18 @@ development"/"Agentic code generation" bridge); emitted as `knowsAbout` on the b
 10. **Font baseline adds ~1.05 MB to the repo** (`assets/portfolio-fonts/index.baseline.html`, the
    recoverable original) — the deliberate, self-contained cost of the offline fidelity proof; net repo
    growth is ~+0.71 MB after index.html itself shrank ~0.33 MB. Not served. **[confirmed].**
+11. **✅ RESOLVED (bug-fix pass 2026-06-29; `BUG_AUDIT.md`).** A 16-finding + 4-nit audit was reconciled:
+   **13 fixed**, **3 not-a-bug**, **0 deferred**, **all 4 nits fixed**; no design change, no new dependency,
+   determinism + portfolio integrity preserved. Hardening landed: JSON-LD now escapes `<`/`>`/`&` for
+   `<script>` context (`seo._jsonld`) so a `</script>` in a title can't break out or fail the verifier;
+   `_is_safe_url` strips embedded C0 controls (kills `java\x00script:`); the GFM table trigger requires
+   header/delimiter cell-count parity (a `|`-paragraph above `---` is no longer a table); `tags:` scalars and
+   content-relative `image:` now fail loud with the file name; the verifier's unresolved-token scan is scoped
+   to the real `{{SLOT}}` vocabulary (author `{{user}}` interpolation no longer trips it); the Atom feed
+   honors per-post `canonical`; `extract_related` keeps a trailing rule with no related block. Re-verified as
+   **NOT bugs** (no change): `display_date` zero-pads to match the design source; a table absorbs a
+   pipe-bearing prose line per GFM; `h3`/`h4` share the single design heading style (no distinct sub-heading
+   style exists in the design, and heading hierarchy is outside the v1.4.0 sanctioned-styling set). **[confirmed].**
 
 ---
 
@@ -540,9 +570,11 @@ development"/"Agentic code generation" bridge); emitted as `knowsAbout` on the b
    intentionally kept as a generic template; worth confirming with the owner.
 4. **Add renderer unit tests** for the in-house Markdown engine (tables, nested lists, emphasis edge
    cases, unsafe-URL neutralization, token-injection). Currently only indirectly covered (issue §9.5).
-5. **Empty-blog / draft-only path**: code handles it (`_EMPTY_GRID`, sitemap omits `/blog/`), but
-   the verifier and homepage-injection tolerate "no markers / no posts" by printing NOTE — confirm
-   that the deployed homepage degrades acceptably when zero posts exist. **[inferred].**
+5. **Empty-blog / draft-only path**: code handles it (`_EMPTY_GRID`; the sitemap still lists `/blog/`
+   since the index page is always rendered — only its `<lastmod>` is omitted when there are no posts,
+   corrected from the old "omits /blog/" note in the 2026-06-29 pass, BUG-009), but the verifier and
+   homepage-injection tolerate "no markers / no posts" by printing NOTE — confirm that the deployed
+   homepage degrades acceptably when zero posts exist. **[inferred].**
 6. **`spec.md` still "Draft"** while tasks are 100% complete — flip status or add a "Shipped" note
    to avoid confusion (issue §9.8).
 7. **Cover image pipeline is unexercised by committed content** (all 3 posts use code covers). The

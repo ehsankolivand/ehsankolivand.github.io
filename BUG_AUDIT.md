@@ -1,9 +1,10 @@
 # BUG_AUDIT.md
 
 > Autonomous line-by-line code audit of the personal-site repo (portfolio + Obsidian-driven static blog generator).
-> **Date:** 2026-06-29.
-> **Status:** COMPLETE.
-> **Summary:** 16 findings — Critical: 0 · High: 1 · Medium: 5 · Low: 10 (+ 4 minor nits). The current committed content builds green (verifier passes); every finding below is **latent** — triggered by specific content/frontmatter or input shapes not present in the 3 committed posts — except the documentation/consistency items, which are present now.
+> **Date:** 2026-06-29 (audit) · 2026-06-29 (resolution pass).
+> **Status:** COMPLETE — **RECONCILED**. All 16 findings + 4 nits triaged: **13 fixed**, **3 verified not-a-bug** (BUG-006, BUG-012, BUG-014), **0 deferred**; **all 4 minor nits fixed**.
+> **Original summary:** 16 findings — Critical: 0 · High: 1 · Medium: 5 · Low: 10 (+ 4 minor nits). The current committed content builds green (verifier passes); every finding below was **latent** — triggered by specific content/frontmatter or input shapes not present in the 3 committed posts — except the documentation/consistency items, which were present.
+> **Resolution summary (by severity):** High 1/1 fixed · Medium 5/5 fixed · Low 7 fixed + 3 not-a-bug · nits 4/4 fixed. Each genuine bug was independently re-verified against the live code before any change. After the pass: renderer/SEO/verifier unit suite **103 tests** (was 71; +32 regression tests across `tests/test_seo.py`, `test_content.py`, `test_feed.py`, `test_render.py`, `test_verify_token_scan.py`, `test_build_blog.py`, and extended `test_markdown_render.py`), verifier **318 checks, 0 failures**, double-build byte-identical (determinism preserved), portfolio byte-identical outside its managed regions.
 
 This file is a worklist of confirmed bugs/defects found by reading the codebase. Nothing else in the repo is modified by this audit. Each item: **What / Why it's a bug / Where / Severity / Suggested fix.**
 
