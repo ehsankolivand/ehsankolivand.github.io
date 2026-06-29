@@ -395,8 +395,9 @@ personal site/
 │   └── index.baseline.html     # 003: recoverable original (full 54 faces, w/ markers). NOT served
 │                               #   (build never copies it). Font-fidelity proof diffs against it.
 ├── readme.html                 # GIT-IGNORED private local "blog system README" page (not served).
-├── Ehsan Koolivand - Blog.html # Design bundle source (dc-runtime/React). UNTRACKED in git. The
-│                               #   canonical design source from which templates were extracted.
+├── Ehsan Koolivand - Blog.html # Design bundle source (dc-runtime/React). Now TRACKED (committed
+│                               #   2026-06-29). Canonical design source the templates were extracted
+│                               #   from; not served (absent from ROOT_COPY_ALLOWLIST).
 ├── robots.txt sitemap.xml site.webmanifest llms.txt   # SEO companions. NOTE: committed llms.txt is
 │                               #   now the IDENTITY BASE the build reads; _site/llms.txt is GENERATED
 │                               #   (base + post list). Build also emits _site/blog/feed.xml (Atom).
@@ -507,9 +508,9 @@ development"/"Agentic code generation" bridge); emitted as `knowsAbout` on the b
    `index.html` (and every built page) contains **no** `/blog/<slug>/` link to a nonexistent post,
    so this cannot regress. **[confirmed — neutralized + verifier-enforced + byte-identical outside
    markers].**
-2. **Design source bundle is untracked.** `Ehsan Koolivand - Blog.html` is named the canonical
-   design source by the constitution but shows as **untracked** in `git status` (not committed).
-   Risk: the design source-of-truth is not under version control. **[confirmed].**
+2. **✅ RESOLVED (2026-06-29) — design source bundle now committed.** `Ehsan Koolivand - Blog.html`
+   (named the canonical design source by the constitution) is now **tracked** in git, so the design
+   source-of-truth is under version control. Not served (absent from `ROOT_COPY_ALLOWLIST`). **[confirmed].**
 3. **`research/seo-brief.md` contradicts the live site.** It is a **generic** brief: location
    "Budapest, Hungary", placeholders `[ENGINEER_NAME]`/`[SITE_URL]`, theme color `#3DDC84`, and a
    KMP-centric skill set — versus the actual Istanbul / "Ehsan Kolivand" / `#34E6A0` / Compose+crypto
@@ -588,8 +589,8 @@ development"/"Agentic code generation" bridge); emitted as `knowsAbout` on the b
 
 1. **✅ DONE (feature 002)** — The committed homepage region was reconciled: it is now
    post-link-free in source and verifier-guarded against dangling links (issue §9.1 resolved).
-2. **Commit the design source bundle** (`Ehsan Koolivand - Blog.html`) or document its removal, so
-   Principle III's "canonical design source" is actually in version control (issue §9.2).
+2. **✅ DONE (2026-06-29)** — The design source bundle (`Ehsan Koolivand - Blog.html`) is now committed,
+   so Principle III's "canonical design source" is in version control (issue §9.2 resolved).
 3. **Fix or delete `research/seo-brief.md`** — it documents the wrong person/city/brand color and
    could mislead a future contributor or an AI assistant (issue §9.3). **[uncertain]** whether it is
    intentionally kept as a generic template; worth confirming with the owner.
