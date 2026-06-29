@@ -88,7 +88,7 @@ reduced-motion reveal, and decorative `aria-hidden`; the `<time>` swap changes n
 - [X] T020 Run the full gate: `python scripts/build_blog.py --out _site` + `python scripts/verify_build.py --out _site`; iterate until green with **≥ 110 checks, 0 failures**.
 - [X] T021 Run quickstart Scenarios A–E (`quickstart.md`): one-commit publish round-trip, no-dangling-links grep, JSON-LD validity script, feed/llms checks, and a two-build determinism `diff -r` (byte-identical). Confirm `git diff -- index.html` differs only inside the managed markers.
 - [X] T022 [P] Tidy `scripts/blog/config.py` comments + `ROOT_COPY_ALLOWLIST`/`ROOT_REQUIRED` notes so they reflect `llms.txt` now being generated (not copied verbatim); ensure no stale guidance remains.
-- [ ] T023 Update `PROJECT_CONTEXT.md` to reflect every change (new modules `feed.py`/`llms.py`, structured-data unification, feed/llms surfaces, neutralized homepage region, expanded verifier, constitution v1.2.0, the 002 spec folder, resolved + any new known issues), preserving its confidence-tagged format. *(Executed in cycle Phase 10.)*
+- [X] T023 Update `PROJECT_CONTEXT.md` to reflect every change (new modules `feed.py`/`llms.py`, structured-data unification, feed/llms surfaces, neutralized homepage region, expanded verifier, constitution v1.2.0, the 002 spec folder, resolved + any new known issues), preserving its confidence-tagged format. *(Executed in cycle Phase 10.)*
 
 ---
 
