@@ -46,6 +46,16 @@ def _common(lines: list[str]) -> list[str]:
 
 def _jsonld(obj) -> str:
     payload = json.dumps(obj, ensure_ascii=False, separators=(",", ":"))
+    # Escape the HTML-sensitive characters for safe embedding in a <script> element:
+    # `<` alone defeats element breakout (`</script>`, `<!--`, `<script`); `>` and `&` are
+    # escaped too for completeness. Each becomes a valid JSON \u escape that decodes back to
+    # the original character, so the JSON-LD stays valid (and round-trips through json.loads)
+    # while a `</script>` in author text (e.g. a post titled "Escaping </script>") can no
+    # longer terminate the block. Mirrors the renderer's full-escaping invariant for the
+    # one context json.dumps does not cover (Constitution V; injection into HTML/JSON-LD).
+    payload = (payload.replace("<", "\\u003c")
+                      .replace(">", "\\u003e")
+                      .replace("&", "\\u0026"))
     return f'<script type="application/ld+json">{payload}</script>'
 
 
