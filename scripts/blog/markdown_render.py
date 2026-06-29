@@ -7,6 +7,7 @@ and attributes are HTML-escaped.
 from __future__ import annotations
 import re
 import html
+import unicodedata
 from pathlib import Path
 from functools import lru_cache
 
@@ -119,6 +120,44 @@ def render_inline(text: str) -> str:
     for key, frag in reversed(list(stash.items())):
         text = text.replace(key, frag)
     return text
+
+
+# --------------------------------------------------------------------------- #
+# Heading anchors (deterministic, collision-free section ids for deep-citability)
+# --------------------------------------------------------------------------- #
+_TAG_RE = re.compile(r"<[^>]+>")
+_SLUG_NONWORD = re.compile(r"[^a-z0-9]+")
+
+
+def _visible_text(inline_html: str) -> str:
+    """Visible text of rendered inline HTML: drop tags, unescape entities. Used so a heading
+    slug reflects the words a reader sees (e.g. a link's label, not its URL)."""
+    return html.unescape(_TAG_RE.sub("", inline_html))
+
+
+def heading_slug(text: str) -> str:
+    """GitHub-style slug of a heading's visible text: NFKD->ASCII fold (so 'Café'->'cafe',
+    Turkish 'ş'->'s'), lowercase, every run of non-alphanumerics -> single '-', trimmed.
+    Returns '' for symbol/emoji-only text (the caller assigns a stable `section-<n>` id).
+    Deterministic and stable across builds (depends only on the heading text)."""
+    ascii_text = unicodedata.normalize("NFKD", text).encode("ascii", "ignore").decode("ascii")
+    return _SLUG_NONWORD.sub("-", ascii_text.lower()).strip("-")
+
+
+def _alloc_heading_id(visible: str, ordinal: int, used: set, counts: dict) -> str:
+    """Assign one heading a unique, deterministic id within a post. `used` (all ids so far) and
+    `counts` (per-base suffix counter) are post-scoped state. Repeats of the same base get
+    '-1','-2',… in document order; an empty slug falls back to 'section-<ordinal>'. The while-loop
+    guarantees global uniqueness even if a suffixed id collides with another heading's base."""
+    base = heading_slug(visible) or f"section-{ordinal}"
+    n = counts.get(base, 0)
+    hid = base
+    while hid in used:
+        n += 1
+        hid = f"{base}-{n}"
+    counts[base] = n
+    used.add(hid)
+    return hid
 
 
 # --------------------------------------------------------------------------- #
@@ -261,6 +300,11 @@ def render(markdown_text: str, image_resolver) -> str:
     """Render a Markdown body to a string of concatenated design block partials."""
     lines = markdown_text.split("\n")
     out: list[str] = []
+    # post-scoped heading-anchor state: deterministic, collision-free section ids (one render()
+    # call == one post body, so ids are unique within a page and stable across builds).
+    used_ids: set[str] = set()
+    base_counts: dict[str, int] = {}
+    heading_ordinal = 0
     i, n = 0, len(lines)
     while i < n:
         line = lines[i]
@@ -286,8 +330,10 @@ def render(markdown_text: str, image_resolver) -> str:
         mh = re.match(r"^(#{1,6})\s+(.*)$", s)
         if mh:
             level = max(2, min(len(mh.group(1)), 4))
-            out.append(_fill("block-h2.html", TAG=f"h{level}",
-                             CONTENT=render_inline(mh.group(2).strip())))
+            inline = render_inline(mh.group(2).strip())
+            heading_ordinal += 1
+            hid = _alloc_heading_id(_visible_text(inline), heading_ordinal, used_ids, base_counts)
+            out.append(_fill("block-h2.html", TAG=f"h{level}", ID=esc_attr(hid), CONTENT=inline))
             i += 1
             continue
         # thematic break -> skip

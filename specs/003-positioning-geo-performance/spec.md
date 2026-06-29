@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-29
 
-**Status**: Draft
+**Status**: Implemented (shipped 2026-06-29 — positioning + heading anchors + font subset landed; verifier 273 checks)
 
 **Input**: User description: "Sharpen the site's positioning and finish the deferred GEO/performance work, building on 002. (a) Positioning: enrich the canonical Person identity with grounded skill/topic signals (jobTitle, knowsAbout/occupation, and the relationship between the Android-engineering identity and the code-generation tooling content) derived from what actually appears in the portfolio and existing posts — so search and AI engines resolve the Python-tooling writing as an Android engineer's tooling work, not a separate Python identity — and ensure the taxonomy is ready for future Android/architecture posts and degrades gracefully while those categories are empty; invent no blog content. (b) Deep-citability: add stable, deterministic anchor ids to post headings so AI assistants and readers can link to a precise section, with no visual redesign. (c) Performance: cut the portfolio's largest weight — the inlined, mostly-unused font-face data on the highest-traffic page — via a one-time offline subset whose result is committed, adding no CI/runtime dependency, gated by a fidelity proof. (d) Inherited fixes: ratify the v1.2.0 constitution amendment, verify the unified-identity sameAs values are exactly correct, tighten verifier coverage for author/locale/article-tag signals, and correct stale spec Status fields. All changes stay static, build-time, deterministic, GitHub-Pages-only, design-faithful, and grounded — no fabricated content or capabilities."
 

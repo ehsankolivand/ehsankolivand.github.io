@@ -50,12 +50,17 @@ def _jsonld(obj) -> str:
 
 
 def _author_node(base_url: str, full: bool) -> dict:
-    """The canonical author Person. `full` adds url/jobTitle/sameAs; otherwise a lean
-    @id+name reference. The @id MUST equal the portfolio's #person so engines merge them."""
+    """The canonical author Person. `full` adds url/jobTitle/knowsAbout/sameAs; otherwise a
+    lean @id+name reference. The @id MUST equal the portfolio's #person so engines merge them.
+    `jobTitle` + `knowsAbout` (grounded, mirrored verbatim from the portfolio) make every post
+    self-describe its author as a Senior Android Engineer whose expertise includes the
+    code-generation/dev-tooling topics, so engines read the tooling posts as an Android
+    engineer's work, not a separate identity (Constitution V/VIII; feature 003)."""
     node = {"@type": "Person", "@id": config.PERSON_ID, "name": config.AUTHOR_NAME}
     if full:
         node["url"] = config.abs_url(base_url, "/")
         node["jobTitle"] = config.AUTHOR_ROLE
+        node["knowsAbout"] = list(config.AUTHOR_KNOWS_ABOUT)
         node["sameAs"] = list(config.AUTHOR_SAMEAS)
     return node
 

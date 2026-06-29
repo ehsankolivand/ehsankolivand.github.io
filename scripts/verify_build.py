@@ -9,6 +9,7 @@ posts). Exit non-zero on any failure.
 """
 from __future__ import annotations
 import argparse
+import html
 import json
 import re
 import sys
@@ -16,7 +17,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from blog import config, content  # noqa: E402
+from blog import config, content, markdown_render  # noqa: E402
 
 TOKEN_RE = re.compile(r"\{\{[A-Za-z_][^}]*\}\}|<sc-(?:if|for)\b")
 _LINK_SLUG_RE = re.compile(r'href="/blog/([^"/]+)/"')  # captures <slug> from /blog/<slug>/ links
@@ -37,6 +38,37 @@ def _all_jsonld(h):
         else:
             out.append(obj)
     return out
+
+
+def _portfolio_identity(repo_index_text):
+    """Parse the portfolio's canonical Person + WebSite from index.html JSON-LD.
+    Returns (person_dict|None, website_dict|None). Used to assert the blog's grounded identity
+    EQUALS the portfolio's (no fabrication, no drift) — feature 003."""
+    objs = _all_jsonld(repo_index_text)
+    if not objs:
+        return None, None
+    person = next((o for o in objs if o.get("@type") == "Person"), None)
+    website = next((o for o in objs if o.get("@type") == "WebSite"), None)
+    return person, website
+
+
+def _unicode_ranges(zone_text):
+    """Parse all `unicode-range:` declarations in a font-zone CSS string into a set of (lo,hi)
+    codepoint intervals. Single codepoints become (cp,cp). Used by the font-fidelity proof."""
+    ranges = set()
+    for ur in re.findall(r"unicode-range:\s*([^;]+);", zone_text):
+        for tok in ur.split(","):
+            m = re.match(r"[Uu]\+([0-9A-Fa-f]+)(?:-([0-9A-Fa-f]+))?$", tok.strip())
+            if not m:
+                continue
+            lo = int(m.group(1), 16)
+            hi = int(m.group(2), 16) if m.group(2) else lo
+            ranges.add((lo, hi))
+    return ranges
+
+
+def _covered(ranges, cp):
+    return any(lo <= cp <= hi for lo, hi in ranges)
 
 
 def main(argv=None) -> int:
@@ -122,6 +154,12 @@ def main(argv=None) -> int:
                 ok(isinstance(bp.get("author"), dict) and bp["author"].get("@id") == config.PERSON_ID,
                    f"{p.slug}: BlogPosting author.@id != PERSON_ID (identity not unified)")
                 ok(bp.get("inLanguage") == config.LOCALE, f"{p.slug}: BlogPosting inLanguage missing")
+                # feature 003: grounded Android-engineer positioning on every post (read in isolation)
+                auth = bp.get("author") if isinstance(bp.get("author"), dict) else {}
+                ok(auth.get("jobTitle") == config.AUTHOR_ROLE,
+                   f"{p.slug}: author.jobTitle != '{config.AUTHOR_ROLE}' (positioning signal missing)")
+                ok(auth.get("knowsAbout") == list(config.AUTHOR_KNOWS_ABOUT),
+                   f"{p.slug}: author.knowsAbout != grounded AUTHOR_KNOWS_ABOUT (positioning)")
             bc = next((o for o in objs if o.get("@type") == "BreadcrumbList"), None)
             ok(bc is not None, f"{p.slug}: no BreadcrumbList JSON-LD")
             if bc:
@@ -132,6 +170,50 @@ def main(argv=None) -> int:
         # image-cover posts must carry intrinsic dimensions (no CLS); code covers have no <img>
         if p.cover.kind == "image":
             ok("width=" in h and "height=" in h, f"{p.slug}: image cover missing intrinsic dimensions")
+
+        # ---- feature 003: author/locale consistency (carried-over fix #3, FR-013-class) ----
+        ok(f'name="author" content="{html.escape(config.AUTHOR_NAME, quote=True)}"' in h,
+           f"{p.slug}: <meta name=author> missing or != AUTHOR_NAME")
+        ok(f'property="og:locale" content="{config.OG_LOCALE}"' in h,
+           f"{p.slug}: og:locale missing or != OG_LOCALE")
+
+        # ---- feature 003: per-post tag -> keyword + article:tag presence (carried-over fix #3) ----
+        if p.tags:
+            mk = re.search(r'name="keywords" content="([^"]*)"', h)
+            ok(bool(mk), f"{p.slug}: tagged post missing meta keywords")
+            if mk:
+                kw = html.unescape(mk.group(1))
+                for t in p.tags:
+                    ok(t in kw, f"{p.slug}: tag '{t}' missing from meta keywords")
+            for t in p.tags:
+                ok(f'property="article:tag" content="{html.escape(t, quote=True)}"' in h,
+                   f"{p.slug}: missing article:tag for '{t}'")
+            mbp = re.search(r'<script type="application/ld\+json">(.*?)</script>', h, re.S)
+            if mbp:
+                try:
+                    kwj = json.loads(mbp.group(1)).get("keywords", "")
+                    for t in p.tags:
+                        ok(t in kwj, f"{p.slug}: tag '{t}' missing from BlogPosting.keywords")
+                except json.JSONDecodeError:
+                    pass
+
+        # ---- feature 003: deterministic, unique, present heading anchors (FR-009..011) ----
+        body_html = mbody.group(1) if mbody else h
+        heads = re.findall(r'<(h[234])\s+id="([^"]*)"[^>]*>(.*?)</\1>', body_html, re.S)
+        hids = [hid for _t, hid, _txt in heads]
+        ok(all(hid.strip() for hid in hids), f"{p.slug}: a body heading has an empty id")
+        ok(len(hids) == len(set(hids)),
+           f"{p.slug}: duplicate heading anchor id(s): {sorted({x for x in hids if hids.count(x) > 1})}")
+        for _t, hid, txt in heads:
+            vis = html.unescape(re.sub(r"<[^>]+>", "", txt)).strip()
+            base = markdown_render.heading_slug(vis)
+            if base:
+                ok(hid == base or hid.startswith(base + "-"),
+                   f"{p.slug}: heading id '{hid}' not deterministically derived from '{vis[:40]}'")
+            else:
+                ok(hid.startswith("section-"),
+                   f"{p.slug}: empty-slug heading id '{hid}' is not a stable section-<n> fallback")
+        ok("<h1" not in body_html, f"{p.slug}: an <h1> appears inside the body (only the title may be h1)")
 
     # ---- index ----
     idx = out / "blog" / "index.html"
@@ -154,10 +236,30 @@ def main(argv=None) -> int:
             blog = next((o for o in iobjs if o.get("@type") == "Blog"), None)
             ok(blog is not None and isinstance(blog.get("author"), dict)
                and blog["author"].get("@id") == config.PERSON_ID, "index: Blog.author.@id != PERSON_ID")
+            # feature 003: index author carries the grounded Android-engineer signals too
+            if blog is not None and isinstance(blog.get("author"), dict):
+                ba = blog["author"]
+                ok(ba.get("jobTitle") == config.AUTHOR_ROLE,
+                   "index: Blog.author.jobTitle missing/wrong (positioning)")
+                ok(ba.get("knowsAbout") == list(config.AUTHOR_KNOWS_ABOUT),
+                   "index: Blog.author.knowsAbout != grounded AUTHOR_KNOWS_ABOUT")
+            ok(blog is not None and blog.get("inLanguage") == config.LOCALE,
+               "index: Blog.inLanguage != LOCALE")
             ibc = next((o for o in iobjs if o.get("@type") == "BreadcrumbList"), None)
             ok(ibc is not None and len(ibc.get("itemListElement", [])) == 2,
                "index: missing 2-item BreadcrumbList")
         ok("SearchAction" not in hi, "index: SearchAction must be omitted (no search endpoint)")
+        # ---- feature 003: index author/locale consistency + empty-category readiness (FR-006/013) ----
+        ok(f'name="author" content="{html.escape(config.AUTHOR_NAME, quote=True)}"' in hi,
+           "index: <meta name=author> missing or != AUTHOR_NAME")
+        ok(f'property="og:locale" content="{config.OG_LOCALE}"' in hi, "index: og:locale missing")
+        post_cats = {p.category for p in posts}
+        for c in cats:
+            ok(re.search(r'<a [^>]*data-cat="' + re.escape(c.name) + r'"', hi) is not None,
+               f"index: category '{c.name}' nav entry is not a crawlable <a> anchor")
+        for name in [c.name for c in cats if c.name not in post_cats]:
+            ok(f'data-cat="{name}"' in hi,
+               f"index: empty category '{name}' absent from nav (positioning scaffold not ready)")
 
     # ---- sitemap ----
     sm = out / "sitemap.xml"
@@ -294,6 +396,70 @@ def main(argv=None) -> int:
             if mt:
                 titles.append(mt.group(1))
     ok(len(titles) == len(set(titles)), "duplicate <title> among built blog pages")
+
+    # ---- feature 003: grounded identity EQUALS the portfolio (FR-002/FR-004/FR-017) ----
+    repo_index = repo / "index.html"
+    if repo_index.exists():
+        rtext = repo_index.read_text(encoding="utf-8")
+        person, website = _portfolio_identity(rtext)
+        if person is None:
+            print("  NOTE: portfolio Person JSON-LD not found; skipping identity-vs-portfolio checks")
+        else:
+            ok(person.get("sameAs") == list(config.AUTHOR_SAMEAS),
+               "identity: AUTHOR_SAMEAS != portfolio Person.sameAs (unified identity would split)")
+            ok(person.get("knowsAbout") == list(config.AUTHOR_KNOWS_ABOUT),
+               "identity: AUTHOR_KNOWS_ABOUT != portfolio Person.knowsAbout (not grounded verbatim)")
+            ok(person.get("jobTitle") == config.AUTHOR_ROLE,
+               "identity: AUTHOR_ROLE != portfolio Person.jobTitle")
+            ok(person.get("@id") == config.PERSON_ID, "identity: PERSON_ID != portfolio Person.@id")
+            ok(website is not None and website.get("@id") == config.WEBSITE_ID,
+               "identity: WEBSITE_ID != portfolio WebSite.@id")
+        ok("Spec-driven development" in config.AUTHOR_KNOWS_ABOUT
+           and "Agentic code generation" in config.AUTHOR_KNOWS_ABOUT,
+           "identity: bridge topics (Spec-driven development / Agentic code generation) missing")
+
+        # ---- feature 003: portfolio font-fidelity proof (prove-or-defer; FR-012..014) ----
+        SF, EF = "<!--PORTFOLIO-FONTS:START-->", "<!--PORTFOLIO-FONTS:END-->"
+        if SF in rtext or EF in rtext:
+            ok(rtext.count(SF) == 1 and rtext.count(EF) == 1 and rtext.find(SF) < rtext.find(EF),
+               "font: malformed PORTFOLIO-FONTS markers in index.html")
+            baseline = repo / "assets" / "portfolio-fonts" / "index.baseline.html"
+            ok(baseline.exists(),
+               "font: zone present but baseline assets/portfolio-fonts/index.baseline.html missing")
+            if baseline.exists() and rtext.count(SF) == 1 and rtext.count(EF) == 1:
+                btext = baseline.read_text(encoding="utf-8")
+                ok(btext.count(SF) == 1 and btext.count(EF) == 1 and btext.find(SF) < btext.find(EF),
+                   "font: malformed PORTFOLIO-FONTS markers in baseline")
+                if btext.count(SF) == 1 and btext.count(EF) == 1:
+                    def _split(s):
+                        i, j = s.find(SF), s.find(EF)
+                        return s[:i], s[i + len(SF):j], s[j + len(EF):]
+                    cpre, czone, csuf = _split(rtext)
+                    bpre, bzone, bsuf = _split(btext)
+                    # (b) outside-zone byte-identical vs the recoverable baseline
+                    ok(cpre == bpre and csuf == bsuf,
+                       "font: index.html changed OUTSIDE the PORTFOLIO-FONTS zone (not just font data)")
+                    # retained faces appear verbatim in baseline (only whole-subset removals)
+                    cur_faces = re.findall(r"@font-face\s*\{.*?\}", czone, re.S)
+                    ok(all(face in bzone for face in cur_faces),
+                       "font: a retained @font-face is not verbatim in the baseline (a kept face was edited)")
+                    cover_base = _unicode_ranges(bzone)
+                    cover_cur = _unicode_ranges(czone)
+                    ok(cover_cur <= cover_base,
+                       "font: current unicode-range set is not a subset of baseline (not a pure removal)")
+                    # (a) glyph coverage: no rendered, originally-covered codepoint loses coverage.
+                    # V = codepoints in index.html minus the base64 payloads (conservative superset).
+                    no_b64 = re.sub(r"url\(data:font/woff2;base64,[^)]*\)", "", rtext)
+                    V = {ord(ch) for ch in no_b64}
+                    lost = sorted(cp for cp in V if _covered(cover_base, cp) and not _covered(cover_cur, cp))
+                    ok(not lost,
+                       f"font: {len(lost)} rendered codepoint(s) lost coverage: {[hex(c) for c in lost[:8]]}")
+                    saved = len(btext) - len(rtext)
+                    print(f"  font: optimization APPLIED — {len(cur_faces)} faces kept (baseline "
+                          f"{len(re.findall(r'@font-face', bzone))}); index.html −{saved} bytes "
+                          f"({saved // 1024} KB); 0 glyphs lost.")
+        else:
+            print("  NOTE: PORTFOLIO-FONTS optimization not applied (no markers) — deferred path, skipped")
 
     # ---- report ----
     print(f"verify_build: {checks} checks, {len(errors)} failure(s)")

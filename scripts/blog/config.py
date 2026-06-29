@@ -36,6 +36,28 @@ AUTHOR_SAMEAS = [
     "https://www.linkedin.com/in/ehsan-koolivand",
     "https://t.me/eksapps",
 ]
+# Grounded areas of expertise — copied VERBATIM (same order) from the portfolio Person.knowsAbout
+# (index.html JSON-LD). Emitted on the blog's canonical author node so every post self-describes its
+# author as a Senior Android Engineer whose expertise INCLUDES the developer-tooling/code-generation
+# topics ("Spec-driven development", "Agentic code generation" — the grounded bridge between the
+# Android identity and the Python-tooling posts). This frames the tooling write-ups as an Android
+# engineer's work, not a separate "Python developer" identity (Constitution V/VIII; feature 003).
+# The verifier asserts this list EQUALS the portfolio's, so it can never drift or fabricate.
+AUTHOR_KNOWS_ABOUT = [
+    "Android development",
+    "Kotlin",
+    "Jetpack Compose",
+    "MVI",
+    "MVVM",
+    "Clean Architecture",
+    "Multi-module architecture",
+    "Coroutines",
+    "Dagger/Hilt",
+    "Server-Driven UI",
+    "Android TV",
+    "Spec-driven development",
+    "Agentic code generation",
+]
 # Human-authored llms.txt base (identity/profile). The build reads it and appends a
 # generated "## Writing" post list -> _site/llms.txt (it is NOT copied verbatim).
 LLMS_SRC = REPO_ROOT / "llms.txt"

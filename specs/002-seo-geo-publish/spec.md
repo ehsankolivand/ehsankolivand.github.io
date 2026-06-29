@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-29
 
-**Status**: Ready for Planning
+**Status**: Implemented (shipped 2026-06-29 — SEO/GEO + one-commit publishing live; verifier-enforced)
 
 **Input**: User description: "Elevate the site to best-in-class SEO and GEO, and make publishing a single-commit action. Audit and complete on-page SEO and structured data; maximize machine-readability and citation-friendliness for AI assistants; fix every SEO defect currently noted in PROJECT_CONTEXT.md (notably the stale committed homepage Field-notes region whose dangling seed-post links would 404, and any sitemap/canonical/lastmod inaccuracy); and automate the publish pipeline so the author edits and commits exactly one Markdown note and the build/CI updates every derived artifact with no second manual edit and no stale committed links. All changes stay static, build-time, deterministic, GitHub-Pages-only, and visually faithful to the existing design and portfolio."
 

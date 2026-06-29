@@ -32,8 +32,25 @@ date), and **eliminates the stale-homepage defect** by neutralizing the committe
 to be post-link-free (the build still injects live cards). It is governed by **Constitution v1.2.0**
 (now **8** principles — Principle VIII added). **[confirmed — implemented + verified this cycle]**
 
+A third feature, **`003-positioning-geo-performance`** (Android-engineer positioning, deep-citability,
+portfolio performance), has since been implemented on top of 002. It (a) **sharpens positioning**: the
+blog's canonical author node now emits a grounded `knowsAbout` skill list + `jobTitle` (copied
+**verbatim** from the portfolio `Person.knowsAbout`/`jobTitle`) on every post and the index, so search/
+AI engines read the Python developer-tooling posts as *a Senior Android Engineer's* tooling work, not a
+separate "Python developer" identity (the grounded bridge topics "Spec-driven development" + "Agentic
+code generation" already live in the portfolio); (b) adds **deterministic, invisible heading anchors**
+(GitHub-style slug `id`s on every body h2–h4) for section-level AI citation, no visual change; (c)
+**cut the portfolio's weight**: removed the 32 unused non-Latin inlined `@font-face` subsets (Cyrillic/
+Cyrillic-ext/Greek/Vietnamese), shrinking `index.html` from **~1.08 MB → ~738 KB (−332 KB, −32%)**,
+gated by an offline fidelity proof (0 glyphs lost); and (d) closed the inherited 002 gaps (constitution
+finalized at **v1.3.0**, `sameAs` exactness locked, author/locale/`article:tag` verifier coverage,
+stale spec `Status` fields fixed). It is governed by **Constitution v1.3.0** (8 principles; Principle
+VII now permits a second bounded, fidelity-proven, non-visual font-data optimization zone).
+**[confirmed — implemented + verified this cycle]**
+
 Current state: **working and verified**. A fresh build produces 3 posts and the verifier passes
-**163 checks, 0 failures** (was 90 before feature 002). **[confirmed — ran the build]**
+**273 checks, 0 failures** (was 163 after feature 002, 90 before it). The double-build output is
+byte-identical (deterministic). **[confirmed — ran the build + verify + determinism diff]**
 
 ---
 
@@ -48,14 +65,19 @@ Current state: **working and verified**. A fresh build produces 3 posts and the 
   static HTML before any script runs**. A prior page on this site reportedly failed because it was
   client-rendered; that failure mode is forbidden by construction. **[confirmed]**
   `.specify/memory/constitution.md` Principle I.
-- **Governed by a constitution** (`.specify/memory/constitution.md`, **v1.2.0**, ratified
+- **Governed by a constitution** (`.specify/memory/constitution.md`, **v1.3.0**, ratified
   2026-06-27, last amended 2026-06-29) with **8 NON-NEGOTIABLE principles**: (I) SEO-correct static
   generation, (II) GitHub Pages only / no backend, (III) design fidelity (reproduce the bundle, do
   not restyle), (IV) Obsidian as the single content source, (V) per-page SEO/GEO completeness, (VI)
-  accessibility & Core Web Vitals, (VII) non-destructive to the existing portfolio, **(VIII)
-  machine-readable discovery & single-source publishing** (added by feature 002: build-generated
-  Atom feed + `llms.txt` listing every post, unified `@id` identity, one-commit publishing where
-  every derived artifact regenerates deterministically, and no dangling committed links). **[confirmed]**
+  accessibility & Core Web Vitals, (VII) non-destructive to the existing portfolio — **now with TWO
+  bounded marker-delimited exceptions: the managed `LATEST-NOTES` Field-notes region (build-
+  regenerated) and the `PORTFOLIO-FONTS` font-data zone (feature 003: a one-time, fidelity-proven,
+  non-visual subset of the inlined fonts; reconciles VI performance with VII)**, (VIII)
+  machine-readable discovery & single-source publishing (feature 002: build-generated Atom feed +
+  `llms.txt` listing every post, unified `@id` identity, one-commit publishing where every derived
+  artifact regenerates deterministically, and no dangling committed links). The v1.2.0→v1.3.0 amend
+  also corrected a stale "Principles I–VII" governance-gate reference to "I–VIII" (left incomplete by
+  the v1.2.0 Principle-VIII addition). **[confirmed]**
 - **Authoring promise (SC-001)**: publish a post by editing/committing exactly one Markdown note
   (plus optional related links) — no other file edits. **[confirmed]** `spec.md`.
 
@@ -127,9 +149,9 @@ Then CI runs **`scripts/verify_build.py`** (Definition-of-Done gate) and, if gre
 |---|---|---|
 | `config.py` | Site constants: base URL, blog path, author identity, brand/wordmark, palettes, `PORTFOLIO_LASTMOD` (2026-06-27), `WORDS_PER_MINUTE`=220, root copy allowlist + required set, `abs_url()`, `media_url()`. | confirmed |
 | `content.py` | Load/validate `categories.yml` and `*.md`; `slugify()` (NFKD→ASCII), frontmatter parse, date parse, read-time compute, `extract_related()` (tail-of-body link scan), `Post`/`Category`/`Cover` dataclasses, slug-uniqueness + related-link resolution. Raises `ContentError`. | confirmed |
-| `markdown_render.py` | In-house renderer → design block partials. Inline (code, links w/ scheme allow-list, bold/italic, inline images), blocks (fenced code, headings→h2–h4, blockquote, ordered/unordered nested lists, GFM tables, image figures, paragraphs). Single-pass `{{TOKEN}}` substitution prevents author-text token injection. Full HTML escaping. | confirmed |
+| `markdown_render.py` | In-house renderer → design block partials. Inline (code, links w/ scheme allow-list, bold/italic, inline images), blocks (fenced code, headings→h2–h4, blockquote, ordered/unordered nested lists, GFM tables, image figures, paragraphs). Single-pass `{{TOKEN}}` substitution prevents author-text token injection. Full HTML escaping. **003**: `heading_slug()` + a post-scoped allocator give every body heading a deterministic, unique, **invisible** anchor `id` (GitHub-style slug of the visible text; `-1/-2…` for repeats; `section-<n>` for symbol-only) for section-level deep-citation — no visual change, exactly one `<h1>` preserved. | confirmed |
 | `render.py` | Fill `base/index/article` templates + partials; build nav, covers, cards, featured, grid, "More notes", and the homepage Field-notes section. All links are real `<a>` anchors. | confirmed |
-| `seo.py` | Per-page `<head>`: title, meta description/author/keywords/robots, canonical, Open Graph (now incl. `og:image:width/height/alt`), Twitter card (now incl. `twitter:image:alt`), favicons/manifest, font preloads, **Atom feed autodiscovery link** (002), `<noscript>` reveal fallback, and JSON-LD. **002**: posts emit `BlogPosting` (now with `url`, `wordCount`, `timeRequired`, `isPartOf`, author/publisher referencing canonical `#person` `@id` + `sameAs`) **+** a `BreadcrumbList`; the index emits a `@graph` of `Blog`+`WebSite`(`@id` `#website`)+`BreadcrumbList`. **No `SearchAction`** (no search endpoint) and no Twitter handle (none on record) — honesty over fabricated signal. | confirmed |
+| `seo.py` | Per-page `<head>`: title, meta description/author/keywords/robots, canonical, Open Graph (now incl. `og:image:width/height/alt`), Twitter card (now incl. `twitter:image:alt`), favicons/manifest, font preloads, **Atom feed autodiscovery link** (002), `<noscript>` reveal fallback, and JSON-LD. **002**: posts emit `BlogPosting` (now with `url`, `wordCount`, `timeRequired`, `isPartOf`, author/publisher referencing canonical `#person` `@id` + `sameAs`) **+** a `BreadcrumbList`; the index emits a `@graph` of `Blog`+`WebSite`(`@id` `#website`)+`BreadcrumbList`. **No `SearchAction`** (no search endpoint) and no Twitter handle (none on record) — honesty over fabricated signal. **003**: the *full* author node (`BlogPosting.author` on posts, `Blog.author` on the index) now also emits grounded `jobTitle` + `knowsAbout` (the portfolio's skill list verbatim via `config.AUTHOR_KNOWS_ABOUT`) so each post self-describes its author as a Senior Android Engineer — positioning the Python-tooling posts as an Android engineer's work. | confirmed |
 | `sitemap.py` | Regenerate `sitemap.xml`: home `/` + `/blog/` + each post; `lastmod = updated || date`; homepage lastmod = max(`PORTFOLIO_LASTMOD`, newest post). Fully deterministic (never uses `today()`). Unchanged by 002 (verifier now asserts its lastmod correctness). | confirmed |
 | `feed.py` **(002, NEW)** | Build a deterministic **Atom 1.0** feed (`build_feed(posts, base_url, portfolio_lastmod)`) → `_site/blog/feed.xml`. Feed `id/title/subtitle/updated/author`; per-entry `id`=canonical, `title`, `link`, `published`, `updated`, `summary`, `category` per tag. All timestamps `<date>T00:00:00Z`; stdlib-only; `html.escape` on all text. | confirmed |
 | `llms.py` **(002, NEW)** | Generate `llms.txt` (`build_llms(base_text, posts, base_url)`) = committed identity base + an appended `## Writing` H2 list (`- [title](abs_url): excerpt`, newest-first). Idempotent (strips any prior `## Writing`), deterministic, conformant with the llms.txt convention. | confirmed |
@@ -269,9 +291,17 @@ Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, page
   graph `WebSite @id`==`#website` + `Blog.author.@id`==`#person` + breadcrumb + **no `SearchAction`**;
   sitemap `lastmod` correctness; Atom feed exists/parses/complete; `llms.txt` exists/complete; **no
   dangling internal links** in committed `index.html` or any built page; robots→sitemap; unique
-  `<title>`s. Spec marks unit tests optional; this verifier is the Definition-of-Done. **[confirmed]**
-- Observed result on current content: **163 checks, 0 failures, 3 posts** (was 90 pre-002).
-  **[confirmed — ran it]**
+  `<title>`s. Spec marks unit tests optional; this verifier is the Definition-of-Done. **003 additions**:
+  grounded identity emission (`jobTitle`+`knowsAbout` on every post + index author node) and
+  **exactness vs the portfolio** (`AUTHOR_SAMEAS`/`AUTHOR_KNOWS_ABOUT`/`AUTHOR_ROLE`/`@id` parsed from
+  `index.html` MUST equal the blog's — locks unified identity); author/locale consistency (`meta
+  author`, `og:locale`, `inLanguage`); per-post tag→`keywords`+`article:tag`+`BlogPosting.keywords`;
+  deterministic+unique+present heading anchors (re-derived from each heading's text); empty-category
+  crawlable-nav readiness; and the **font-fidelity proof** (markers + recoverable baseline; outside-
+  zone byte-equality; retained faces verbatim; glyph-coverage of every rendered codepoint;
+  prove-or-defer). **[confirmed]**
+- Observed result on current content: **273 checks, 0 failures, 3 posts** (was 163 post-002, 90
+  pre-002); double-build output byte-identical (deterministic). **[confirmed — ran it]**
 
 ---
 
@@ -279,8 +309,14 @@ Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, page
 
 ```text
 personal site/
-├── index.html                  # PORTFOLIO single page (1814 lines). Copied verbatim by build;
-│                               #   never edited (Principle VII). Has a managed Field-notes region.
+├── index.html                  # PORTFOLIO single page (~738 KB after 003 font subset; was ~1.08 MB).
+│                               #   Copied verbatim by build (Principle VII). Two sanctioned managed
+│                               #   regions: LATEST-NOTES (Field-notes, build-regenerated) +
+│                               #   PORTFOLIO-FONTS (003: 22 of 54 inlined @font-face kept; non-Latin
+│                               #   subsets removed; fidelity-proven, non-visual).
+├── assets/portfolio-fonts/
+│   └── index.baseline.html     # 003: recoverable original (full 54 faces, w/ markers). NOT served
+│                               #   (build never copies it). Font-fidelity proof diffs against it.
 ├── readme.html                 # GIT-IGNORED private local "blog system README" page (not served).
 ├── Ehsan Koolivand - Blog.html # Design bundle source (dc-runtime/React). UNTRACKED in git. The
 │                               #   canonical design source from which templates were extracted.
@@ -305,8 +341,10 @@ personal site/
 │
 ├── scripts/
 │   ├── build_blog.py           # ENTRY POINT (content+templates → _site/; emits feed.xml + llms.txt)
-│   ├── verify_build.py         # Definition-of-Done verifier (163 checks)
-│   └── blog/{config,content,markdown_render,render,seo,sitemap,feed,llms}.py  # feed+llms NEW (002)
+│   ├── verify_build.py         # Definition-of-Done verifier (273 checks; 163 post-002, 90 pre-002)
+│   └── blog/{config,content,markdown_render,render,seo,sitemap,feed,llms}.py  # feed+llms NEW (002);
+│                               #   003 touched config (AUTHOR_KNOWS_ABOUT), seo (knowsAbout/jobTitle),
+│                               #   markdown_render (heading anchors)
 │
 ├── .github/workflows/deploy.yml  # build + verify + deploy to Pages on push to main
 │
@@ -319,6 +357,10 @@ personal site/
 │   ├── spec.md plan.md data-model.md research.md quickstart.md tasks.md
 │   ├── contracts/{structured-data, feed, llms-txt, verifier}.md
 │   └── checklists/{requirements, seo-geo}.md
+├── specs/003-positioning-geo-performance/  # Spec Kit artifacts for positioning + anchors + fonts
+│   ├── spec.md plan.md data-model.md research.md quickstart.md tasks.md analysis.md convergence.md
+│   ├── contracts/{identity, heading-anchors, font-optimization, verifier}.md
+│   └── checklists/{requirements, positioning-geo-perf}.md
 │
 ├── .specify/                   # Spec Kit engine: memory/constitution.md, templates/, scripts/,
 │   │                           #   workflows/, extensions/ (agent-context)
@@ -338,7 +380,9 @@ Key constants (`config.py`) **[confirmed]**: `DEFAULT_BASE_URL=https://ehsankoli
 `WORDS_PER_MINUTE=220`, `PORTFOLIO_LASTMOD=2026-06-27`. **Added by 002**:
 `PERSON_ID="…/#person"`, `WEBSITE_ID="…/#website"`, `AUTHOR_SAMEAS=[github, linkedin, telegram]`,
 `BLOG_FEED_PATH="/blog/feed.xml"`, `LLMS_SRC=<repo>/llms.txt`; `llms.txt` removed from
-`ROOT_COPY_ALLOWLIST` (now generated, not copied).
+`ROOT_COPY_ALLOWLIST` (now generated, not copied). **Added by 003**: `AUTHOR_KNOWS_ABOUT=[…13 grounded
+Android/tooling topics…]` (the portfolio `Person.knowsAbout` verbatim, incl. the "Spec-driven
+development"/"Agentic code generation" bridge); emitted as `knowsAbout` on the blog's full author node.
 
 ---
 
@@ -397,8 +441,15 @@ Key constants (`config.py`) **[confirmed]**: `DEFAULT_BASE_URL=https://ehsankoli
    reference-style links. Unknown constructs render as plain paragraphs/escaped text. **[confirmed —
    read renderer].**
 7. **No `LICENSE` file.** **[confirmed].**
-8. **`spec.md` Status is still "Draft"** despite all tasks complete — a documentation lag, not a
-   code issue. **[confirmed].**
+8. **✅ RESOLVED (feature 003) — stale spec `Status` fields.** 001 (`Draft`) and 002 (`Ready for
+   Planning`) now read `Implemented`; 003 reads `Implemented`. The stale-status habit is fixed.
+   **[confirmed].**
+9. **✅ RESOLVED (feature 003) — identity-unification exactness now verifier-locked.** The blog's
+   `AUTHOR_SAMEAS`/`AUTHOR_KNOWS_ABOUT`/`AUTHOR_ROLE`/`@id` are asserted byte-equal to the portfolio
+   `index.html` Person; a future divergence fails the build (no silent identity split). **[confirmed].**
+10. **Font baseline adds ~1.05 MB to the repo** (`assets/portfolio-fonts/index.baseline.html`, the
+   recoverable original) — the deliberate, self-contained cost of the offline fidelity proof; net repo
+   growth is ~+0.71 MB after index.html itself shrank ~0.33 MB. Not served. **[confirmed].**
 
 ---
 

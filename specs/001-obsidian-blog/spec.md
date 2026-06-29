@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-27
 
-**Status**: Draft
+**Status**: Implemented (shipped — Obsidian-driven blog generator is live; see git history)
 
 **Input**: User description: "Build an Obsidian-vault-driven blog for the personal site, generating static pages on GitHub Pages. The author writes each post as a single Obsidian markdown note with YAML frontmatter and commits it; on push the blog index plus a new static post page are generated — correctly categorized, SEO-complete, in the existing design, with related 'More notes' resolved from links the author placed at the end of the post."
 
