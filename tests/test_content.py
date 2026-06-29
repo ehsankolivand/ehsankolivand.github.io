@@ -48,6 +48,25 @@ class TestTagsValidation(unittest.TestCase):
         self.assertEqual(_load("").tags, [])
 
 
+class TestExtractRelated(unittest.TestCase):
+    def test_trailing_rule_with_no_related_block_is_preserved(self):
+        # BUG-007: a post ending in a bare `---` with no related block keeps it in the body.
+        body, slugs = content.extract_related("Para one.\n\nPara two.\n\n---\n")
+        self.assertIn("---", body)
+        self.assertEqual(slugs, [])
+
+    def test_related_block_with_separator_delimiter_is_extracted(self):
+        body, slugs = content.extract_related("Body text.\n\n---\n\n- [[post-a]]\n- [[post-b]]\n")
+        self.assertEqual(slugs, ["post-a", "post-b"])
+        self.assertNotIn("post-a", body)
+        self.assertNotIn("---", body)   # the delimiter separator is consumed with the block
+
+    def test_related_heading_block_is_extracted(self):
+        body, slugs = content.extract_related("Body text.\n\n## Related\n- [[x]]\n")
+        self.assertEqual(slugs, ["x"])
+        self.assertNotIn("Related", body)
+
+
 class TestImageValidation(unittest.TestCase):
     def test_missing_relative_image_fails_loud(self):
         # BUG-002: a code-cover post with a content-relative image: that doesn't exist must fail

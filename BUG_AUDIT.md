@@ -61,14 +61,14 @@ _(none found — the build is green on current content and no defect breaks the 
 
 ## Low
 
-- [ ] **BUG-006 — `display_date()` zero-pads the day (`Jun 08, 2026`).**
+- [ ] **BUG-006 — `display_date()` zero-pads the day (`Jun 08, 2026`).** _Not a bug (misreported): the canonical design source `Ehsan Koolivand - Blog.html` itself uses zero-padded days (`Apr 02, 2026`, `Jun 02, 2026`, `May 06, 2026`), so `{d.day:02d}` faithfully reproduces the design. Switching to `{d.day}` ("Jun 8") would DIVERGE from the design and violate Principle III (design fidelity). No code change._
   - **What**: `display_date` formats with `{d.day:02d}`, producing a leading zero for single-digit days ("Jun 08, 2026"), whereas the documented/design format is "Jun 8, 2026"-style.
   - **Why it's a bug**: Minor visual inconsistency with the design bundle and the docstring's own example (`'Jun 18, 2026'`); affects the chip date, JSON-LD-adjacent display, sitemap is unaffected. Only manifests for days 1–9.
   - **Where**: `scripts/blog/content.py:75-77` (`display_date`).
   - **Severity**: Low — cosmetic; only single-digit days.
   - **Suggested fix**: Use `{d.day}` (no padding) to match "Jun 8, 2026".
 
-- [ ] **BUG-007 — `extract_related` strips a legitimate trailing thematic break (`---`).**
+- [x] **BUG-007 — `extract_related` strips a legitimate trailing thematic break (`---`).** _Fixed: a trailing separator is now consumed only once a real related block (links/heading) has been found below it; a bare trailing `---` with no related block is preserved in the body. Regression tests: `test_content.py::TestExtractRelated` (3 cases). (Note: the reported visible loss of an `<hr>` doesn't actually occur today — `render()` skips thematic breaks — but the extraction is now correct and future-proofed.)_
   - **What**: Scanning from the bottom, a trailing `---`/`***`/`___` line sets `cut = i` and is removed even when there is no related-links block beneath/above it. A post that intentionally ends with a horizontal rule loses it.
   - **Why it's a bug**: Silent content loss (a trailing `<hr>` disappears from the rendered post). Edge-case but real.
   - **Where**: `scripts/blog/content.py:160-163` (the `if line in ("---", "***", "___")` branch inside `extract_related`).
@@ -96,7 +96,7 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Low — only triggers when `canonical:` is overridden (no committed post does).
   - **Suggested fix**: Use `p.canonical` for the entry `<id>`/`<link>` (or document the divergence).
 
-- [x] **BUG-012 — A paragraph immediately after a table that contains a `|` is absorbed as a table row.** _Not a bug (GFM-conformant): traced against the GFM/cmark-gfm reference — a table continues on every non-blank line until a blank line or another block structure (GFM example 279 absorbs even a no-pipe `bar` line as a row). A pipe-bearing prose line directly under a table is absorbed as a row by GFM too, and there is no syntactic way to distinguish a borderless body row (`1 | 2`) from prose-with-a-pipe — which is precisely why GFM requires the blank-line boundary the committed content already uses. "Fixing" it would diverge from GFM and break borderless/ragged tables (which have tests). Box ticked as resolved-by-analysis; no code change._
+- [ ] **BUG-012 — A paragraph immediately after a table that contains a `|` is absorbed as a table row.** _Not a bug (GFM-conformant): traced against the GFM/cmark-gfm reference — a table continues on every non-blank line until a blank line or another block structure (GFM example 279 absorbs even a no-pipe `bar` line as a row). A pipe-bearing prose line directly under a table is absorbed as a row by GFM too, and there is no syntactic way to distinguish a borderless body row (`1 | 2`) from prose-with-a-pipe — which is precisely why GFM requires the blank-line boundary the committed content already uses. "Fixing" it would diverge from GFM and break borderless/ragged tables (which have tests). No code change._
   - **What**: The table body loop continues while `lines[i].strip() and "|" in lines[i]`. A normal paragraph placed directly under a table (no blank line) that happens to contain a `|` is consumed as an extra table row instead of starting a paragraph.
   - **Why it's a bug**: Wrong output — prose gets pulled into the table. Same root cause family as BUG-003 (no blank-line boundary / loose table heuristics).
   - **Where**: `scripts/blog/markdown_render.py:572-574`.

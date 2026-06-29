@@ -151,6 +151,7 @@ def extract_related(body: str) -> tuple[str, list[str]]:
     lines = body.rstrip().split("\n")
     collected: list[str] = []
     cut = len(lines)
+    found_related = False  # a separator only delimits a related block if links/heading exist below it
     i = len(lines) - 1
     while i >= 0:
         line = lines[i].strip()
@@ -158,10 +159,15 @@ def extract_related(body: str) -> tuple[str, list[str]]:
             i -= 1
             continue
         if line in ("---", "***", "___"):
-            cut = i
+            # Consume a separator only when a real related block has already been found below it
+            # (we scan bottom-up). A trailing rule with no related block is body content and is
+            # left intact instead of being silently swallowed (BUG-007).
+            if found_related:
+                cut = i
             i -= 1
             continue
         if _RELATED_HEADING.match(line):
+            found_related = True
             # The related block is bounded below this heading. Stop scanning here so a
             # legitimate link list higher in the body isn't swallowed; absorb only the
             # delimiter (separators / blank lines) directly above the heading.
@@ -185,6 +191,7 @@ def extract_related(body: str) -> tuple[str, list[str]]:
         stripped = _WIKILINK.sub("", bullet)
         stripped = _MDLINK.sub("", stripped).strip()
         if targets and stripped == "":
+            found_related = True
             collected.extend(targets)
             cut = i
             i -= 1
