@@ -567,8 +567,13 @@ def render(markdown_text: str, image_resolver) -> str:
             out.append(_image(mi.group(1), mi.group(2), image_resolver))
             i += 1
             continue
-        # GFM table: a header row of pipes immediately followed by a separator row
-        if "|" in s and i + 1 < n and _is_table_sep(lines[i + 1]):
+        # GFM table: a header row of pipes immediately followed by a delimiter row whose cell
+        # count EQUALS the header's. GFM requires that match; without it a paragraph line that
+        # merely contains a `|` directly above a `---` thematic break (cell counts 2 vs 1) is
+        # misparsed as a 1-column table, silently eating the rule/paragraph (BUG-003). Single-
+        # column and borderless tables still match (1==1, 2==2).
+        if ("|" in s and i + 1 < n and _is_table_sep(lines[i + 1])
+                and len(_split_row(s)) == len(_split_row(lines[i + 1]))):
             aligns = _table_aligns(lines[i + 1].strip())
             header = _split_row(s)
             i += 2

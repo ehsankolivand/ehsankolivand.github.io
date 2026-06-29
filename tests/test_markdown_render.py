@@ -157,6 +157,21 @@ class TestTables(unittest.TestCase):
     def test_class_hook(self):
         self.assertIn('class="mdtable"', render("| a |\n|---|\n| 1 |"))
 
+    def test_pipe_paragraph_above_dashes_is_not_a_table(self):
+        # BUG-003: a paragraph containing `|` directly above a `---` thematic break has a
+        # header/delimiter cell-count mismatch (2 vs 1), so it must NOT become a 1-column
+        # table; the prose stays a paragraph and the rule does not silently disappear.
+        out = render("Use the a | b operator here.\n---\n\nNext para.")
+        self.assertNotIn("<table", out)
+        self.assertIn("Use the a", out)
+        self.assertIn("Next para.", out)
+
+    def test_borderless_table_with_matching_delimiter_still_recognized(self):
+        # Guard against over-correcting BUG-003: a borderless table (header 2 == delimiter 2).
+        out = render("a | b\n--- | ---\n1 | 2")
+        self.assertIn("<table", out)
+        self.assertIn(">1<", out.replace(" ", ""))
+
 
 class TestCodeBlocks(unittest.TestCase):
     def test_highlight_known_language(self):
