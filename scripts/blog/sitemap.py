@@ -27,7 +27,9 @@ def build_sitemap(posts, base_url: str, portfolio_lastmod: dt.date | None = None
         rows.append("  </url>")
 
     url(home, home_lastmod)
-    url(blog, newest)                     # omitted when there are no posts
+    # /blog/ index is always rendered (even with zero posts, via _EMPTY_GRID), so it is always
+    # listed; only its <lastmod> is conditional — `newest` is None when empty, which drops it.
+    url(blog, newest)
     for p in posts:                       # already sorted newest-first
         url(config.abs_url(base_url, p.url), p.updated)
 

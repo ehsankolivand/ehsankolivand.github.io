@@ -173,7 +173,9 @@ def main(argv=None) -> int:
                 f"(expected file: assets/{rel}). Author images must live in content/blog/assets/."
             )
         size = image_size(src_path)
-        w, h = size if size else (1200, 675)
+        # Fallback for unmeasurable formats (svg/webp/avif): match Cover's default and
+        # seo._post_image's 1200x630 so intrinsic dims are consistent site-wide (BUG-008).
+        w, h = size if size else (1200, 630)
         return url, w, h
 
     # 5b. Measure image covers (like body images) for accurate intrinsic dimensions;

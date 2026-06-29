@@ -75,14 +75,14 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Low — uncommon authoring pattern; non-destructive to meaning.
   - **Suggested fix**: Only consume separators when an actual related block (heading or link-only lines) is found; otherwise leave a trailing rule intact.
 
-- [ ] **BUG-008 — Inconsistent default image dimensions (1200×675 vs 1200×630).**
+- [x] **BUG-008 — Inconsistent default image dimensions (1200×675 vs 1200×630).** _Fixed: the body-image fallback in `build_blog.image_resolver` now uses `1200×630`, matching `Cover` defaults and `seo._post_image`. No committed content uses the unmeasurable-image path, so current output is unchanged (build still byte-identical)._
   - **What**: `build_blog.image_resolver` falls back to `(1200, 675)` for unmeasurable body images, while `content.Cover` defaults and `seo._post_image` use `1200×630`.
   - **Why it's a bug**: Inconsistent intrinsic dimensions for unmeasurable formats (svg/webp/avif) → minor layout/aspect mismatch and inconsistent metadata; not deterministic-breaking but sloppy.
   - **Where**: `scripts/build_blog.py:176` vs `scripts/blog/content.py:209-210` and `scripts/blog/seo.py:79-80`.
   - **Severity**: Low — only affects unmeasurable image formats.
   - **Suggested fix**: Pick one default (e.g. 1200×630) everywhere.
 
-- [ ] **BUG-009 — Misleading sitemap comment: `/blog/` is always emitted, not "omitted when there are no posts."**
+- [x] **BUG-009 — Misleading sitemap comment: `/blog/` is always emitted, not "omitted when there are no posts."** _Fixed (comment + doc, no behavior change): the code is correct — `/blog/` is always rendered (even empty) so it belongs in the sitemap; only its `<lastmod>` is conditional. Corrected the inline comment in `sitemap.py` and the PROJECT_CONTEXT references. Wrapping `url(blog, …)` in `if posts:` was rejected because it would drop a real, always-generated page._
   - **What**: `url(blog, newest)` is called unconditionally; only the `<lastmod>` is conditional (`if lastmod:`). The inline comment "# omitted when there are no posts" and PROJECT_CONTEXT §11.5 ("sitemap omits /blog/") describe behavior the code does not implement.
   - **Why it's a bug**: Code/doc inconsistency; if the documented intent (omit `/blog/` when empty) is correct, this is also a latent logic gap.
   - **Where**: `scripts/blog/sitemap.py:30` (and `:13`, `:31`).
