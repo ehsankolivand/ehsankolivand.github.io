@@ -36,6 +36,11 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
+      # Stdlib-only renderer unit tests (no extra dependency). Runs BEFORE the build so a
+      # renderer/highlighter regression fails the pipeline early (feature 004).
+      - name: Run renderer unit tests
+        run: python -m unittest discover -s tests -v
+
       - name: Build site
         run: python scripts/build_blog.py --out _site
 

@@ -48,9 +48,26 @@ stale spec `Status` fields fixed). It is governed by **Constitution v1.3.0** (8 
 VII now permits a second bounded, fidelity-proven, non-visual font-data optimization zone).
 **[confirmed — implemented + verified this cycle]**
 
-Current state: **working and verified**. A fresh build produces 3 posts and the verifier passes
-**273 checks, 0 failures** (was 163 after feature 002, 90 before it). The double-build output is
-byte-identical (deterministic). **[confirmed — ran the build + verify + determinism diff]**
+A fourth feature, **`004-technical-writing-canvas`** (syntax highlighting, richer code, callouts/
+footnotes, renderer tests), has since been implemented on top of 003 — making the in-house renderer a
+first-class technical-writing surface with **no new runtime/build/CI dependency**: (a) a **vendored,
+stdlib-only syntax highlighter** (`scripts/blog/highlight.py`) emits deterministic, escaped, classed
+token spans for **10 languages** (Kotlin, Java, Python, Bash, JSON, YAML, XML/HTML, JavaScript,
+TypeScript, SQL) with a safe escape-only fallback for unknown tags (never fails a build); (b) **richer
+code blocks** gain an optional `title="…"` filename label + `{1,3-5}` line-emphasis parsed from the
+fenced info string (no new frontmatter; the legacy caption behavior is preserved); (c) **callouts**
+(Obsidian `> [!kind]`) and **footnotes** (`[^id]`/`[^id]:`) render as accessible static HTML (DPUB-ARIA
+roles, no client JS); (d) **blockquotes/GFM tables** are refined + hardened (single-column, ragged rows,
+escaped pipes, per-column alignment, inline-markup cells); and (e) the security-sensitive renderer finally
+has an **isolated stdlib `unittest` suite** (`tests/`, 71 tests) plus an extended verifier. Governed by
+**Constitution v1.4.0** (Principle III now permits *sanctioned body-content semantic styling*: new
+`blog.css` classes under `#blog-root`, the design's existing palette/fonts only, no portfolio/chrome
+change). **[confirmed — implemented + verified this cycle]**
+
+Current state: **working and verified**. A fresh build produces 3 posts; the renderer unit suite passes
+**71 tests** and the verifier passes **318 checks, 0 failures** (was 273 after 003, 163 after 002, 90
+before). The double-build output is byte-identical (deterministic). **[confirmed — ran tests + build +
+verify + determinism diff]**
 
 ---
 
@@ -65,10 +82,14 @@ byte-identical (deterministic). **[confirmed — ran the build + verify + determ
   static HTML before any script runs**. A prior page on this site reportedly failed because it was
   client-rendered; that failure mode is forbidden by construction. **[confirmed]**
   `.specify/memory/constitution.md` Principle I.
-- **Governed by a constitution** (`.specify/memory/constitution.md`, **v1.3.0**, ratified
+- **Governed by a constitution** (`.specify/memory/constitution.md`, **v1.4.0**, ratified
   2026-06-27, last amended 2026-06-29) with **8 NON-NEGOTIABLE principles**: (I) SEO-correct static
   generation, (II) GitHub Pages only / no backend, (III) design fidelity (reproduce the bundle, do
-  not restyle), (IV) Obsidian as the single content source, (V) per-page SEO/GEO completeness, (VI)
+  not restyle — **v1.4.0 adds a bounded "sanctioned body-content semantic styling" exception: new
+  `blog.css` classes under `#blog-root` for code-token highlighting, callouts, footnotes,
+  line-emphasis, and quote/table refinements, using the design's existing palette/fonts only, body
+  content only, portfolio/chrome untouched**), (IV) Obsidian as the single content source, (V)
+  per-page SEO/GEO completeness, (VI)
   accessibility & Core Web Vitals, (VII) non-destructive to the existing portfolio — **now with TWO
   bounded marker-delimited exceptions: the managed `LATEST-NOTES` Field-notes region (build-
   regenerated) and the `PORTFOLIO-FONTS` font-data zone (feature 003: a one-time, fidelity-proven,
@@ -89,7 +110,8 @@ byte-identical (deterministic). **[confirmed — ran the build + verify + determ
 |---|---|---|---|---|
 | Language | Python | **3.11+** required; CI pins **3.12.7**; local observed **3.12.7** | `plan.md`, `.github/workflows/deploy.yml`, `python3 --version` | confirmed |
 | Only third-party dep | **PyYAML** | **==6.0.1** (pinned) | `requirements.txt` | confirmed |
-| Markdown rendering | **in-house, stdlib-only** renderer (NO Markdown library) | — | `scripts/blog/markdown_render.py`, `requirements.txt` comment | confirmed |
+| Markdown rendering | **in-house, stdlib-only** renderer (NO Markdown library); **004**: + vendored `highlight.py` (10-language syntax highlighter), callouts, footnotes | — | `scripts/blog/markdown_render.py`, `scripts/blog/highlight.py` | confirmed |
+| Renderer tests **(004, NEW)** | stdlib **`unittest`** suite (NO third-party test dep); `python -m unittest discover -s tests` | — | `tests/test_markdown_render.py`, `tests/test_highlight.py` (71 tests) | confirmed |
 | Stdlib used | `pathlib, html, re, datetime, json, xml(implicit), unicodedata, struct, math, dataclasses, argparse, shutil, functools` | stdlib | generator modules | confirmed |
 | Templating | hand-rolled `{{TOKEN}}` single-pass substitution (no Jinja) | — | `markdown_render.sub_tokens`, `render.py` | confirmed |
 | Fonts | 15 self-hosted **woff2** (JetBrains Mono, Manrope, Space Grotesk); **54** `@font-face` rules | — | `templates/blog/assets/blog.css`, `fonts/` | confirmed |
@@ -149,7 +171,8 @@ Then CI runs **`scripts/verify_build.py`** (Definition-of-Done gate) and, if gre
 |---|---|---|
 | `config.py` | Site constants: base URL, blog path, author identity, brand/wordmark, palettes, `PORTFOLIO_LASTMOD` (2026-06-27), `WORDS_PER_MINUTE`=220, root copy allowlist + required set, `abs_url()`, `media_url()`. | confirmed |
 | `content.py` | Load/validate `categories.yml` and `*.md`; `slugify()` (NFKD→ASCII), frontmatter parse, date parse, read-time compute, `extract_related()` (tail-of-body link scan), `Post`/`Category`/`Cover` dataclasses, slug-uniqueness + related-link resolution. Raises `ContentError`. | confirmed |
-| `markdown_render.py` | In-house renderer → design block partials. Inline (code, links w/ scheme allow-list, bold/italic, inline images), blocks (fenced code, headings→h2–h4, blockquote, ordered/unordered nested lists, GFM tables, image figures, paragraphs). Single-pass `{{TOKEN}}` substitution prevents author-text token injection. Full HTML escaping. **003**: `heading_slug()` + a post-scoped allocator give every body heading a deterministic, unique, **invisible** anchor `id` (GitHub-style slug of the visible text; `-1/-2…` for repeats; `section-<n>` for symbol-only) for section-level deep-citation — no visual change, exactly one `<h1>` preserved. | confirmed |
+| `markdown_render.py` | In-house renderer → design block partials. Inline (code, links w/ scheme allow-list, bold/italic, inline images), blocks (fenced code, headings→h2–h4, blockquote, ordered/unordered nested lists, GFM tables, image figures, paragraphs). Single-pass `{{TOKEN}}` substitution prevents author-text token injection. Full HTML escaping. **003**: `heading_slug()` + a post-scoped allocator give every body heading a deterministic, unique, **invisible** anchor `id` (GitHub-style slug of the visible text; `-1/-2…` for repeats; `section-<n>` for symbol-only) for section-level deep-citation — no visual change, exactly one `<h1>` preserved. **004**: the fenced-code path parses the info string (`parse_info_string`) and calls `highlight.highlight_code` (classed token spans + optional `title=` filename label + `{n}` line-emphasis; legacy caption preserved); the blockquote branch detects Obsidian `> [!kind]` **callouts**; a fence-aware **footnote** pre-pass + post-scoped registry render `[^id]`/`[^id]:` to a DPUB-ARIA footnotes section (ids reserved in the shared heading `used_ids` set → collision-free); GFM-table separator detection hardened (single-column/ragged via split-and-check). | confirmed |
+| `highlight.py` **(004, NEW)** | Vendored, stdlib-only (`re`/`html`) syntax highlighter. One ordered-alternation scanner + per-language rule tables for **10 languages** (kotlin, java, python, bash, json, yaml, markup=xml/html, javascript, typescript, sql) + alias map. `tokenize`→`(tokens, recognized)` with exact coverage; `emit_html` (inline literal-newline mode, or block-line `cl`/`cl--hl` mode for emphasis); unknown tag → escape-only fallback (never fails). Closed `tok-*` class vocabulary (never author-derived); every char HTML-escaped exactly once → no breakout, no token-injection. Deterministic. | confirmed |
 | `render.py` | Fill `base/index/article` templates + partials; build nav, covers, cards, featured, grid, "More notes", and the homepage Field-notes section. All links are real `<a>` anchors. | confirmed |
 | `seo.py` | Per-page `<head>`: title, meta description/author/keywords/robots, canonical, Open Graph (now incl. `og:image:width/height/alt`), Twitter card (now incl. `twitter:image:alt`), favicons/manifest, font preloads, **Atom feed autodiscovery link** (002), `<noscript>` reveal fallback, and JSON-LD. **002**: posts emit `BlogPosting` (now with `url`, `wordCount`, `timeRequired`, `isPartOf`, author/publisher referencing canonical `#person` `@id` + `sameAs`) **+** a `BreadcrumbList`; the index emits a `@graph` of `Blog`+`WebSite`(`@id` `#website`)+`BreadcrumbList`. **No `SearchAction`** (no search endpoint) and no Twitter handle (none on record) — honesty over fabricated signal. **003**: the *full* author node (`BlogPosting.author` on posts, `Blog.author` on the index) now also emits grounded `jobTitle` + `knowsAbout` (the portfolio's skill list verbatim via `config.AUTHOR_KNOWS_ABOUT`) so each post self-describes its author as a Senior Android Engineer — positioning the Python-tooling posts as an Android engineer's work. | confirmed |
 | `sitemap.py` | Regenerate `sitemap.xml`: home `/` + `/blog/` + each post; `lastmod = updated || date`; homepage lastmod = max(`PORTFOLIO_LASTMOD`, newest post). Fully deterministic (never uses `today()`). Unchanged by 002 (verifier now asserts its lastmod correctness). | confirmed |
@@ -282,8 +305,13 @@ Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, page
 
 ### Tests
 
-- **No unit-test framework** (no `pytest`, no `tests/` dir). The single automated gate is
-  **`scripts/verify_build.py`**, a post-build smoke/integration verifier. Baseline checks: per-post
+- **Renderer unit tests (004, NEW)**: a stdlib **`unittest`** suite (`tests/test_markdown_render.py`
+  + `tests/test_highlight.py`, **71 tests**, no third-party dep) covers the renderer's security
+  guarantees (escaping, URL allow-list, token-injection) + behaviors (lists, tables, code
+  highlighting + filename + line-emphasis + fallback, callouts, footnotes, heading anchors); run
+  `python -m unittest discover -s tests`; CI runs it before build/verify.
+- The post-build **`scripts/verify_build.py`** integration gate remains the Definition-of-Done, a
+  smoke/integration verifier. Baseline checks: per-post
   content + SEO + JSON-LD parse + single `<h1>` + no stray tokens; index links; sitemap completeness;
   portfolio byte-identical outside the managed region; required assets present. **002 additions**:
   exact canonical; `og:image`/`twitter:image` alt+dims; `<time datetime>` == post date; enriched
@@ -299,9 +327,15 @@ Concurrency group `pages`, cancel-in-progress. Permissions: `contents:read, page
   deterministic+unique+present heading anchors (re-derived from each heading's text); empty-category
   crawlable-nav readiness; and the **font-fidelity proof** (markers + recoverable baseline; outside-
   zone byte-equality; retained faces verbatim; glyph-coverage of every rendered codepoint;
-  prove-or-defer). **[confirmed]**
-- Observed result on current content: **273 checks, 0 failures, 3 posts** (was 163 post-002, 90
-  pre-002); double-build output byte-identical (deterministic). **[confirmed — ran it]**
+  prove-or-defer). **004 additions**: the AnkiVoice ```bash``` block is asserted highlighted on its
+  built page (no raw `<…>` breakout); `blog.css` ships the new `tok-*`/`cl`/`callout`/`footnotes`/
+  `pquote`/`mdtable` classes; and **synthetic Markdown fixtures** rendered in-process assert
+  per-language highlighting + verbatim coverage, unknown-language fallback, the filename label +
+  line-emphasis, callouts (known/unknown), footnotes (incl. no dangling anchor), table edge cases,
+  and the security guarantees (+45 checks). **[confirmed]**
+- Observed result on current content: **318 verifier checks, 0 failures, 3 posts** + **71 renderer
+  unit tests, 0 failures** (verifier was 273 post-003, 163 post-002, 90 pre-002); double-build output
+  byte-identical (deterministic). **[confirmed — ran tests + build + verify + determinism diff]**
 
 ---
 
@@ -336,15 +370,20 @@ personal site/
 │
 ├── templates/blog/             # DESIGN, extracted once from the bundle (source of truth)
 │   ├── base.html index.html article.html
-│   ├── partials/               # 22 block/cover/card/nav partials
-│   └── assets/{blog.css, blog.js, fonts/*.woff2 (15)}
+│   ├── partials/               # 24 partials (004: + block-callout, block-footnotes; block-quote/-table
+│   │                           #   gained pquote/mdtable class hooks)
+│   └── assets/{blog.css, blog.js, fonts/*.woff2 (15)}  # 004: blog.css + tok-*/cl/callout/footnotes classes
 │
 ├── scripts/
 │   ├── build_blog.py           # ENTRY POINT (content+templates → _site/; emits feed.xml + llms.txt)
-│   ├── verify_build.py         # Definition-of-Done verifier (273 checks; 163 post-002, 90 pre-002)
-│   └── blog/{config,content,markdown_render,render,seo,sitemap,feed,llms}.py  # feed+llms NEW (002);
-│                               #   003 touched config (AUTHOR_KNOWS_ABOUT), seo (knowsAbout/jobTitle),
-│                               #   markdown_render (heading anchors)
+│   ├── verify_build.py         # Definition-of-Done verifier (318 checks; 273 post-003, 163 post-002, 90 pre-002)
+│   └── blog/{config,content,markdown_render,render,seo,sitemap,feed,llms,highlight}.py  # feed+llms NEW
+│                               #   (002); 003 touched config/seo/markdown_render; 004: highlight.py NEW
+│                               #   (10-language syntax highlighter) + markdown_render (info-string parse,
+│                               #   callouts, footnotes, table hardening)
+│
+├── tests/                      # 004 NEW — stdlib unittest renderer suite (71 tests; no third-party dep)
+│   └── {test_markdown_render, test_highlight}.py   # run: python -m unittest discover -s tests
 │
 ├── .github/workflows/deploy.yml  # build + verify + deploy to Pages on push to main
 │
@@ -361,6 +400,11 @@ personal site/
 │   ├── spec.md plan.md data-model.md research.md quickstart.md tasks.md analysis.md convergence.md
 │   ├── contracts/{identity, heading-anchors, font-optimization, verifier}.md
 │   └── checklists/{requirements, positioning-geo-perf}.md
+├── specs/004-technical-writing-canvas/  # Spec Kit artifacts: highlighting + rich code + callouts/
+│   │                           #   footnotes + quote/table hardening + renderer tests (constitution v1.4.0)
+│   ├── spec.md plan.md data-model.md research.md quickstart.md tasks.md analysis.md convergence.md
+│   ├── contracts/{highlighter, code-block, callout-footnote, renderer-tests, verifier}.md
+│   └── checklists/{requirements, rendering-quality}.md
 │
 ├── .specify/                   # Spec Kit engine: memory/constitution.md, templates/, scripts/,
 │   │                           #   workflows/, extensions/ (agent-context)
@@ -431,15 +475,21 @@ development"/"Agentic code generation" bridge); emitted as `knowsAbout` on the b
 4. **`readme.html` wordmark is stale.** Its `<title>` still says "Ehsan.log — Blog System README"
    though the wordmark was rebranded to "Ehsan.kolivand" (commit `78a5b9a`). It is git-ignored and
    not served. **[confirmed].**
-5. **No automated unit tests** — only the post-build smoke verifier. The in-house Markdown renderer
-   (escaping, nesting, table edge cases) has no isolated test coverage; regressions would only be
-   caught if they break a verifier assertion. **[inferred from absence of tests + read of renderer].**
-6. **Markdown renderer is a closed vocabulary.** Supports paragraph, h2–h4 headings (never h1),
-   fenced code (+caption, no syntax highlighting), blockquote, nested ordered/unordered lists, GFM
-   tables, image figures, inline code/links/bold/italic/inline-images. **Not supported**: raw HTML
-   passthrough, footnotes, task lists, definition lists, nested block structures beyond lists,
-   reference-style links. Unknown constructs render as plain paragraphs/escaped text. **[confirmed —
-   read renderer].**
+5. **✅ RESOLVED (feature 004) — renderer now has isolated unit tests.** A stdlib `unittest` suite
+   (`tests/test_markdown_render.py` + `tests/test_highlight.py`, **71 tests**, no third-party dep)
+   covers escaping, the URL-scheme allow-list, token-injection, nested lists, table edge cases, code
+   highlighting + filename + line-emphasis + fallback, callouts, footnotes, and heading anchors; run
+   `python -m unittest discover -s tests`; CI runs it before build/verify. **[confirmed — ran it].**
+6. **Markdown renderer is a closed vocabulary (GREW in 004; no-syntax-highlighting RESOLVED).**
+   Supports paragraph, h2–h4 headings (never h1), fenced code (**004: + 10-language syntax
+   highlighting + optional `title=` filename label + `{n}` line-emphasis**; legacy caption preserved),
+   blockquote (**004: + Obsidian `> [!kind]` callouts**), nested ordered/unordered lists, GFM tables
+   (**004: hardened — single-column/ragged/escaped-pipe/inline-cell**), **004: footnotes
+   (`[^id]`/`[^id]:`)**, image figures, inline code/links/bold/italic/inline-images. **Still not
+   supported**: raw HTML passthrough, task lists, definition lists, nested block structures beyond
+   lists, reference-style links. Unknown constructs (incl. unknown code languages and callout kinds)
+   degrade gracefully to escaped text / a note callout — never a build failure. **[confirmed — read
+   renderer].**
 7. **No `LICENSE` file.** **[confirmed].**
 8. **✅ RESOLVED (feature 003) — stale spec `Status` fields.** 001 (`Draft`) and 002 (`Ready for
    Planning`) now read `Implemented`; 003 reads `Implemented`. The stale-status habit is fixed.

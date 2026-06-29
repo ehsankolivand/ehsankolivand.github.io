@@ -461,6 +461,77 @@ def main(argv=None) -> int:
         else:
             print("  NOTE: PORTFOLIO-FONTS optimization not applied (no markers) — deferred path, skipped")
 
+    # ============================================================================
+    # feature 004: technical-writing canvas. Asserted on the REAL built site AND on
+    # synthetic Markdown fixtures rendered in-process through markdown_render (no
+    # content/blog/*.md file is added — honors the "no content authored" scope).
+    # ============================================================================
+    def _render(md: str) -> str:
+        return markdown_render.render(md, lambda s, a: ("/blog/assets/media/" + s.lstrip("./"), 800, 600))
+
+    # (1) real built page: the AnkiVoice ```bash block is highlighted + escaped (no breakout)
+    anki = out / "blog" / "ankivoice-offline-audio-anki-decks" / "index.html"
+    if anki.exists():
+        at = anki.read_text(encoding="utf-8")
+        mcode = re.search(r"<pre[^>]*>(.*?)</pre>", at, re.S)
+        ok(bool(mcode) and 'class="tok-' in mcode.group(1),
+           "ankivoice: built bash code block is not syntax-highlighted")
+        ok("<BOT_TOKEN>" not in at, "ankivoice: raw <BOT_TOKEN> leaked (escaping breakout)")
+
+    # (2) blog.css ships the new body-content classes (design fidelity: classes, not inline restyle)
+    css = out / "blog" / "assets" / "blog.css"
+    if css.exists():
+        ct = css.read_text(encoding="utf-8")
+        for cls in (".tok-keyword", ".tok-string", ".tok-comment", ".cl--hl",
+                    ".callout--warning", ".footnotes", ".fnref", ".pquote", ".mdtable"):
+            ok(cls in ct, f"blog.css missing class {cls}")
+
+    # (3) per-language highlighting + verbatim coverage (no char lost or duplicated)
+    LANG_FIX = {
+        "kotlin": "fun f() { val x = 1 }", "java": "class A { int x = 0xFF; }",
+        "python": "def f():\n    return 1", "bash": "echo hi  # c", "json": '{"k": true}',
+        "yaml": "k: v", "markup": '<a href="x">y</a>', "javascript": "const x = 1;",
+        "typescript": "let x: number = 1;", "sql": "SELECT 1 FROM t",
+    }
+    for lang, code in LANG_FIX.items():
+        h = _render(f"```{lang}\n{code}\n```")
+        ok('class="tok-' in h, f"fixture {lang}: no syntax highlighting emitted")
+        mp = re.search(r"<pre[^>]*>(.*?)</pre>", h, re.S)
+        recovered = html.unescape(re.sub(r"<[^>]+>", "", mp.group(1))) if mp else ""
+        ok(recovered == code, f"fixture {lang}: code text not preserved verbatim (coverage)")
+
+    # (4) unknown language -> safe escape-only fallback (no spans, no build error)
+    hf = _render("```nope\nx<y & z\n```")
+    ok("tok-" not in hf and "x&lt;y" in hf, "fixture: unknown language not safe escape-only fallback")
+
+    # (5) rich code blocks: filename label + line-emphasis + legacy caption
+    hr = _render('```python title="m.py" {2}\na=1\nb=2\n```')
+    ok("m.py" in hr, "fixture: code filename label missing")
+    ok(hr.count("cl--hl") == 1, "fixture: line-emphasis not applied to exactly one line")
+    ok("// cap" in _render("```// cap\nx\n```"), "fixture: legacy caption not preserved")
+
+    # (6) callouts: known kind labeled+role; unknown kind degrades to note
+    hc = _render("> [!warning] Heads\n> body")
+    ok('class="callout callout--warning"' in hc and 'role="note"' in hc, "fixture: warning callout malformed")
+    ok("callout--note" in _render("> [!bogus] x\n> y"), "fixture: unknown callout kind not degraded to note")
+
+    # (7) footnotes: ref + section + backref present; undefined ref leaves no dangling anchor
+    hfn = _render("Claim.[^1]\n\n[^1]: a note")
+    ok('class="fnref"' in hfn and 'id="fn-1"' in hfn and 'class="fn-back"' in hfn
+       and 'role="doc-endnotes"' in hfn, "fixture: footnote ref/section/backref missing")
+    ok('href="#fn-x"' not in _render("Undefined.[^x]"), "fixture: undefined footnote left a dangling anchor")
+
+    # (8) hardened tables: alignment, inline markup in cells, single column
+    ht = _render("| L | R |\n|:--|--:|\n| `c` | |\n| x | y | z |")
+    ok("text-align:right" in ht and "text-align:left" in ht, "fixture: table column alignment missing")
+    ok("<code" in ht, "fixture: inline markup not rendered inside a table cell")
+    ok("<table" in _render("| H |\n|---|\n| v |"), "fixture: single-column table not recognized")
+
+    # (9) security re-proven at the integration layer
+    ok("javascript:" not in _render("[x](javascript:alert(1))"), "fixture: javascript: URL not neutralized")
+    ok("{{BODY}}" in _render("```\n{{BODY}}\n```"), "fixture: {{TOKEN}} injection not inert in a code block")
+    ok("&lt;/span&gt;" in _render("```python\nx = '</span>'\n```"), "fixture: </span> in code not escaped")
+
     # ---- report ----
     print(f"verify_build: {checks} checks, {len(errors)} failure(s)")
     if errors:

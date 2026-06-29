@@ -4,7 +4,7 @@
 
 **Created**: 2026-06-29
 
-**Status**: Draft
+**Status**: Implemented (shipped 2026-06-29 — vendored highlighter for 10 languages, rich code blocks, callouts + footnotes, hardened tables, 71-test renderer suite; verifier 318 checks, 0 failures)
 
 **Input**: User description: "Make the in-house Markdown renderer a first-class technical-writing surface: deterministic, dependency-free syntax highlighting for the languages the blog uses; richer code blocks (optional filename label + line-emphasis); upgraded blockquotes and hardened GFM tables; two high-value constructs (admonition/callout + footnotes); and the security-sensitive renderer finally covered by isolated unit tests — with no new runtime/build/CI dependency, no client-side rendering, deterministic output, and the existing design language honored. Governed by Constitution v1.4.0."
 

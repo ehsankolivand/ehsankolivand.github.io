@@ -515,3 +515,47 @@
   @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } *{ animation-duration:.001ms !important; animation-delay:0s !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; transition-delay:0s !important; } }
   @media (max-width: 820px){ [data-topcats]{ display:none !important; } }
   @media (max-width: 760px){ [data-herocue]{ display:none !important; } }
+
+  /* ===========================================================================
+     Feature 004 — sanctioned body-content semantic styling (Constitution v1.4.0,
+     Principle III bounded exception). New classes ONLY, scoped to #blog-root,
+     colors drawn from the design bundle's existing palette; no new web font, no
+     new color system. Page chrome/layout/portfolio unaffected.
+     =========================================================================== */
+  /* syntax-highlighting tokens (mono code; default plain text stays #9FE9C8 from <pre>) */
+  #blog-root .tok-comment{ color:#66756F; font-style:italic; }
+  #blog-root .tok-keyword{ color:#34E6A0; }
+  #blog-root .tok-string{ color:#E7D2A6; }
+  #blog-root .tok-number{ color:#b388ff; }
+  #blog-root .tok-function{ color:#7DF0C2; }
+  #blog-root .tok-type{ color:#ffd166; }
+  #blog-root .tok-builtin{ color:#46a8e0; }
+  #blog-root .tok-operator{ color:#9FB0AA; }
+  #blog-root .tok-tag{ color:#34E6A0; }
+  #blog-root .tok-attr{ color:#ffd166; }
+  #blog-root .tok-meta{ color:#9FB0AA; }
+  /* line-emphasis (emitted only when a code block requests {n} lines) */
+  #blog-root pre .cl{ display:block; min-height:1.7em; }
+  #blog-root pre .cl--hl{ background:rgba(52,230,160,0.10); box-shadow:inset 3px 0 0 #34E6A0; margin:0 -20px; padding:0 20px; }
+  /* callouts / admonitions */
+  #blog-root .callout{ margin:30px 0 0; padding:14px 18px 16px; border:1px solid rgba(255,255,255,0.08); border-left-width:3px; border-radius:14px; background:rgba(255,255,255,0.02); }
+  #blog-root .callout__head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:14px; letter-spacing:.01em; }
+  #blog-root .callout__icon{ font-size:14px; line-height:1; }
+  #blog-root .callout__body{ color:#C2CDC8; font-size:clamp(15px,1.9vw,17px); line-height:1.7; }
+  #blog-root .callout--note{ border-left-color:#46a8e0; }     #blog-root .callout--note .callout__head{ color:#8fd0f2; }
+  #blog-root .callout--tip{ border-left-color:#34E6A0; }      #blog-root .callout--tip .callout__head{ color:#7DF0C2; }
+  #blog-root .callout--warning{ border-left-color:#ffd166; }  #blog-root .callout--warning .callout__head{ color:#ffd166; }
+  #blog-root .callout--important{ border-left-color:#b388ff; }#blog-root .callout--important .callout__head{ color:#c6a6ff; }
+  #blog-root .callout--caution{ border-left-color:#ff8a80; }  #blog-root .callout--caution .callout__head{ color:#ff8a80; }
+  /* footnotes */
+  #blog-root .footnotes{ margin:48px 0 0; }
+  #blog-root .footnotes__rule{ border:0; border-top:1px solid rgba(255,255,255,0.08); margin:0 0 14px; }
+  #blog-root .footnotes__list{ margin:0; padding-left:22px; color:#9FB0AA; font-size:14px; line-height:1.7; }
+  #blog-root .footnotes__item{ margin:0 0 6px; }
+  #blog-root .fnref{ font-size:.72em; line-height:0; }
+  #blog-root .fnref a{ color:#34E6A0; text-decoration:none; padding:0 2px; }
+  #blog-root .fn-back{ color:#34E6A0; text-decoration:none; margin-left:6px; }
+  /* refined blockquote (decorative quote mark) + table (row hover) */
+  #blog-root .pquote{ position:relative; }
+  #blog-root .pquote::before{ content:"\201C"; position:absolute; left:13px; top:-12px; font-family:'Space Grotesk',sans-serif; font-size:46px; line-height:1; color:rgba(52,230,160,0.16); pointer-events:none; }
+  #blog-root .mdtable tbody tr:hover{ background:rgba(255,255,255,0.02); }

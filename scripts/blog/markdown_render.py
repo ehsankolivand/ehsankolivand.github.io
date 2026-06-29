@@ -12,6 +12,7 @@ from pathlib import Path
 from functools import lru_cache
 
 from . import config
+from . import highlight
 
 LINK_STYLE = "color:#34E6A0; text-decoration:none; border-bottom:1px solid rgba(52,230,160,0.4);"
 INLINE_CODE_STYLE = ("font-family:'JetBrains Mono',monospace; font-size:0.92em; "
@@ -34,6 +35,11 @@ def esc(text: str) -> str:
 
 def esc_attr(text: str) -> str:
     return html.escape(text, quote=True)
+
+
+# Render-scoped footnote context: set by render() for the current post, read by render_inline.
+# None outside a render() call (so render_inline used standalone treats `[^id]` as literal text).
+_CURRENT_FN = None
 
 
 # --------------------------------------------------------------------------- #
@@ -101,6 +107,14 @@ def render_inline(text: str) -> str:
 
     # inline code first (verbatim, escaped) so its contents aren't further processed
     text = re.sub(r"`([^`]+)`", lambda m: keep(f'<code style="{INLINE_CODE_STYLE}">{esc(m.group(1))}</code>'), text)
+    # footnote references [^id]: only when the current render has a matching definition; stashed
+    # after inline code (so `[^x]` inside code stays literal) and before escaping. Undefined refs
+    # are left as literal text (no dangling anchor — Constitution VIII).
+    if _CURRENT_FN is not None:
+        text = re.sub(
+            r"\[\^([^\]]+)\]",
+            lambda m: keep(_footnote_ref(m.group(1))) if m.group(1) in _CURRENT_FN.defs else m.group(0),
+            text)
     # inline images before links so the leading '!' is consumed (not left as a stray char)
     text = re.sub(r"!\[([^\]]*)\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)",
                   lambda m: keep(_inline_image(m.group(1), m.group(2))), text)
@@ -161,6 +175,116 @@ def _alloc_heading_id(visible: str, ordinal: int, used: set, counts: dict) -> st
 
 
 # --------------------------------------------------------------------------- #
+# Callouts / admonitions (Obsidian `> [!kind]` form) + footnotes (`[^id]` / `[^id]:`)
+# --------------------------------------------------------------------------- #
+# Synonyms collapse to one of five canonical kinds; unknown -> note (graceful degradation).
+_CALLOUT_SYNONYMS = {
+    "note": "note", "info": "note", "abstract": "note", "summary": "note", "quote": "note", "cite": "note",
+    "tip": "tip", "success": "tip", "hint": "tip", "check": "tip", "done": "tip",
+    "warning": "warning", "warn": "warning", "attention": "warning",
+    "important": "important",
+    "caution": "caution", "danger": "caution", "error": "caution", "bug": "caution", "failure": "caution", "fail": "caution",
+}
+# (visible label, aria-hidden glyph) — glyphs are decorative; the label conveys meaning.
+_CALLOUT_META = {
+    "note": ("Note", "ℹ"),        # information sign
+    "tip": ("Tip", "✓"),          # check mark
+    "warning": ("Warning", "⚠"),  # warning sign
+    "important": ("Important", "★"),  # star
+    "caution": ("Caution", "‼"),  # double exclamation
+}
+
+
+def _paragraphs(de_quoted_lines: list) -> list:
+    """Group de-quoted lines into paragraph strings on blank-line boundaries (shared by
+    blockquotes and callout bodies)."""
+    paras, cur = [], []
+    for ln in de_quoted_lines:
+        if ln.strip() == "":
+            if cur:
+                paras.append(" ".join(x.strip() for x in cur).strip())
+                cur = []
+        else:
+            cur.append(ln)
+    if cur:
+        paras.append(" ".join(x.strip() for x in cur).strip())
+    return [p for p in paras if p]
+
+
+def _callout(raw_kind: str, title_text: str, body_lines: list) -> str:
+    """Render an Obsidian-style callout to a static, accessible labeled region."""
+    kind = _CALLOUT_SYNONYMS.get(raw_kind.lower(), "note")
+    label, icon = _CALLOUT_META[kind]
+    body = "<br><br>".join(render_inline(p) for p in _paragraphs(body_lines))
+    title = render_inline(title_text.strip()) if title_text.strip() else esc(label)
+    return _fill("block-callout.html", KIND=kind, ARIA=esc_attr(f"{label} callout"),
+                 ICON=icon, TITLE=title, BODY=body)
+
+
+class _FnCtx:
+    """Post-scoped footnote registry. `defs`/`slug_of` are fixed by render()'s pre-pass; `order`
+    (reference order → visible numbers) and `ref_counts` (unique repeat-ref ids) fill during render."""
+    __slots__ = ("defs", "slug_of", "order", "ref_counts")
+
+    def __init__(self, defs, slug_of):
+        self.defs = defs
+        self.slug_of = slug_of
+        self.order = []
+        self.ref_counts = {}
+
+
+def _footnote_ref(fid: str) -> str:
+    ctx = _CURRENT_FN
+    if fid not in ctx.order:
+        ctx.order.append(fid)
+    num = ctx.order.index(fid) + 1
+    ctx.ref_counts[fid] = ctx.ref_counts.get(fid, 0) + 1
+    slug = ctx.slug_of[fid]
+    refid = f"fnref-{slug}" if ctx.ref_counts[fid] == 1 else f"fnref-{slug}-{ctx.ref_counts[fid]}"
+    return (f'<sup class="fnref" id="{esc_attr(refid)}">'
+            f'<a href="#fn-{esc_attr(slug)}" role="doc-noteref" aria-label="Footnote {num}">{num}</a></sup>')
+
+
+_FN_DEF_RE = re.compile(r"^\[\^([^\]]+)\]:\s?(.*)$")
+
+
+def _extract_footnote_defs(lines: list):
+    """Fence-aware extraction of `[^id]: definition` blocks. Returns (defs dict, kept lines) with
+    the definition lines (+ simple indented continuations) removed from the body. `[^x]:` inside a
+    fenced code block is left untouched (treated as code, not a definition)."""
+    defs, kept = {}, []
+    i, n = 0, len(lines)
+    fence = None
+    while i < n:
+        line = lines[i]
+        s = line.strip()
+        if fence is not None:
+            if s.startswith(fence):
+                fence = None
+            kept.append(line)
+            i += 1
+            continue
+        if s.startswith("```") or s.startswith("~~~"):
+            fence = s[:3]
+            kept.append(line)
+            i += 1
+            continue
+        md = _FN_DEF_RE.match(line)
+        if md:
+            fid = md.group(1)
+            body = [md.group(2)]
+            i += 1
+            while i < n and lines[i].strip() != "" and lines[i][:1] in (" ", "\t"):
+                body.append(lines[i].strip())
+                i += 1
+            defs[fid] = " ".join(body).strip()
+            continue
+        kept.append(line)
+        i += 1
+    return defs, kept
+
+
+# --------------------------------------------------------------------------- #
 # Block rendering
 # --------------------------------------------------------------------------- #
 _TOKEN_RE = re.compile(r"\{\{([A-Za-z_][A-Za-z0-9_]*)\}\}")
@@ -178,8 +302,50 @@ def _fill(partial_name: str, **tokens) -> str:
     return sub_tokens(_partial(partial_name), tokens)
 
 
-def _code_block(code: str, caption: str) -> str:
-    return _fill("block-code.html", CAPTION=esc(caption), CONTENT=esc(code))
+# Fenced-code info string -> (language, filename, emphasized lines, legacy caption). GFM superset:
+# the first bare-word token is the language; title=/file=/filename="..." is the filename label;
+# {1,3-5} are 1-based emphasized lines. If the first token is not a bare-word language token, the
+# WHOLE info string is a legacy caption (no language, no highlighting). See contracts/code-block.md.
+_INFO_LANG_RE = re.compile(r"^[A-Za-z0-9+#._-]+$")
+_INFO_TITLE_RE = re.compile(r'(?:title|file|filename)\s*=\s*"([^"]*)"')
+_INFO_BRACE_RE = re.compile(r"\{([0-9,\s\-]+)\}")
+
+
+def parse_info_string(info: str):
+    info = (info or "").strip()
+    if not info:
+        return None, None, frozenset(), None
+    first = info.split()[0]
+    if not _INFO_LANG_RE.match(first):
+        return None, None, frozenset(), info  # legacy caption (prose / `//path` / `key=val` lead)
+    rest = info[len(first):]
+    filename = None
+    mt = _INFO_TITLE_RE.search(rest)
+    if mt:
+        filename = mt.group(1)
+    emphasized: set[int] = set()
+    mb = _INFO_BRACE_RE.search(rest)
+    if mb:
+        for part in mb.group(1).split(","):
+            part = part.strip()
+            if not part:
+                continue
+            if "-" in part:
+                a, _, b = part.partition("-")
+                if a.strip().isdigit() and b.strip().isdigit():
+                    lo, hi = int(a), int(b)
+                    emphasized.update(range(min(lo, hi), max(lo, hi) + 1))
+            elif part.isdigit():
+                emphasized.add(int(part))
+    return first, filename, frozenset(emphasized), None
+
+
+def _code_block(code: str, language, filename, emphasized, caption) -> str:
+    # highlight (or escape-only fallback) -> CONTENT; title-bar label precedence:
+    # filename -> legacy caption -> language token -> "" (preserves the pre-004 caption behavior).
+    content, _recognized, _lang = highlight.highlight_code(code, language, emphasized)
+    label = filename or caption or language or ""
+    return _fill("block-code.html", CAPTION=esc(label), CONTENT=content)
 
 
 def _image(alt: str, src: str, image_resolver) -> str:
@@ -238,9 +404,6 @@ def _emit_list_groups(nodes: list) -> str:
     return "\n        ".join(chunks)
 
 
-_TABLE_SEP = re.compile(r"^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?\s*$")
-
-
 def _split_row(row: str) -> list:
     row = row.strip()
     if row.startswith("|"):
@@ -248,6 +411,16 @@ def _split_row(row: str) -> list:
     if row.endswith("|"):
         row = row[:-1]
     return [c.strip().replace("\\|", "|") for c in re.split(r"(?<!\\)\|", row)]
+
+
+_SEP_CELL = re.compile(r"^:?-+:?$")
+
+
+def _is_table_sep(line: str) -> bool:
+    """A GFM table delimiter row: every pipe-split cell matches `:?-+:?`. Split-and-check (not one
+    monolithic regex) so SINGLE-column tables (`|---|`) and ragged separators are recognized (FR-013)."""
+    cells = _split_row(line)
+    return bool(cells) and all(_SEP_CELL.match(c.strip()) for c in cells)
 
 
 def _table_aligns(sep_row: str) -> list:
@@ -298,6 +471,7 @@ def _render_list_run(run: list) -> str:
 
 def render(markdown_text: str, image_resolver) -> str:
     """Render a Markdown body to a string of concatenated design block partials."""
+    global _CURRENT_FN
     lines = markdown_text.split("\n")
     out: list[str] = []
     # post-scoped heading-anchor state: deterministic, collision-free section ids (one render()
@@ -305,6 +479,21 @@ def render(markdown_text: str, image_resolver) -> str:
     used_ids: set[str] = set()
     base_counts: dict[str, int] = {}
     heading_ordinal = 0
+    # footnotes: extract definitions (fence-aware), reserve collision-free ids in the SAME used_ids
+    # set the heading allocator uses (so a heading and a footnote can never share an id), then expose
+    # a render-scoped context that render_inline reads to turn `[^id]` into a superscript link.
+    fn_defs, lines = _extract_footnote_defs(lines)
+    fn_slug: dict[str, str] = {}
+    for idx, fid in enumerate(fn_defs, start=1):
+        slug = heading_slug(fid) or f"fn{idx}"
+        cand, k = slug, 0
+        while f"fn-{cand}" in used_ids or f"fnref-{cand}" in used_ids:
+            k += 1
+            cand = f"{slug}-{k}"
+        used_ids.add(f"fn-{cand}")
+        used_ids.add(f"fnref-{cand}")
+        fn_slug[fid] = cand
+    _CURRENT_FN = _FnCtx(fn_defs, fn_slug)
     i, n = 0, len(lines)
     while i < n:
         line = lines[i]
@@ -316,14 +505,14 @@ def render(markdown_text: str, image_resolver) -> str:
         mfence = re.match(r"^(```|~~~)(.*)$", s)
         if mfence:
             fence = mfence.group(1)
-            caption = mfence.group(2).strip()
+            language, filename, emphasized, caption = parse_info_string(mfence.group(2))
             i += 1
             buf: list[str] = []
             while i < n and not lines[i].strip().startswith(fence):
                 buf.append(lines[i])
                 i += 1
             i += 1  # closing fence
-            out.append(_code_block("\n".join(buf), caption))
+            out.append(_code_block("\n".join(buf), language, filename, emphasized, caption))
             continue
         # heading -> design heading style at the correct semantic level (never <h1>,
         # which is reserved for the post title): #/## -> h2, ### -> h3, ####+ -> h4.
@@ -347,17 +536,12 @@ def render(markdown_text: str, image_resolver) -> str:
             while i < n and lines[i].strip().startswith(">"):
                 buf.append(re.sub(r"^\s*(>\s?)+", "", lines[i]))
                 i += 1
-            paras, cur = [], []
-            for ln in buf:
-                if ln.strip() == "":
-                    if cur:
-                        paras.append(" ".join(x.strip() for x in cur).strip())
-                        cur = []
-                else:
-                    cur.append(ln)
-            if cur:
-                paras.append(" ".join(x.strip() for x in cur).strip())
-            content = "<br><br>".join(render_inline(p) for p in paras if p)
+            # Obsidian callout? First de-quoted line `[!kind] optional title` -> labeled region.
+            mco = re.match(r"^\[!([A-Za-z]+)\]\s*(.*)$", buf[0]) if buf else None
+            if mco:
+                out.append(_callout(mco.group(1), mco.group(2), buf[1:]))
+                continue
+            content = "<br><br>".join(render_inline(p) for p in _paragraphs(buf))
             out.append(_fill("block-quote.html", CONTENT=content))
             continue
         # list (ordered/unordered, nestable by indentation)
@@ -380,7 +564,7 @@ def render(markdown_text: str, image_resolver) -> str:
             i += 1
             continue
         # GFM table: a header row of pipes immediately followed by a separator row
-        if "|" in s and i + 1 < n and _TABLE_SEP.match(lines[i + 1].strip()):
+        if "|" in s and i + 1 < n and _is_table_sep(lines[i + 1]):
             aligns = _table_aligns(lines[i + 1].strip())
             header = _split_row(s)
             i += 2
@@ -401,4 +585,18 @@ def render(markdown_text: str, image_resolver) -> str:
             i += 1
         text = " ".join(x.strip() for x in buf).strip()
         out.append(_fill("block-p.html", CONTENT=render_inline(text)))
+    # Footnotes section: referenced + defined notes in reference order. Definitions render with the
+    # footnote context OFF (a nested `[^x]` in a definition stays literal — no self-mutation).
+    order = list(_CURRENT_FN.order)
+    _CURRENT_FN = None
+    if order:
+        items = []
+        for fid in order:
+            slug = fn_slug[fid]
+            def_html = render_inline(fn_defs[fid])
+            items.append(
+                f'<li id="fn-{esc_attr(slug)}" class="footnotes__item">{def_html} '
+                f'<a href="#fnref-{esc_attr(slug)}" class="fn-back" role="doc-backlink" '
+                f'aria-label="Back to content">↩</a></li>')
+        out.append(_fill("block-footnotes.html", ITEMS="\n        ".join(items)))
     return "\n        ".join(out)
