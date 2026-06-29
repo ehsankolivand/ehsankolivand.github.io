@@ -1,6 +1,38 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version change: 1.3.0 → 1.4.0
+Bump rationale: Amends Principle III (Design Fidelity) to add a SECOND bounded exception —
+  "Sanctioned body-content semantic styling" — so the blog can render serious technical
+  writing well without restyling the look. Feature 004 turns the in-house Markdown renderer
+  into a first-class technical-writing surface: build-time, dependency-free syntax-
+  highlighting token classes for fenced code, an optional code-block filename/title label +
+  line-emphasis, callout/admonition blocks (note/tip/warning/...), footnotes, and refinements
+  to the already-supported blockquotes and GFM tables. All of this is NEW visual styling on
+  BODY CONTENT, which a strict reading of Principle III ("new visual styling MUST NOT be
+  invented") would forbid. The amendment permits it under tight bounds: new CSS classes live
+  ONLY in templates/blog/assets/blog.css, scoped to the blog body (#blog-root); they draw
+  EXCLUSIVELY on the design's existing visual vocabulary — the bundle's palette colors, the
+  already-loaded fonts (JetBrains Mono / Manrope / Space Grotesk), and the existing spacing/
+  radius/border idioms — adding NO new web font and NO new color system; they style only
+  author-content constructs and MUST NOT alter page chrome, layout, covers, cards, nav, or any
+  existing non-code design (all byte-faithful to the bundle); they are produced
+  deterministically at build time with no new runtime/build/CI dependency, no client-side
+  rendering, and without weakening the renderer's security posture; and they never touch the
+  portfolio index.html (Principle VII still governs it, unchanged). Gated by the Definition-of-
+  Done verifier: the design stays faithful (portfolio byte-identical outside its two sanctioned
+  zones, no new @font-face, no new color system), highlighted code is well-formed escaped
+  classed markup with a safe escape-only fallback for unknown languages, and the new constructs
+  render as accessible static HTML. MINOR: narrows a NON-NEGOTIABLE principle by adding a
+  bounded exception consistent with the design's own tokens (no principle removed or weakened)
+  — exactly parallel to the 1.2.0→1.3.0 Principle VII font-zone amendment. Also extends the
+  Development Workflow Verification gate with the body-content-styling fidelity Definition-of-
+  Done check. Templates reviewed and remain compatible (generic Constitution Check references
+  this file; verified directly against plan-template.md + tasks-template.md + spec-template.md):
+  ✅ plan-template.md, ✅ spec-template.md, ✅ tasks-template.md,
+  ✅ .claude/skills/speckit-*/SKILL.md.
+
+----- Prior entry -----
 Version change: 1.2.0 → 1.3.0
 Bump rationale: Amends Principle VII (Non-Destructive To The Existing Portfolio) to add a
   SECOND bounded exception — a one-time, performance-only, NON-VISUAL font-data
@@ -140,9 +172,39 @@ regenerate the look.
 - Templates MUST be derived from that design; new visual styling MUST NOT be invented.
 - Self-hosted fonts and design assets from the bundle MUST be preserved; the look MUST be
   byte-faithful within the limits of converting a client-rendered bundle to static HTML.
+- **Bounded exception — Sanctioned body-content semantic styling.** To render author
+  content the in-house renderer newly supports, NEW CSS classes MAY be added — in
+  `templates/blog/assets/blog.css` ONLY, scoped to the blog body (`#blog-root`) — giving that
+  content semantic visual treatment: build-time syntax-highlighting token classes for fenced
+  code, an optional code-block filename/title label and line-emphasis, callout/admonition
+  blocks (e.g. note/tip/warning), footnote markers and back-references, and refinements to the
+  already-supported blockquote and GFM-table elements. This is the ONLY sanctioned addition of
+  new visual styling, and it is permitted ONLY when ALL of the following hold:
+  - **(a) Existing vocabulary only.** It draws EXCLUSIVELY on the design's existing visual
+    language — the bundle's palette colors, the already-loaded fonts (JetBrains Mono, Manrope,
+    Space Grotesk), and the existing spacing/radius/border idioms. It introduces NO new web
+    font and NO new color system.
+  - **(b) Body content only, via blog.css.** It is confined to author-content constructs in the
+    blog body and delivered as classes in `blog.css`. It MUST NOT restyle or alter the page
+    chrome, layout, header/nav, covers, cards, or any existing non-code design — all of which
+    stay byte-faithful to the bundle.
+  - **(c) Deterministic & safe.** It is produced deterministically at build time with no new
+    runtime/build/CI dependency and no client-side rendering, and it MUST NOT weaken the
+    renderer's security posture (full HTML escaping, the URL-scheme allow-list, single-pass
+    token substitution). Unknown or unsupported variants degrade gracefully (e.g. an unknown
+    code-fence language falls back to safe escaped text — never a build failure).
+  - **(d) Portfolio untouched.** It never modifies the portfolio `index.html`; Principle VII
+    continues to govern that file unchanged.
+  The Definition-of-Done verifier MUST assert this fidelity: the portfolio stays byte-identical
+  outside its two sanctioned zones, no new `@font-face` rule or color system is introduced, and
+  the new styling appears only on body-content elements. If any of these bounds cannot be met,
+  the styling MUST be reduced until they are; a principle is never weakened to ship it.
 
 Rationale: The design was produced deliberately; the engineering task is content
-generation into a fixed design, not redesign.
+generation into a fixed design, not redesign. Extending the design's own tokens to present
+newly-supported content (highlighted code, callouts, footnotes, refined quotes/tables) is not a
+redesign — it renders serious technical writing within the established look rather than inventing
+a new one, and the bounds above keep every pixel outside that body content faithful to the bundle.
 
 ### IV. Obsidian As The Single Content Source (NON-NEGOTIABLE)
 
@@ -298,7 +360,12 @@ the served site always correct.
   and, where applied, the `PORTFOLIO-FONTS` font-data zone (the latter proven NON-VISUAL:
   every rendered codepoint keeps its webfont glyph coverage and only whole unused font
   subsets were removed) (Principles VII & VI), the design matches the source (Principle
-  III), the Atom feed and `llms.txt` are present and list every published post, structured
+  III) — and where body-content semantic styling is applied (syntax-highlighting tokens,
+  callouts, footnotes, code filename/line-emphasis, blockquote/table refinements), the verifier
+  proves it stays within the sanctioned bounds (well-formed escaped classed code with a safe
+  escape-only fallback for unknown languages, the new constructs rendered as accessible static
+  HTML, no new web font or color system introduced, and everything outside the blog body content
+  byte-faithful) — the Atom feed and `llms.txt` are present and list every published post, structured
   data references the canonical Person/WebSite `@id`, and no committed source file carries
   an internal link to a nonexistent page (Principle VIII). These checks are encoded in the
   post-build verifier.
@@ -326,4 +393,4 @@ for what the blog system MUST and MUST NOT do.
   `research.md`, and `quickstart.md`; those documents MUST defer to this constitution on
   any conflict.
 
-**Version**: 1.3.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-29
+**Version**: 1.4.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-29
