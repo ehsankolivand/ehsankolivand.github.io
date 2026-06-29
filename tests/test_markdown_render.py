@@ -57,6 +57,18 @@ class TestUrlAllowList(unittest.TestCase):
         self.assertNotIn("javascript:alert", out.replace("\x01", ""))
         self.assertNotIn("<a ", out)
 
+    def test_embedded_control_char_scheme_bypass_neutralized(self):
+        # BUG-004: a non-whitespace C0 control embedded *inside* the scheme (NUL, SOH, DEL —
+        # the controls the link parser's [^)\s]+ does NOT swallow, so they reach the classifier)
+        # must not let `java\x00script:` slip through as a "schemeless" (safe) URL.
+        for ctrl in ("\x00", "\x01", "\x7f"):
+            payload = f"java{ctrl}script:alert(1)"
+            self.assertFalse(M._is_safe_url(payload), repr(payload))   # classifier rejects it
+            out = render(f"[x]({payload})")
+            self.assertNotIn("<a ", out, repr(payload))               # link dropped, label kept
+            self.assertNotIn(ctrl, out)                                # no raw control char emitted
+            self.assertIn("x", out)
+
     def test_vbscript_neutralized(self):
         self.assertNotIn("<a ", render("[x](vbscript:msgbox(1))"))
 

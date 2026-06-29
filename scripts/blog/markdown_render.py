@@ -50,11 +50,15 @@ _SAFE_URL_SCHEMES = ("http", "https", "mailto")
 
 def _is_safe_url(url: str) -> bool:
     """Allow-list link schemes: http/https/mailto plus schemeless (relative/anchor/query)
-    URLs. Everything else (javascript:, data:, vbscript:, …) is unsafe. Browsers strip
-    leading C0 control chars + whitespace before reading the scheme, so strip the same
-    first to defeat `\\x01javascript:`-style bypasses."""
+    URLs. Everything else (javascript:, data:, vbscript:, …) is unsafe. Browsers strip C0
+    control chars + whitespace when reading a URL's scheme, so strip the same first: leading
+    controls/space AND every EMBEDDED C0 control + DEL (which html.escape would not remove).
+    This defeats both `\\x01javascript:` (leading) and `java\\x00script:` (embedded) scheme
+    smuggling — without an embedded-control strip the scheme regex would miss the `:` and the
+    URL would be misclassified as a harmless relative link, then emitted with a raw NUL that a
+    NUL-stripping browser reassembles into `javascript:`."""
     u = re.sub(r"^[\x00-\x20]+", "", url)
-    u = re.sub(r"[\t\n\r]", "", u)
+    u = re.sub(r"[\x00-\x1f\x7f]", "", u)  # all C0 controls + DEL, anywhere (subsumes \t\n\r)
     m = re.match(r"^([a-zA-Z][a-zA-Z0-9+.\-]*):", u)
     if not m:
         return True  # relative / anchor / query / protocol-relative — no scheme to abuse
