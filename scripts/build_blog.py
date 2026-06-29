@@ -49,6 +49,14 @@ def image_size(path: Path):
                     i += 1
                     continue
                 marker = data[i + 1]
+                if marker == 0xFF:          # 0xFF fill byte before a marker: realign on the next
+                    i += 1
+                    continue
+                if marker == 0x01 or 0xD0 <= marker <= 0xD9:
+                    # standalone markers (TEM, RST0-7, SOI, EOI) carry NO length field — skip just
+                    # the marker, never misread the following 2 bytes as a segment length.
+                    i += 2
+                    continue
                 if marker in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7,
                               0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
                     if i + 9 > n:
@@ -70,9 +78,19 @@ def image_size(path: Path):
     return None
 
 
+# OS/editor cruft that must never be copied into the deployed site (would otherwise be served).
+_STRAY_NAMES = {".DS_Store", "Thumbs.db", "desktop.ini"}
+
+
+def _is_stray(name: str) -> bool:
+    return name in _STRAY_NAMES or name.endswith("~") or name.endswith((".swp", ".swo"))
+
+
 def copytree(src: Path, dst: Path):
     dst.mkdir(parents=True, exist_ok=True)
     for item in sorted(src.rglob("*")):
+        if _is_stray(item.name):
+            continue
         rel = item.relative_to(src)
         target = dst / rel
         if item.is_dir():
