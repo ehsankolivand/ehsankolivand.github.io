@@ -39,7 +39,10 @@ def build_feed(posts, base_url: str, portfolio_lastmod: dt.date | None = None) -
         f"  <author><name>{_esc(config.AUTHOR_NAME)}</name><uri>{_esc(home)}</uri></author>",
     ]
     for p in posts:  # already newest-first
-        url = config.abs_url(base_url, p.url)
+        # Use the post's canonical (honors a frontmatter `canonical:` override) for the entry
+        # id + alternate link, consistent with og:url / JSON-LD url in seo.py (BUG-010). For a
+        # post with no override this equals abs_url(base_url, p.url).
+        url = p.canonical
         rows.append("  <entry>")
         rows.append(f"    <title>{_esc(p.title)}</title>")
         rows.append(f"    <id>{_esc(url)}</id>")

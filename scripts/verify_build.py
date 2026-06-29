@@ -324,8 +324,9 @@ def main(argv=None) -> int:
             ok(len(entries) == len(posts), f"feed: {len(entries)} entries != {len(posts)} posts")
             entry_ids = {e.find("a:id", ns).text for e in entries if e.find("a:id", ns) is not None}
             for p in posts:
-                ok(config.abs_url(args.base_url, p.url) in entry_ids,
-                   f"feed: missing entry id for {p.slug}")
+                # feed entry id == the post canonical (honors a frontmatter override), matching
+                # og:url / JSON-LD url (BUG-010); equals abs_url(base_url, p.url) with no override.
+                ok(p.canonical in entry_ids, f"feed: missing entry id for {p.slug}")
             newest = max((p.updated for p in posts), default=None)
             if newest and fupd is not None:
                 ok(fupd.text == newest.isoformat() + "T00:00:00Z",

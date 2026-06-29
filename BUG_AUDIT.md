@@ -89,7 +89,7 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Low — `/blog/` index is always generated, so listing it is acceptable; this is primarily a doc/intent mismatch.
   - **Suggested fix**: Fix the comment, or wrap `url(blog, newest)` in `if posts:` to match the documented behavior.
 
-- [ ] **BUG-010 — Atom entry `id`/`link` ignore a per-post `canonical` override (inconsistent with JSON-LD/`og:url`).**
+- [x] **BUG-010 — Atom entry `id`/`link` ignore a per-post `canonical` override (inconsistent with JSON-LD/`og:url`).** _Fixed: `feed.build_feed` now uses `p.canonical` for each entry's `<id>` + alternate `<link>` (equals the on-site URL when no override), matching og:url/JSON-LD; the verifier's feed-id check was updated to assert `p.canonical` so the override case stays consistent. Regression tests: `tests/test_feed.py`._
   - **What**: `feed.build_feed` uses `config.abs_url(base_url, p.url)` for each entry's `<id>` and `<link>`, while `seo.py` uses `post.canonical` (which honors a frontmatter `canonical:` override) for `og:url`/JSON-LD `url`.
   - **Why it's a bug**: If an author sets a custom `canonical:`, the feed advertises a different URL than the canonical/OG/JSON-LD, a minor cross-surface inconsistency.
   - **Where**: `scripts/blog/feed.py:42,45,46` vs `scripts/blog/seo.py:98,116,143`.
