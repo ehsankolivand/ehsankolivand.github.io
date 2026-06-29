@@ -237,6 +237,18 @@ class Post:
     def display_date(self) -> str:
         return display_date(self.date)
 
+    @property
+    def word_count(self) -> int:
+        """Word count of the rendered body (for JSON-LD wordCount). Same tokenizer as read-time."""
+        return len(re.findall(r"\w+", self.body))
+
+    @property
+    def read_minutes(self):
+        """Integer minutes parsed from read_time ("5 min" -> 5), or None if unparseable
+        (feeds JSON-LD timeRequired = PT<n>M; never emit PT0M)."""
+        m = re.match(r"\s*(\d+)", self.read_time or "")
+        return int(m.group(1)) if m else None
+
 
 def _cover_int(value, source: str, field: str) -> int:
     try:

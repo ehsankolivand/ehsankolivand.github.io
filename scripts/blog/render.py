@@ -152,7 +152,8 @@ def render_article_page(post: Post, categories: list[Category], base_url: str, i
     main = _fill(
         main,
         TAG_BG=style["bg"], TAG_BORDER=style["border"], TAG_COLOR=style["color"],
-        TAG_LABEL=esc(cat.label), DATE=esc(post.display_date()), READ_TIME=esc(post.read_time),
+        TAG_LABEL=esc(cat.label), DATE=esc(post.display_date()), DATE_ISO=post.date.isoformat(),
+        READ_TIME=esc(post.read_time),
         TITLE=esc(post.title), DEK=esc(post.excerpt),
         COVER=render_cover(post, "article"),
         BODY=body_html,

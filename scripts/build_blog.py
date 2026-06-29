@@ -24,7 +24,7 @@ HOME_NOTES_END = "<!--LATEST-NOTES:END-->"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # allow `import blog.*`
 
-from blog import config, content, render, sitemap  # noqa: E402
+from blog import config, content, render, sitemap, feed, llms  # noqa: E402
 
 
 # --------------------------------------------------------------------------- #
@@ -203,6 +203,17 @@ def main(argv=None) -> int:
         sitemap.build_sitemap(posts, base_url, portfolio_lastmod=config.PORTFOLIO_LASTMOD),
         encoding="utf-8")
 
+    # 8b. Generate the Atom syndication feed (machine-readable surface — Principle VIII)
+    (blog_out / "feed.xml").write_text(
+        feed.build_feed(posts, base_url, portfolio_lastmod=config.PORTFOLIO_LASTMOD),
+        encoding="utf-8")
+
+    # 8c. Generate llms.txt: committed identity base + derived post list (NOT copied verbatim —
+    # it is a build artifact so a single-note commit updates the AI-facing index; Principle VIII).
+    base_llms = (config.LLMS_SRC.read_text(encoding="utf-8")
+                 if config.LLMS_SRC.exists() else f"# {config.AUTHOR_NAME}\n")
+    (out / "llms.txt").write_text(llms.build_llms(base_llms, posts, base_url), encoding="utf-8")
+
     # 9. Report
     print(f"Built {len(posts)} post(s) into {out}")
     print(f"  categories: {', '.join(c.name for c in cats)}")
@@ -210,6 +221,8 @@ def main(argv=None) -> int:
     if missing:
         print(f"  WARNING: missing root companion files (skipped): {', '.join(missing)}")
     print(f"  blog index: {blog_out / 'index.html'}")
+    print(f"  feed: {blog_out / 'feed.xml'}  ({len(posts)} entries)")
+    print(f"  llms.txt: {out / 'llms.txt'}  (generated: identity base + {len(posts)} posts)")
     for p in posts:
         print(f"    - /blog/{p.slug}/  ({p.category}, {p.read_time}, related={len(p.related)})")
     return 0
