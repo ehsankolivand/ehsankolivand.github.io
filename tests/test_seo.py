@@ -8,9 +8,17 @@ import json
 import os
 import sys
 import unittest
+from types import SimpleNamespace
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "scripts"))
 from blog import seo  # noqa: E402
+
+
+def _post(image="", kind="code", src="", alt="", title="A Post"):
+    return SimpleNamespace(
+        image=image, title=title,
+        cover=SimpleNamespace(kind=kind, src=src, alt=alt, width=1200, height=630),
+    )
 
 _OPEN = '<script type="application/ld+json">'
 _CLOSE = "</script>"
@@ -44,6 +52,23 @@ class TestJsonLdScriptSafety(unittest.TestCase):
     def test_plain_content_unaffected(self):
         inner = self._inner(seo._jsonld({"k": "List of T, no specials"}))
         self.assertEqual(json.loads(inner), {"k": "List of T, no specials"})
+
+
+class TestPostImage(unittest.TestCase):
+    def test_absolute_image_url_passes_through(self):
+        # BUG-002: an absolute image: must NOT be run through media_url (which would mangle it
+        # into /blog/assets/media/https://...).
+        url, w, h, alt = seo._post_image(_post(image="https://cdn.example.com/x.png"), "https://site/")
+        self.assertEqual(url, "https://cdn.example.com/x.png")
+        self.assertEqual((w, h), (1200, 630))
+
+    def test_relative_image_maps_to_media(self):
+        url, *_ = seo._post_image(_post(image="assets/pic.png"), "https://site/")
+        self.assertEqual(url, "https://site/blog/assets/media/pic.png")
+
+    def test_no_image_uses_site_default(self):
+        url, *_ = seo._post_image(_post(), "https://site/")
+        self.assertTrue(url.endswith("/og-image.png"))
 
 
 if __name__ == "__main__":

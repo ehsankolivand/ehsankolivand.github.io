@@ -24,7 +24,7 @@ _(none found — the build is green on current content and no defect breaks the 
 
 ## Medium
 
-- [ ] **BUG-002 — `image:` frontmatter is never validated to exist; broken `og:image`/JSON-LD image ships silently.**
+- [x] **BUG-002 — `image:` frontmatter is never validated to exist; broken `og:image`/JSON-LD image ships silently.** _Fixed: `load_post` now calls `_require_media_file` for a content-relative `image:` (fail loud on a 404, like covers/body images), while an absolute http(s) URL is allowed; `seo._post_image` emits an absolute `image:` verbatim instead of mangling it through `media_url`. Regression tests: `test_content.py::TestImageValidation` + `test_seo.py::TestPostImage`._
   - **What**: `load_post` validates only image *cover* `src` via `_require_media_file`. A standalone `image:` frontmatter key (used by `seo._post_image`) is taken verbatim with no existence check. `_post_image` also runs it through `config.media_url()`, so an absolute URL (`image: https://cdn/x.png`) is mangled into `/blog/assets/media/https://cdn/x.png`.
   - **Why it's a bug**: A code-cover post with `image: assets/missing.png` (or an image-cover post overriding `image:`) ships `og:image`/`twitter:image`/JSON-LD `image` pointing at a 404, with no build error — defeating the project's "fail loud on missing media" guarantee (the `_require_media_file` docstring explicitly warns a missing file "would ship a broken `<img>` and a broken og:image silently"). The verifier does not catch it.
   - **Where**: `scripts/blog/content.py:361` (`image = ...` unvalidated) and `scripts/blog/seo.py:68-80` (`_post_image`); contrast `content.py:344-345` which validates `cover.src`.

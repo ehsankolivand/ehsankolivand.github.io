@@ -368,6 +368,12 @@ def load_post(path: Path, categories: list[Category], base_url: str) -> Post:
     og_description = str(meta.get("ogDescription") or meta.get("socialDescription") or excerpt).strip()
 
     image = str(meta.get("image") or (cover.src if cover.kind == "image" else "")).strip()
+    # A content-relative `image:` (standalone or overriding an image cover) must resolve to a
+    # real file, exactly like a cover/body image — otherwise og:image/twitter:image/JSON-LD ship
+    # a 404 silently (BUG-002). An absolute http(s) URL is allowed and passed through untouched by
+    # seo._post_image (running it through media_url would mangle it into /blog/assets/media/http...).
+    if image and not re.match(r"https?://", image, re.I):
+        _require_media_file(image, source, "image")
 
     body, related_slugs = extract_related(raw_body)
     if body.strip() == "":

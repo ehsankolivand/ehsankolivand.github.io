@@ -8,6 +8,7 @@ anchors (#person / #website) so engines merge the portfolio and blog into one en
 from __future__ import annotations
 import json
 import html
+import re
 
 from . import config
 
@@ -80,13 +81,18 @@ def _post_image(post, base_url: str):
 
     Image covers use measured intrinsic dimensions + the cover alt; an explicit `image:`
     frontmatter (no image cover) uses the standard 1200x630 OG size; otherwise the site
-    default social image with a site-identity alt."""
+    default social image with a site-identity alt. An absolute http(s) `image:` is emitted
+    verbatim; a content-relative one maps to its /blog/assets/media/ URL (BUG-002)."""
+    def resolve(src: str) -> str:
+        if re.match(r"https?://", src, re.I):
+            return src  # absolute URL: emit as-is (media_url would mangle it)
+        return config.abs_url(base_url, config.media_url(src))
+
     if post.cover.kind == "image":
         src = post.image or post.cover.src
-        return (config.abs_url(base_url, config.media_url(src)),
-                post.cover.width, post.cover.height, post.cover.alt or post.title)
+        return (resolve(src), post.cover.width, post.cover.height, post.cover.alt or post.title)
     if post.image:
-        return (config.abs_url(base_url, config.media_url(post.image)), 1200, 630, post.title)
+        return (resolve(post.image), 1200, 630, post.title)
     return (config.abs_url(base_url, config.DEFAULT_OG_IMAGE), 1200, 630, config.SITE_NAME)
 
 

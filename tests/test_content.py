@@ -48,5 +48,21 @@ class TestTagsValidation(unittest.TestCase):
         self.assertEqual(_load("").tags, [])
 
 
+class TestImageValidation(unittest.TestCase):
+    def test_missing_relative_image_fails_loud(self):
+        # BUG-002: a code-cover post with a content-relative image: that doesn't exist must fail
+        # the build (no silent 404 og:image) with a file-identifying message.
+        with self.assertRaises(ContentError) as cm:
+            _load("image: assets/definitely-missing.png\n")
+        msg = str(cm.exception)
+        self.assertIn("my-post.md", msg)
+        self.assertIn("definitely-missing.png", msg)
+
+    def test_absolute_image_url_is_allowed(self):
+        # An absolute http(s) image: is a valid override and is NOT validated as a local file.
+        post = _load("image: https://cdn.example.com/social.png\n")
+        self.assertEqual(post.image, "https://cdn.example.com/social.png")
+
+
 if __name__ == "__main__":
     unittest.main()
