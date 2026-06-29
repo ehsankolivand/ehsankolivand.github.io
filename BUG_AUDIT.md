@@ -45,7 +45,7 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Medium — security-by-construction gap; exploitability depends on browser NUL handling + a hand-crafted/pasted control char in source.
   - **Suggested fix**: Strip/forbid all C0 control chars (`[\x00-\x1f\x7f]`) anywhere in the URL before scheme detection, or reject URLs containing them.
 
-- [ ] **BUG-005 — `tags:` as a non-list, non-string scalar raises an unhandled `TypeError` instead of `ContentError`.**
+- [x] **BUG-005 — `tags:` as a non-list, non-string scalar raises an unhandled `TypeError` instead of `ContentError`.** _Fixed: `load_post` now branches explicitly on str/list and raises a file-identifying `ContentError` for any other type (`tags: 5`, `tags: true`), while still treating falsy values as no tags. Regression tests: `tests/test_content.py::TestTagsValidation` (5 cases)._
   - **What**: In `load_post`, `tags = meta.get("tags") or []`; if `tags` is truthy and not a `str`, it is iterated: `[str(t).strip() for t in tags]`. A scalar like `tags: 5` (int) or `tags: true` is truthy and non-iterable → `TypeError: 'int' object is not iterable`.
   - **Why it's a bug**: Violates "fail loud with a file-identifying message." Instead of a clean `ContentError` naming the file, the build dies with a bare Python traceback that doesn't identify the offending note.
   - **Where**: `scripts/blog/content.py:334-337`.

@@ -331,10 +331,19 @@ def load_post(path: Path, categories: list[Category], base_url: str) -> Post:
         )
 
     excerpt = str(req("excerpt", "description")).strip()
-    tags = meta.get("tags") or []
-    if isinstance(tags, str):
-        tags = [t.strip() for t in tags.split(",") if t.strip()]
-    tags = [str(t).strip() for t in tags]
+    # tags: a YAML list or a comma-separated string. Falsy (absent/empty/0/false) -> no tags.
+    # Any other scalar (e.g. `tags: 5`, `tags: true`) is malformed: fail loud WITH the file name
+    # rather than dying on a bare `TypeError: 'int' object is not iterable` (BUG-005).
+    tags_raw = meta.get("tags") or []
+    if isinstance(tags_raw, str):
+        tags = [t.strip() for t in tags_raw.split(",") if t.strip()]
+    elif isinstance(tags_raw, list):
+        tags = [str(t).strip() for t in tags_raw if str(t).strip()]
+    else:
+        raise ContentError(
+            f"{source}: 'tags' must be a list or a comma-separated string "
+            f"(got {type(tags_raw).__name__} {tags_raw!r})."
+        )
 
     slug = str(meta.get("slug") or slugify(title)).strip()
     if slug != slugify(slug):
