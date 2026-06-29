@@ -6,6 +6,7 @@ real <a> anchors present in the static HTML (Principle I).
 """
 from __future__ import annotations
 from functools import lru_cache
+from urllib.parse import quote
 
 from . import config
 from . import seo
@@ -37,7 +38,13 @@ def render_nav(categories: list[Category], active: str = "All") -> str:
     # "All" first, then declared categories in order
     entries = [("All", "All", config.BLOG_PATH)]
     for c in categories:
-        entries.append((c.name, c.label, f"{config.BLOG_PATH}#cat={c.name}"))
+        # Percent-encode the category in the static `#cat=` href so it matches the hash blog.js
+        # writes via encodeURIComponent (and reads via decodeURIComponent). quote(safe="!*'()")
+        # reproduces encodeURIComponent exactly, so a multi-word category (e.g. "Server Driven")
+        # yields a valid, consistent anchor instead of a malformed one (BUG-016). data-cat keeps
+        # the raw name (the JS compares the decoded hash against it).
+        cat_frag = quote(c.name, safe="!*'()")  # == JS encodeURIComponent(name)
+        entries.append((c.name, c.label, f"{config.BLOG_PATH}#cat={cat_frag}"))
     for name, label, href in entries:
         on = (name == active)
         color = "#34E6A0" if on else "#9FB0AA"

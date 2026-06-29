@@ -117,14 +117,14 @@ _(none found — the build is green on current content and no defect breaks the 
   - **Severity**: Low — cosmetic/hierarchy; semantics + anchors are still correct.
   - **Suggested fix**: Add level-scaled styles (e.g. via `font-size` per `h2/h3/h4` in `blog.css` under `#blog-root`) or distinct partials.
 
-- [ ] **BUG-015 — Index hero hardcodes a "New · Spec-driven Android" badge for a non-existent post.**
+- [x] **BUG-015 — Index hero hardcodes a "New · Spec-driven Android" badge for a non-existent post.** _Fixed: the hero badge is now the evergreen "New · Field notes" (no dangling deleted-seed topic). Static text only; no verifier check asserts hero copy and the blog index template is not the byte-compared portfolio._
   - **What**: The blog index template's hero shows a static badge `New · Spec-driven Android`. There is no such post (`spec-driven-android` is a known *deleted* seed slug), so the badge advertises content that does not exist.
   - **Why it's a bug**: Misleading/stale UI copy; the "New ·" framing implies a recent post that can't be opened.
   - **Where**: `templates/blog/index.html:7`.
   - **Severity**: Low — cosmetic; static marketing text, not a link.
   - **Suggested fix**: Make the badge generic ("New · Field notes") or drive it from the latest post; remove the dangling topic reference.
 
-- [ ] **BUG-016 — `nav-item` category links are not URL-encoded (latent).**
+- [x] **BUG-016 — `nav-item` category links are not URL-encoded (latent).** _Fixed: `render_nav` now percent-encodes the category in the `#cat=` href via `quote(name, safe="!*'()")`, which reproduces `encodeURIComponent` exactly, so it matches the hash blog.js writes/reads; `data-cat` keeps the raw name. Single-word categories are unchanged; a multi-word category (e.g. "Server Driven" → `#cat=Server%20Driven`) now ships a valid, consistent anchor. Regression tests: `tests/test_render.py`._
   - **What**: `render_nav` builds hrefs as `"/blog/#cat=" + c.name` with no percent-encoding, while the JS writes the same hash with `encodeURIComponent(f)`. For a category name containing a space or special char the static href would be malformed and inconsistent with the JS-written hash.
   - **Why it's a bug**: Latent — current categories (Compose/Architecture/Tooling/Crypto) are single words, so it doesn't trigger today, but a multi-word category would ship a broken/inconsistent anchor.
   - **Where**: `scripts/blog/render.py:40` vs `templates/blog/assets/blog.js:118`.
