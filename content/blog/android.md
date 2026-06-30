@@ -13,4 +13,4 @@ Intro paragraph — set up the problem in your own voice.
 
 A paragraph with **bold**, *italic*, `inline code`, and a [link](https://example.com).
 
-hello word 
+hello world 
