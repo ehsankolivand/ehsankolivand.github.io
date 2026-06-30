@@ -1,0 +1,13 @@
+{
+  "contentFolder": "",
+  "repoRoot": "",
+  "enginePath": "",
+  "pythonPath": "/opt/anaconda3/bin/python3",
+  "ciBranch": "main",
+  "defaultCategory": "Tooling",
+  "commitMessageTemplate": "blog: {title} ({slug})",
+  "autoPush": true,
+  "showStatusBar": true,
+  "panelOnboarded": true,
+  "panelShowDescriptions": false
+}

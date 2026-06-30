@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{HEAD}}
+</head>
+<body>
+<div id="blog-root" style="position:relative; min-height:100vh; background:radial-gradient(120% 80% at 50% -10%, #0C1512 0%, #090C0B 45%, #07090A 100%); color:#EDF2EF; font-family:'Manrope',system-ui,sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased;">
+
+  <!-- ===== AMBIENT LIVING BACKGROUND ===== -->
+  <div data-ambient="" aria-hidden="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;">
+    <div style="position:absolute; top:-20%; left:-10%; width:70vw; height:70vw; background:radial-gradient(circle, rgba(52,230,160,0.16), rgba(52,230,160,0) 62%); filter:blur(20px); animation:meshDrift 26s ease-in-out infinite;"></div>
+    <div style="position:absolute; bottom:-30%; right:-15%; width:75vw; height:75vw; background:radial-gradient(circle, rgba(231,210,166,0.10), rgba(231,210,166,0) 60%); filter:blur(24px); animation:meshDrift2 32s ease-in-out infinite;"></div>
+    <div style="position:absolute; top:30%; right:18%; width:38vw; height:38vw; background:radial-gradient(circle, rgba(24,160,106,0.12), rgba(24,160,106,0) 64%); filter:blur(26px); animation:meshDrift 38s ease-in-out infinite reverse;"></div>
+    <div style="position:absolute; inset:0; opacity:.5; background-image:radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px); background-size:22px 22px;"></div>
+    <div style="position:absolute; inset:0; opacity:.55; background:radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,0.55) 100%);"></div>
+  </div>
+
+  <!-- magnetic custom cursor (desktop only, wired in JS) -->
+  <div data-cursor="" style="position:fixed; top:0; left:0; z-index:200; width:34px; height:34px; border:1.5px solid rgba(52,230,160,0.7); border-radius:50%; transform:translate(-100px,-100px); pointer-events:none; transition:width .25s cubic-bezier(.2,0,0,1), height .25s cubic-bezier(.2,0,0,1), background .25s, border-color .25s; mix-blend-mode:screen; display:none;"></div>
+  <div data-cursor-dot="" style="position:fixed; top:0; left:0; z-index:201; width:5px; height:5px; border-radius:50%; background:#34E6A0; transform:translate(-100px,-100px); pointer-events:none; display:none;"></div>
+
+  <!-- ===== SCROLL-REACTOR — cute side companion that reacts to scroll speed ===== -->
+  <div data-reactor="" aria-hidden="true" style="position:fixed; right:16px; top:0; bottom:0; z-index:115; width:64px; pointer-events:none; display:none;">
+    <div style="position:absolute; right:28px; top:15%; bottom:15%; width:2px; border-radius:2px; background:rgba(255,255,255,0.09);"></div>
+    <div data-reactor-fill="" style="position:absolute; right:28px; top:15%; width:2px; height:0; border-radius:2px; background:linear-gradient(180deg,#7DF0C2,#18A06A); box-shadow:0 0 10px rgba(52,230,160,0.7);"></div>
+    <div data-reactor-bot="" style="position:absolute; right:6px; top:15%; transform:translateY(-50%); will-change:top;">
+      <div data-reactor-speed="" style="position:absolute; top:7px; left:-24px; display:flex; flex-direction:column; gap:5px; opacity:0; transition:opacity .12s;">
+        <span style="display:block; width:16px; height:2px; border-radius:2px; background:rgba(52,230,160,0.7);"></span>
+        <span style="display:block; width:10px; height:2px; border-radius:2px; background:rgba(52,230,160,0.5); margin-left:6px;"></span>
+        <span style="display:block; width:14px; height:2px; border-radius:2px; background:rgba(52,230,160,0.6);"></span>
+      </div>
+      <div data-reactor-shout="" style="position:absolute; bottom:42px; left:50%; transform:translateX(-50%) scale(0); white-space:nowrap; padding:4px 9px; border-radius:10px 10px 10px 4px; background:rgba(18,26,24,0.96); border:1px solid rgba(52,230,160,0.4); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:#34E6A0; opacity:0; transition:opacity .12s;">!!</div>
+      <span data-reactor-arm="l" style="position:absolute; top:13px; left:-4px; width:5px; height:14px; border-radius:4px; background:#18A06A; transform-origin:top center; transform:rotate(-22deg);"></span>
+      <span data-reactor-arm="r" style="position:absolute; top:13px; right:-4px; width:5px; height:14px; border-radius:4px; background:#18A06A; transform-origin:top center; transform:rotate(22deg);"></span>
+      <div data-reactor-head="" style="position:relative; width:40px; height:34px; transform-origin:center bottom;">
+        <span style="position:absolute; top:-8px; left:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(-20deg);"></span>
+        <span style="position:absolute; top:-8px; right:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(20deg);"></span>
+        <div style="position:absolute; inset:0; border-radius:20px 20px 9px 9px; background:linear-gradient(160deg,#7DF0C2,#1AA56E); box-shadow:inset 0 2px 0 rgba(255,255,255,0.4), 0 6px 16px rgba(52,230,160,0.4);">
+          <span data-reactor-eye="l" style="position:absolute; top:10px; left:9px; width:7px; height:7px; border-radius:50%; background:#04130D; transform-origin:center;"><span style="position:absolute; top:1px; right:1px; width:2.4px; height:2.4px; border-radius:50%; background:#EDF2EF;"></span></span>
+          <span data-reactor-eye="r" style="position:absolute; top:10px; right:9px; width:7px; height:7px; border-radius:50%; background:#04130D; transform-origin:center;"><span style="position:absolute; top:1px; right:1px; width:2.4px; height:2.4px; border-radius:50%; background:#EDF2EF;"></span></span>
+          <span data-reactor-mouth="" style="position:absolute; bottom:6px; left:50%; transform:translateX(-50%) scaleY(0.2); width:9px; height:9px; border-radius:50%; background:#04130D; opacity:0;"></span>
+          <span data-reactor-sweat="" style="position:absolute; top:-3px; right:-3px; width:7px; height:9px; background:linear-gradient(180deg,#b6ecff,#46a8e0); border-radius:60% 60% 60% 0; transform:rotate(45deg); opacity:0; transition:opacity .15s; box-shadow:0 0 5px rgba(120,210,255,0.6);"></span>
+        </div>
+      </div>
+    </div>
+    <!-- ===== GRADUATION CAP — rides on the mascot's head with a springy scroll-lag (BLOG ONLY) =====
+         Decorative chrome, drawn inline like the rest of the mascot, in the design's own palette.
+         It is a sibling AFTER the rider so it paints on top of the head; aria-hidden via the
+         [data-reactor] ancestor; pointer-events:none; absolutely positioned so it never affects
+         layout (no CLS). The vertical spring-follow + tilt + tassel swing are applied in blog.js.
+         Hidden entirely under prefers-reduced-motion / mobile (the whole [data-reactor] is set to
+         display:none there) — so reduced-motion users get no cap and no animation, exactly like the
+         existing mascot. NOTE: this lives only in the blog template; the portfolio index.html has its
+         own separate, untouched mascot. -->
+    <div data-reactor-cap="" style="position:absolute; right:6px; top:0; width:40px; height:22px; transform-origin:50% 100%; will-change:transform; pointer-events:none;">
+      <div style="position:absolute; left:50%; top:14px; transform:translateX(-50%); width:23px; height:8px; border-radius:6px 6px 5px 5px; background:linear-gradient(180deg,#0e1d16,#070f0b); box-shadow:inset 0 1px 0 rgba(125,240,194,0.28);"></div>
+      <div style="position:absolute; left:50%; top:2px; width:22px; height:22px; transform:translateX(-50%) scaleY(0.6) rotate(45deg); border-radius:4px; background:linear-gradient(135deg,#13281d,#070f0b); border:1px solid rgba(125,240,194,0.55); box-shadow:0 4px 10px rgba(0,0,0,0.55);"></div>
+      <div style="position:absolute; left:50%; top:11px; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:#7DF0C2; box-shadow:0 0 5px rgba(52,230,160,0.7);"></div>
+      <div data-reactor-tassel="" style="position:absolute; left:50%; top:11px; margin-left:13px; transform-origin:top center; will-change:transform;">
+        <span style="position:absolute; top:0; left:-1px; width:2px; height:15px; border-radius:2px; background:linear-gradient(180deg,#E7D2A6,#c9a869);"></span>
+        <span style="position:absolute; top:14px; left:50%; transform:translateX(-50%); width:5.5px; height:8px; border-radius:3px 3px 4px 4px; background:linear-gradient(180deg,#E7D2A6,#b8945a); box-shadow:0 0 5px rgba(231,210,166,0.45);"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOP STATUS BAR ===== -->
+  <header style="position:fixed; top:0; left:0; right:0; z-index:120; display:flex; align-items:center; justify-content:space-between; padding:14px clamp(16px,4vw,48px); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:linear-gradient(180deg, rgba(7,9,10,0.72), rgba(7,9,10,0));">
+    <div style="display:flex; align-items:center; gap:14px;">
+    <div data-logo="" title="✦ tap me a few times…" style="display:flex; align-items:center; gap:11px; cursor:pointer; user-select:none; -webkit-user-select:none;">
+      <div style="position:relative; width:30px; height:30px; border-radius:9px; background:linear-gradient(140deg,#34E6A0,#18A06A); display:grid; place-items:center; box-shadow:0 6px 18px rgba(52,230,160,0.30);">
+        <div style="width:13px; height:13px; border-radius:50%; background:#07090A;"></div>
+        <div style="position:absolute; width:5px; height:5px; border-radius:50%; background:#07090A; top:6px; left:8px;"></div>
+        <div style="position:absolute; width:5px; height:5px; border-radius:50%; background:#07090A; top:6px; right:8px;"></div>
+      </div>
+      <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:.02em; font-size:15px;">Ehsan<span style="color:#34E6A0;">.</span>kolivand</span>
+    </div>
+      <a href="/" data-home="" data-ripple="" data-magnetic="" aria-label="Back to portfolio home" style="display:inline-flex; align-items:center; gap:7px; padding:8px 13px; border-radius:11px; color:#9FB0AA; font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:500; text-decoration:none; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); transition:color .25s, background .25s, border-color .25s;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11l8-7 8 7M6 10v9h12v-9"/></svg>Home</a>
+    </div>
+    <nav data-topcats="" style="display:flex; align-items:center; gap:4px;">
+      {{NAV_ITEMS}}
+    </nav>
+  </header>
+{{MAIN}}
+  </div>
+<script src="/blog/assets/blog.js" defer></script>
+</body>
+</html>

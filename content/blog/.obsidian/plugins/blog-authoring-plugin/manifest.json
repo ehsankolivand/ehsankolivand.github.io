@@ -1,0 +1,9 @@
+{
+  "id": "blog-authoring-plugin",
+  "name": "Blog Authoring",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Author and publish posts for the Ehsan Kolivand blog: scaffold valid notes, place images and pick a cover, insert code snippets, see live validity, and verify→commit→push (desktop only).",
+  "author": "Ehsan Kolivand",
+  "isDesktopOnly": true
+}
