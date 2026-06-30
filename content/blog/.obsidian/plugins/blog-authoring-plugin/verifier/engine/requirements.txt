@@ -1,6 +1,0 @@
-# Build-time dependencies for the Obsidian-driven blog generator.
-# Kept intentionally minimal (Principle II: free, reproducible CI build).
-# Markdown is rendered by an in-house, stdlib-only module (scripts/blog/markdown_render.py)
-# keyed to the design's fixed block vocabulary, so no Markdown library is required —
-# this removes version fragility and keeps output fully deterministic.
-PyYAML==6.0.1

@@ -16,3 +16,9 @@ _site/
 # Python
 __pycache__/
 *.pyc
+
+# Plugin integration spec — local extraction artifact for the separate Obsidian-plugin project; never pushed
+PLUGIN_INTEGRATION_SPEC.md
+
+# Obsidian vault config living inside the content folder — never commit to the public repo
+content/blog/.obsidian/
