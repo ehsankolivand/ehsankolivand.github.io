@@ -3,9 +3,19 @@ title: "Compose Multiplatform 1.12: the iOS fixes that matter most"
 description: "Compose Multiplatform 1.12's headline is mesh gradients. The changes that matter are two quiet iOS fixes: the HorizontalPager swipe-back conflict and ViewModel.onCleared."
 date: 2026-06-30
 category: Compose
-tags: [kotlin-multiplatform, compose-multiplatform, ios, android, mobile-development]
+tags:
+  - kotlin-multiplatform
+  - compose-multiplatform
+  - ios
+  - android
+  - mobile-development
 slug: compose-multiplatform-1-12-ios-fixes
+cover:
+  type: image
+  src: assets/compose-multiplatform.png
+  alt: compose multiplatform
 ---
+![compose multiplatform](assets/compose-multiplatform.png)
 
 Compose Multiplatform 1.12.0-beta01 landed this morning. If you read the changelog top to bottom, the headline features come first: a mesh gradient painter and layer outsets. Both are good additions. Neither is the reason this release matters.
 
