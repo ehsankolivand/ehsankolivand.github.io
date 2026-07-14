@@ -176,6 +176,22 @@ def head_for_post(post, base_url: str, category_label: str) -> str:
     breadcrumb = {"@context": "https://schema.org",
                   **_breadcrumb([("Home", home), ("Field Notes", blog), (post.title, canonical)])}
     L.append(_jsonld(breadcrumb))
+    # JSON-LD: WebSite (emitted LAST, so BlogPosting stays the first ld+json script the verifier
+    # reads). Keyed to the canonical #website @id and referencing the canonical #person publisher,
+    # so each crawlable post URL carries the unified single-entity graph on its own — an AI engine
+    # citing one post page resolves the site + author identity without also crawling the index or
+    # portfolio (Constitution VIII; feature 006). Mirrors the index page's WebSite node verbatim.
+    L.append(_jsonld({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "@id": config.WEBSITE_ID,
+        # WebSite entity name == the portfolio's #website name (AUTHOR_NAME), NOT the blog's
+        # SITE_NAME, so the shared #website @id resolves to ONE name across both surfaces (the
+        # Blog node keeps the "Field Notes" brand). Removes a same-@id name conflict (feature 006).
+        "name": config.AUTHOR_NAME,
+        "url": home,
+        "publisher": {"@id": config.PERSON_ID},
+    }))
     return "\n".join(L)
 
 
@@ -233,7 +249,9 @@ def head_for_index(posts, base_url: str) -> str:
             {
                 "@type": "WebSite",
                 "@id": config.WEBSITE_ID,
-                "name": config.SITE_NAME,
+                # WebSite name unified with the portfolio's #website node (AUTHOR_NAME); the Blog
+                # node above keeps SITE_NAME ("Field Notes"). One @id -> one name (feature 006).
+                "name": config.AUTHOR_NAME,
                 "url": config.abs_url(base_url, "/"),
                 "publisher": {"@id": config.PERSON_ID},
             },

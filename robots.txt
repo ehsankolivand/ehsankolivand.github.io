@@ -7,6 +7,10 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
+# Apple search (Siri, Spotlight, Safari Suggestions) + Apple Intelligence citations
+User-agent: Applebot
+Allow: /
+
 # AI search / citation bots (fetch at query time and can cite this page)
 User-agent: OAI-SearchBot
 Allow: /
