@@ -1,6 +1,46 @@
 <!--
 SYNC IMPACT REPORT
 ==================
+Version change: 1.4.0 → 1.5.0
+Bump rationale: Broadens Principle III (Design Fidelity) and Principle VII (Non-Destructive To
+  The Existing Portfolio) to sanction a bounded "design-fingerprint differentiation" scope on
+  BOTH surfaces, so the site can shed an AI-generated/templated feel while keeping its
+  recognizable brand and every functional guarantee. Feature 005 refreshes the design
+  fingerprint — (1) type-pairing & type treatment/scale within the three already-loaded
+  self-hosted fonts (Space Grotesk, Manrope, JetBrains Mono; NO new web font, NO new
+  @font-face), (2) spacing & vertical rhythm, (3) color-accent usage & discipline via a CSS
+  custom-property token layer that NAMES existing palette colors (NO new color system, NO new
+  hues), (4) component structure & composition (section rhythm, dividers, grid spans, card /
+  quote / code-block / callout composition, heading placement), and (5) motion &
+  microinteraction detailing — on the blog (through the generator ONLY: templates/blog/**,
+  templates/blog/assets/blog.css scoped under #blog-root, scripts/blog/**; never hand-editing
+  generated HTML) and, for the first time in committed source, on the hand-authored portfolio
+  index.html and its own inline styles/assets. Both exceptions are hard-bounded: the robot
+  characters and their reactive animations are PROTECTED identity (reskin-only — never removed,
+  disabled, or flattened); content & information architecture are preserved; the recognizable
+  brand character (dark green/teal palette family, the three fonts, ambient living background,
+  robot mascots, dark-tech-with-warmth mood) stays; the portfolio's two machine-readable marker
+  zones (LATEST-NOTES, PORTFOLIO-FONTS) remain present, correctly paired, and writable by the
+  build; the canonical per-page SEO/GEO metadata and JSON-LD Person/WebSite @id identity stay
+  intact and consistent; and accessibility & Core Web Vitals are preserved or improved (the
+  portfolio restyle MAY fix pre-existing a11y gaps but MUST NOT regress). MINOR: broadens two
+  NON-NEGOTIABLE principles by adding one bounded exception to each (no principle removed or
+  weakened) — exactly parallel to the 1.2.0→1.3.0 and 1.3.0→1.4.0 amendments. Every
+  out-of-scope principle is untouched and remains fully in force: I (SEO-correct static
+  generation), II (GitHub Pages only), IV (Obsidian single source), V (per-page SEO/GEO
+  completeness), VI (accessibility & Core Web Vitals), VIII (machine-readable discovery &
+  single-source publishing). Also extends the Development Workflow Verification gate with the
+  fingerprint-differentiation Definition-of-Done checks (no new @font-face and no new color
+  system on either surface; blog styling confined to the generator + #blog-root with no
+  hand-edited generated HTML; portfolio marker zones + canonical SEO/JSON-LD identity + single
+  h1 intact; robots + reactive animations still present on both surfaces). Templates reviewed
+  and remain compatible (generic Constitution Check references this file; verified directly
+  against plan-template.md L39/L43 "[Gates determined based on constitution file]" +
+  spec-template.md + tasks-template.md, neither of which hardcodes a principle list):
+  ✅ plan-template.md, ✅ spec-template.md, ✅ tasks-template.md,
+  ✅ .claude/skills/speckit-*/SKILL.md.
+
+----- Prior entry -----
 Version change: 1.3.0 → 1.4.0
 Bump rationale: Amends Principle III (Design Fidelity) to add a SECOND bounded exception —
   "Sanctioned body-content semantic styling" — so the blog can render serious technical
@@ -162,9 +202,10 @@ deployment and the project's zero-cost constraint.
 
 ### III. Design Fidelity (NON-NEGOTIABLE)
 
-The existing blog and post-page visual design MUST be preserved exactly. The system
-extracts that design into templates and renders content into it; it MUST NOT restyle or
-regenerate the look.
+The existing blog and post-page visual design MUST be preserved — its recognizable brand
+character kept intact — and MAY change only where a bounded exception below expressly permits
+it. The system extracts that design into templates and renders content into it; outside the
+sanctioned exceptions it MUST NOT restyle or regenerate the look.
 
 - The canonical design source is the existing bundled design (`Ehsan Koolivand - Blog.html`).
   Its markup, inline styles, CSS, keyframes, fonts, mascots, and interaction behaviors are
@@ -199,12 +240,54 @@ regenerate the look.
   outside its two sanctioned zones, no new `@font-face` rule or color system is introduced, and
   the new styling appears only on body-content elements. If any of these bounds cannot be met,
   the styling MUST be reduced until they are; a principle is never weakened to ship it.
+- **Bounded exception — Sanctioned design-fingerprint differentiation (blog).** The blog's
+  visual *fingerprint* MAY be deliberately refreshed to shed templated / AI-generated "slop"
+  tells (e.g. gradient-clipped headline text, fake-terminal/OS window chrome on code blocks,
+  decorative status pills, coloured glow-on-dark, mono-cap eyebrows on every section, uniform
+  card grids, "the page never settles" reveal-on-everything). ONLY these five fingerprint
+  elements MAY change: **(1) type-pairing & type treatment/scale** — restricted to the three
+  already-loaded self-hosted fonts (Space Grotesk, Manrope, JetBrains Mono); NO new web font
+  and NO new `@font-face` rule; **(2) spacing & vertical rhythm**; **(3) colour-accent usage &
+  discipline** — a CSS custom-property token layer MAY be introduced that NAMES the design
+  bundle's EXISTING palette colours, but it MUST NOT introduce a new colour system or new hues;
+  **(4) component structure & composition** — section rhythm, dividers, grid spans, and the
+  composition of cards, blockquotes, code blocks, callouts, and heading placement; and **(5)
+  motion & microinteraction detailing**. It is permitted ONLY when ALL of the following hold:
+  - **(a) Generator-only, #blog-root-scoped, never hand-edited output.** The change flows ONLY
+    through the generator — `templates/blog/**`, `templates/blog/assets/blog.css` (scoped to
+    `#blog-root`), and `scripts/blog/**` — so the build reproduces it. No generated HTML is
+    ever hand-edited (Principle IV).
+  - **(b) Deterministic & dependency-free.** It is produced deterministically at build time
+    with no new runtime/build/CI dependency, no client-only content, and no weakening of the
+    renderer's security posture (Principles I & II).
+  - **(c) Robots preserved.** It MUST NOT remove, disable, or flatten the robot characters and
+    their reactive animations (the scroll-reactor + graduation-cap rider, the hero companion,
+    the robot author-avatar, the magnetic cursor, `[data-ripple]`/`[data-magnetic]`, and
+    reveal-on-scroll). These are protected identity; they MAY be reskinned to sit inside the
+    new fingerprint but MUST stay present and reactive.
+  - **(d) Brand, content & IA preserved.** It keeps the recognizable brand character (the dark
+    green/teal palette family, the three fonts, the ambient living background, the robot
+    mascots, the dark-tech-with-warmth mood) and preserves the content and information
+    architecture. Accessibility & Core Web Vitals (Principle VI) and per-page SEO/GEO
+    (Principle V) remain fully in force.
+  The Definition-of-Done verifier MUST assert this stayed in bounds: no new `@font-face` rule
+  and no new colour system is introduced, the blog fingerprint change is confined to the
+  generator + `#blog-root` with no hand-edited generated HTML, and the robots and their
+  reactive animations are still present. If any bound cannot be met, the change MUST be reduced
+  until it can; a principle is never weakened to ship it. (The prior two exceptions above —
+  body-content semantic styling, and the portfolio being untouched by the blog system — remain
+  unchanged; the portfolio's own fingerprint is governed by Principle VII, not this one.)
 
 Rationale: The design was produced deliberately; the engineering task is content
 generation into a fixed design, not redesign. Extending the design's own tokens to present
 newly-supported content (highlighted code, callouts, footnotes, refined quotes/tables) is not a
 redesign — it renders serious technical writing within the established look rather than inventing
 a new one, and the bounds above keep every pixel outside that body content faithful to the bundle.
+The later fingerprint-differentiation exception is a distinct, deliberate act: the design had
+drifted into a common, templated "AI-generated" look, and shedding those specific tells — within
+the existing fonts and palette, through the generator, with the robots and brand kept — makes the
+site distinctive again without becoming a different site. It is a bounded refresh of the same
+identity, not a rebrand.
 
 ### IV. Obsidian As The Single Content Source (NON-NEGOTIABLE)
 
@@ -257,8 +340,9 @@ signals; they are cheap to keep and expensive to retrofit.
 The existing portfolio and its prior SEO work MUST stay intact.
 
 - `index.html` (the portfolio bundle) and its prior SEO pass MUST NOT be modified or
-  regenerated by this system, with **two bounded, marker-delimited exceptions** and no
-  others:
+  regenerated by this system, with **three bounded exceptions** and no others — the first two
+  marker-delimited and build-managed, the third a one-time design-fingerprint restyle committed
+  to source:
   - **(1) Managed "Field notes" region** — a single region in the deployed copy,
     delimited by `<!--LATEST-NOTES:START-->` / `<!--LATEST-NOTES:END-->` markers, is
     deterministically regenerated by the build from the latest posts so the homepage links
@@ -283,6 +367,48 @@ The existing portfolio and its prior SEO work MUST stay intact.
     remains recoverable from the committed baseline. If any part of this proof cannot be
     made to pass deterministically and offline, the optimization MUST be deferred and the
     fonts left untouched (prove-or-defer); a principle is never weakened to ship it.
+  - **(3) Sanctioned portfolio design-fingerprint differentiation** — a ONE-TIME, deliberate
+    restyle of the hand-authored `index.html` and its own inline stylesheet/assets MAY be
+    committed to source to shed the same templated / AI-generated "slop" tells the blog sheds
+    (gradient-clipped headline text, fake terminal/OS window chrome, decorative status pills,
+    emoji-as-icons, invented skill-percentage bars, coloured glow-on-dark, numbered eyebrows on
+    every section, reveal-on-everything). Unlike exceptions (1) and (2), this edits the
+    committed portfolio bytes broadly (not a marker zone) — but ONLY the same five fingerprint
+    elements as Principle III's blog exception: **(i) type-pairing & treatment** within the
+    existing three fonts (NO new web font, NO new `@font-face`); **(ii) spacing & vertical
+    rhythm**; **(iii) colour-accent discipline** within the EXISTING palette (NO new colour
+    system or hues); **(iv) component structure & composition**; and **(v) motion &
+    microinteraction detailing**. It is permitted ONLY when ALL of the following hold:
+    - **(a) Marker zones intact.** Both machine-readable zones —
+      `<!--LATEST-NOTES:START-->`/`<!--LATEST-NOTES:END-->` and
+      `<!--PORTFOLIO-FONTS:START-->`/`<!--PORTFOLIO-FONTS:END-->` — MUST remain present,
+      correctly paired, and functional, so the build can still regenerate the "Field notes"
+      region and the font-data zone stays usable. The build still copies `index.html` verbatim
+      (it does not regenerate the page).
+    - **(b) Content & IA preserved.** The page's content and information architecture — its
+      sections and their arc (hero → about → skills → experience → writing → contact), copy
+      meaning, headings, and links — are preserved. Copy may be re-typeset and punctuation
+      refined, but its meaning is not rewritten.
+    - **(c) SEO/GEO identity intact.** All per-page SEO metadata and structured data in
+      `<head>` (title, meta description, canonical URL, Open Graph, Twitter card, and the
+      JSON-LD Person / WebSite graph keyed by the canonical `…/#person` and `…/#website`
+      `@id`s) stay intact and identity-consistent (Principles V & VIII).
+    - **(d) Robots preserved.** The robot characters and their reactive animations (the
+      scroll-reactor with its shouts, the android mascot, the chase gag, the logo-tap easter
+      egg, the walk/stride bots, and the blink/hover/cursor/parallax behaviours) MUST NOT be
+      removed, disabled, or flattened. They are protected identity; they MAY be reskinned to
+      sit inside the new fingerprint but MUST stay present and reactive.
+    - **(e) Brand preserved; a11y & CWV preserved or improved.** The recognizable brand
+      character is kept, and accessibility & Core Web Vitals (Principle VI) are preserved or
+      improved — this restyle MAY fix pre-existing a11y gaps (e.g. an unlabelled landmark, a
+      footer nested out of `contentinfo`) but MUST NOT regress: compositor-only
+      transform/opacity motion, `prefers-reduced-motion` honoured, exactly one `<h1>`, semantic
+      landmarks, and decorative art kept `aria-hidden`.
+    This exception does NOT authorize changing the hosting model, the content pipeline, or any
+    out-of-scope principle. The Definition-of-Done verifier MUST assert: both marker zones still
+    present and correctly paired, the canonical SEO/JSON-LD identity intact, exactly one `<h1>`
+    preserved, and the robots and their reactive animations still present. If any bound cannot
+    be met, the restyle MUST be reduced until it can; a principle is never weakened to ship it.
 - The blog MUST live in its own path (`/blog/`) and write only blog files plus the shared
   `sitemap.xml` entry; it MUST NOT overwrite unrelated files.
 - Shared root companion files (`robots.txt`, `site.webmanifest`, favicons, `.nojekyll`)
@@ -367,8 +493,14 @@ the served site always correct.
   HTML, no new web font or color system introduced, and everything outside the blog body content
   byte-faithful) — the Atom feed and `llms.txt` are present and list every published post, structured
   data references the canonical Person/WebSite `@id`, and no committed source file carries
-  an internal link to a nonexistent page (Principle VIII). These checks are encoded in the
-  post-build verifier.
+  an internal link to a nonexistent page (Principle VIII). Where the sanctioned design-
+  fingerprint differentiation is applied (Principles III & VII), the verifier ALSO proves it
+  stayed in bounds: no new `@font-face` rule and no new colour system is introduced on either
+  surface; the blog fingerprint change lives only in the generator + `#blog-root` with no
+  hand-edited generated HTML; the portfolio's two marker zones remain present and correctly
+  paired, its canonical SEO/JSON-LD Person/WebSite `@id` identity is intact, and it keeps
+  exactly one `<h1>`; and the robot characters and their reactive animations are still present
+  on both surfaces. These checks are encoded in the post-build verifier.
 - **No silent degradation**: A build error MUST be fixed at the root cause or reported
   honestly; a feature MUST NOT be disabled or a principle weakened to silence an error.
 - **Example content**: At least one real example post authored as an Obsidian note MUST
@@ -393,4 +525,4 @@ for what the blog system MUST and MUST NOT do.
   `research.md`, and `quickstart.md`; those documents MUST defer to this constitution on
   any conflict.
 
-**Version**: 1.4.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-06-29
+**Version**: 1.5.0 | **Ratified**: 2026-06-27 | **Last Amended**: 2026-07-14
