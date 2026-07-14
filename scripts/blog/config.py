@@ -93,6 +93,7 @@ ROOT_COPY_ALLOWLIST = [
     "icon-192.png",
     "icon-512.png",
     "og-image.png",
+    "googledd54a8fe7383f34f.html",  # Google Search Console URL-prefix HTML-file verification token
 ]
 # Note: .nojekyll is NOT copied here — it is always written by the build (single source of
 # truth) so it exists for GitHub Pages even if the repo root lacks it.
