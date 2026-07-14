@@ -150,9 +150,10 @@ def main(argv=None) -> int:
             except json.JSONDecodeError as e:
                 ok(False, f"{p.slug}: JSON-LD invalid: {e}")
         # rendered body content present, scoped to the body container so the dek <p>
-        # can't satisfy it (every body block partial carries data-reveal)
+        # can't satisfy it. (005: body block partials no longer carry data-reveal — the
+        # per-element reveal was shed as a slop tell — so detect a real body block element.)
         mbody = re.search(r"<!-- body blocks -->(.*?)<!-- end / signature -->", h, re.S)
-        ok(bool(mbody) and "data-reveal" in mbody.group(1),
+        ok(bool(mbody) and bool(re.search(r"<(?:p|h2|h3|h4|pre|ul|ol|blockquote|figure|table|aside)[ >]", mbody.group(1))),
            f"{p.slug}: no rendered body content in the body container")
         # related "more notes" resolve to real anchors when declared
         if p.related:
@@ -558,6 +559,62 @@ def main(argv=None) -> int:
     ok("javascript:" not in _render("[x](javascript:alert(1))"), "fixture: javascript: URL not neutralized")
     ok("{{BODY}}" in _render("```\n{{BODY}}\n```"), "fixture: {{TOKEN}} injection not inert in a code block")
     ok("&lt;/span&gt;" in _render("```python\nx = '</span>'\n```"), "fixture: </span> in code not escaped")
+
+    # ============================================================================
+    # feature 005: design-fingerprint differentiation IN-BOUNDS proof (constitution
+    # v1.5.0, Principles III & VII bounded exceptions). Proves the fingerprint change
+    # stayed within scope on BOTH surfaces — no new font/colour system, tokens shared,
+    # tells shed, marker zones + canonical identity + single h1 intact, robots present.
+    # ============================================================================
+    if css.exists():
+        ct = css.read_text(encoding="utf-8")
+        # (a) shared token layer scoped to #blog-root; names existing palette hexes only
+        ok("#blog-root" in ct and "--signal" in ct, "005: blog token layer not present/scoped to #blog-root")
+        for tok in ("--signal:#34E6A0", "--sand:#E7D2A6", "--paper:#07090A", "--ink:#EDF2EF"):
+            ok(tok.replace(" ", "") in ct.replace(" ", ""), f"005: blog token {tok} missing")
+        # (b) fingerprint classes shipped (editorial index, code frame, divider, pressed-ink)
+        for cls in (".cf", ".ei__row", ".fa-rule", ".press"):
+            ok(cls in ct, f"005: blog.css missing fingerprint class {cls}")
+        # (c) NO new @font-face family beyond the three fixed faces
+        fams = set(re.findall(r"@font-face\s*\{[^}]*?font-family:\s*'([^']+)'", ct, re.S))
+        ok(fams <= {"JetBrains Mono", "Manrope", "Space Grotesk"},
+           f"005: blog.css introduced a new @font-face family: {sorted(fams)}")
+    repo_index = repo / "index.html"
+    if repo_index.exists():
+        it = repo_index.read_text(encoding="utf-8")
+        # (d) the SAME named token layer on the portfolio (#ek-root) — one shared fingerprint
+        ok("#ek-root" in it, "005: portfolio token layer scope #ek-root missing")
+        for tok in ("--signal:#34E6A0", "--sand:#E7D2A6", "--paper:#07090A"):
+            ok(tok.replace(" ", "") in it.replace(" ", ""), f"005: portfolio token {tok} missing (shared fingerprint)")
+        # (e) exactly one <h1>; gradient-clip headline tell shed
+        ok(it.count("<h1") == 1, f"005: portfolio expected exactly one <h1> (found {it.count('<h1')})")
+        ok("background-clip:text" not in it, "005: portfolio still uses a gradient-clipped headline (slop tell)")
+        # (f) both marker zones present + paired exactly once
+        for mk in ("<!--LATEST-NOTES:START-->", "<!--LATEST-NOTES:END-->",
+                   "<!--PORTFOLIO-FONTS:START-->", "<!--PORTFOLIO-FONTS:END-->"):
+            ok(it.count(mk) == 1, f"005: portfolio marker {mk} not present exactly once")
+        # (g) canonical Person/WebSite @id identity intact
+        ok('#person"' in it and '#website"' in it, "005: portfolio canonical @id identity missing")
+        # (h) protected robots present on the portfolio (reskin-only, never removed)
+        for hook in ("data-reactor", "data-chase", "data-logo", "data-cursor", "data-parallax"):
+            ok(hook in it, f"005: portfolio robot hook {hook} missing (must be preserved)")
+    # (i) protected robots present on the blog templates: the shell carries the
+    # scroll-reactor + magnetic cursor + ambient background; the index carries the
+    # hero companion; the article carries the robot author-avatar.
+    base_tpl = repo / "templates" / "blog" / "base.html"
+    if base_tpl.exists():
+        bt = base_tpl.read_text(encoding="utf-8")
+        for hook in ("data-reactor", "data-reactor-cap", "data-cursor", "data-ambient"):
+            ok(hook in bt, f"005: blog shell robot hook {hook} missing (must be preserved)")
+    idx_tpl = repo / "templates" / "blog" / "index.html"
+    if idx_tpl.exists():
+        ok("data-companion" in idx_tpl.read_text(encoding="utf-8"),
+           "005: blog hero companion (data-companion) missing (must be preserved)")
+    # (j) built blog index sheds the gradient-clip headline
+    bidx = out / "blog" / "index.html"
+    if bidx.exists():
+        ok("background-clip:text" not in bidx.read_text(encoding="utf-8"),
+           "005: built blog index still uses a gradient-clipped headline")
 
     # ---- report ----
     print(f"verify_build: {checks} checks, {len(errors)} failure(s)")

@@ -55,15 +55,24 @@
     }
 
     /* ---------- scroll reveals (rect-based) ---------- */
+    /* Two reveal channels: legacy per-element [data-reveal] (now only section headers/hero/
+     * signature — the body content is shed to always-present) and the 005 section-level
+     * [data-fa-reveal] (one draw per section, .is-in toggles the CSS transition). */
     var reveal = function (el) { el.style.opacity = "1"; el.style.transform = "none"; el.style.filter = "none"; el.setAttribute("data-shown", ""); };
+    var faReveal = function (el) { el.classList.add("is-in"); };
     if (reduce) {
       Array.prototype.forEach.call(root.querySelectorAll("[data-reveal]"), reveal);
+      Array.prototype.forEach.call(root.querySelectorAll("[data-fa-reveal]"), faReveal);
     } else {
       var revealCheck = function () {
         var vh = window.innerHeight || document.documentElement.clientHeight;
         Array.prototype.forEach.call(root.querySelectorAll("[data-reveal]:not([data-shown])"), function (el) {
           var b = el.getBoundingClientRect();
           if (b.top < vh * 0.94 && b.bottom > 0) reveal(el);
+        });
+        Array.prototype.forEach.call(root.querySelectorAll("[data-fa-reveal]:not(.is-in)"), function (el) {
+          var b = el.getBoundingClientRect();
+          if (b.top < vh * 0.94 && b.bottom > 0) faReveal(el);
         });
       };
       var rafR = 0;
@@ -79,11 +88,10 @@
         el.addEventListener("pointerleave", function () { el.style.transition = "transform .5s " + EASE; el.style.transform = "translate(0,0)"; setTimeout(function () { el.style.transition = ""; }, 500); });
       });
     }
-    Array.prototype.forEach.call(root.querySelectorAll("[data-card]"), function (card) {
-      var glow = card.querySelector("[data-cardglow]"), arrow = card.querySelector("[data-cardarrow]");
-      card.addEventListener("pointerenter", function () { card.style.transform = "translateY(-5px)"; card.style.boxShadow = "0 26px 64px rgba(0,0,0,0.5)"; card.style.borderColor = "rgba(52,230,160,0.4)"; if (glow) glow.style.opacity = "1"; if (arrow) arrow.style.transform = "translate(3px,-1px)"; if (card.style.background.indexOf("255,255,255,0.025") > -1) card.style.background = "rgba(52,230,160,0.06)"; });
-      card.addEventListener("pointerleave", function () { card.style.transform = "none"; card.style.boxShadow = ""; card.style.borderColor = ""; if (glow) glow.style.opacity = "0"; if (arrow) arrow.style.transform = "none"; if (card.style.background.indexOf("52,230,160,0.06") > -1) card.style.background = "rgba(255,255,255,0.025)"; });
-    });
+    /* 005: card hover is now a SINGLE signal driven by CSS (`.ei__row:hover` background +
+     * title tint). The old 6-property JS mutation (translateY + shadow + border + bg + glow +
+     * arrow) is shed with its now-absent [data-cardglow]/[data-cardarrow] targets. The custom
+     * cursor still grows over [data-card] (handled in the cursor block above). */
 
     /* ---------- category nav: active state + filtering (index = progressive enhancement) ---------- */
     var isIndex = !!root.querySelector('[data-screen-label="Blog Index"]');

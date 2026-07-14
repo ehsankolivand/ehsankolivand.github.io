@@ -306,6 +306,16 @@
 </style>
 <!--PORTFOLIO-FONTS:END-->
 <style>
+  #ek-root{
+    --paper:#07090A; --paper-2:#0C1512; --ink:#EDF2EF; --muted:#9FB0AA; --muted-2:#828D86;
+    --signal:#34E6A0; --green-deep:#18A06A; --green-deep-2:#1AA56E; --mint:#7DF0C2;
+    --sand:#E7D2A6; --sand-deep:#CBB07A;
+    --sem-blue:#46a8e0; --sem-yellow:#ffd166; --sem-purple:#b388ff; --sem-coral:#ff8a80;
+    --rule:rgba(231,210,166,0.14); --rule-strong:rgba(231,210,166,0.24);
+    --font-display:'Space Grotesk',sans-serif; --font-body:'Manrope',system-ui,sans-serif; --font-mono:'JetBrains Mono',monospace;
+    --space-2xs:8px; --space-xs:12px; --space-sm:16px; --space-md:24px; --space-lg:32px; --space-xl:48px; --space-2xl:72px; --space-3xl:112px;
+    --ease-out:cubic-bezier(.16,1,.3,1); --dur-1:120ms; --dur-2:220ms; --dur-3:420ms;
+  }
   *{ box-sizing:border-box; }
   html{ scroll-behavior:smooth; }
   body{ margin:0; background:#07090A; }
@@ -375,7 +385,7 @@
 </style>
 </head>
 <body>
-<div id="ek-root" style="position:relative; min-height:100vh; background:radial-gradient(120% 80% at 50% -10%, #0C1512 0%, #090C0B 45%, #07090A 100%); color:#EDF2EF; font-family:'Manrope',system-ui,sans-serif; overflow-x:hidden; -webkit-font-smoothing:antialiased;">
+<div id="ek-root" style="position:relative; min-height:100vh; background:radial-gradient(120% 80% at 50% -10%, #0C1512 0%, #090C0B 45%, #07090A 100%); color:#EDF2EF; font-family:'Manrope',system-ui,sans-serif; overflow-x:clip; -webkit-font-smoothing:antialiased;">
 <a href="#main" class="skip-link">Skip to main content</a>
 
   <!-- ===== AMBIENT LIVING BACKGROUND ===== -->
@@ -403,7 +413,7 @@
         <span style="display:block; width:14px; height:2px; border-radius:2px; background:rgba(52,230,160,0.6);"></span>
       </div>
       <!-- shout bubble -->
-      <div data-reactor-shout="" style="position:absolute; bottom:42px; left:50%; transform:translateX(-50%) scale(0); white-space:nowrap; padding:4px 9px; border-radius:10px 10px 10px 4px; background:rgba(18,26,24,0.96); border:1px solid rgba(52,230,160,0.4); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:#34E6A0; opacity:0; transition:opacity .12s;">!!</div>
+      <div data-reactor-shout="" style="position:absolute; bottom:42px; left:50%; transform:translateX(-50%) scale(0); white-space:nowrap; padding:4px 9px; border-radius:10px 10px 10px 4px; background:var(--paper-2); border:1px solid var(--rule-strong); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:#E7D2A6; opacity:0; transition:opacity .12s;">!!</div>
       <!-- arms -->
       <span data-reactor-arm="l" style="position:absolute; top:13px; left:-4px; width:5px; height:14px; border-radius:4px; background:#18A06A; transform-origin:top center; transform:rotate(-22deg);"></span>
       <span data-reactor-arm="r" style="position:absolute; top:13px; right:-4px; width:5px; height:14px; border-radius:4px; background:#18A06A; transform-origin:top center; transform:rotate(22deg);"></span>
@@ -411,7 +421,7 @@
       <div data-reactor-head="" style="position:relative; width:40px; height:34px; transform-origin:center bottom;">
         <span style="position:absolute; top:-8px; left:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(-20deg);"></span>
         <span style="position:absolute; top:-8px; right:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(20deg);"></span>
-        <div style="position:absolute; inset:0; border-radius:20px 20px 9px 9px; background:linear-gradient(160deg,#7DF0C2,#1AA56E); box-shadow:inset 0 2px 0 rgba(255,255,255,0.4), 0 6px 16px rgba(52,230,160,0.4);">
+        <div style="position:absolute; inset:0; border-radius:20px 20px 9px 9px; background:linear-gradient(160deg,#CBB07A,#0C1512); border:1px solid var(--rule-strong); box-shadow:inset 0 1px 0 rgba(231,210,166,0.3), 0 6px 16px rgba(0,0,0,0.4);">
           <span data-reactor-eye="l" style="position:absolute; top:10px; left:9px; width:7px; height:7px; border-radius:50%; background:#04130D; transform-origin:center;"><span style="position:absolute; top:1px; right:1px; width:2.4px; height:2.4px; border-radius:50%; background:#EDF2EF;"></span></span>
           <span data-reactor-eye="r" style="position:absolute; top:10px; right:9px; width:7px; height:7px; border-radius:50%; background:#04130D; transform-origin:center;"><span style="position:absolute; top:1px; right:1px; width:2.4px; height:2.4px; border-radius:50%; background:#EDF2EF;"></span></span>
           <span data-reactor-mouth="" style="position:absolute; bottom:6px; left:50%; transform:translateX(-50%) scaleY(0.2); width:9px; height:9px; border-radius:50%; background:#04130D; opacity:0;"></span>
@@ -431,7 +441,7 @@
       </div>
       <span style="font-family:'Space Grotesk',sans-serif; font-weight:600; letter-spacing:.02em; font-size:15px;">Ehsan<span style="color:#34E6A0;">.</span>Kolivand</span>
     </div>
-    <nav data-topnav="" style="display:flex; align-items:center; gap:4px;">
+    <nav data-topnav="" aria-label="Primary" style="display:flex; align-items:center; gap:4px;">
       <!-- desktop nav links, wired in JS -->
     </nav>
   </header>
@@ -439,7 +449,7 @@
   <main id="main">
   <!-- ===== HERO ===== -->
   <!-- EDIT: hero name / title / positioning line -->
-  <section id="sec-hero" data-screen-label="Hero" aria-labelledby="hero-h" style="position:relative; z-index:2; min-height:100vh; display:flex; flex-direction:column; justify-content:center; padding:120px clamp(20px,6vw,96px) 80px; max-width:1320px; margin:0 auto;">
+  <section id="sec-hero" data-screen-label="Hero" aria-labelledby="hero-h" style="position:relative; z-index:2; min-height:88vh; display:flex; flex-direction:column; justify-content:center; padding:120px clamp(20px,6vw,96px) 80px; max-width:1320px; margin:0 auto;">
     <div style="display:inline-flex; align-items:center; gap:9px; align-self:flex-start; padding:7px 14px 7px 11px; border-radius:999px; border:1px solid rgba(255,255,255,0.09); background:rgba(255,255,255,0.035); backdrop-filter:blur(8px); font-family:'JetBrains Mono',monospace; font-size:12px; color:#9FB0AA; animation:composeIn .8s cubic-bezier(.2,0,0,1) both; animation-delay:.05s;">
       <span style="width:7px; height:7px; border-radius:50%; background:#34E6A0; box-shadow:0 0 10px #34E6A0;"></span>
       Open to senior roles · Istanbul
@@ -449,7 +459,7 @@
 
     <h1 id="hero-h" style="margin:6px 0 0; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(52px,11vw,158px); line-height:0.92; letter-spacing:-0.035em; color:#EDF2EF;">
       <span style="display:block; animation:composeIn 1s cubic-bezier(.2,0,0,1) both; animation-delay:.30s;">Ehsan</span>
-      <span style="display:block; background:linear-gradient(100deg,#34E6A0 0%,#7DF0C2 40%,#E7D2A6 100%); -webkit-background-clip:text; background-clip:text; color:transparent; animation:composeIn 1s cubic-bezier(.2,0,0,1) both; animation-delay:.46s;">Kolivand<span style="-webkit-text-fill-color:#34E6A0; color:#34E6A0;">.</span></span>
+      <span style="display:block; color:#EDF2EF; animation:composeIn 1s cubic-bezier(.2,0,0,1) both; animation-delay:.46s;">Kolivand<span style="color:#34E6A0;">.</span></span>
     </h1>
 
     <div style="display:flex; flex-wrap:wrap; align-items:baseline; gap:14px 22px; margin-top:30px; animation:composeIn 1s cubic-bezier(.2,0,0,1) both; animation-delay:.62s;">
@@ -462,7 +472,7 @@
     <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-top:46px; animation:composeIn 1s cubic-bezier(.2,0,0,1) both; animation-delay:.78s;">
       <!-- EDIT: primary CTA target -->
       <a href="#sec-contact" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:11px; padding:16px 26px; border-radius:16px; background:linear-gradient(135deg,#34E6A0,#18A06A); color:#04130D; font-weight:700; font-size:15px; text-decoration:none; box-shadow:0 14px 38px rgba(52,230,160,0.32); cursor:pointer;">
-        Let's build something
+        Let’s build something
         <span style="display:inline-grid; place-items:center; width:24px; height:24px; border-radius:50%; background:rgba(4,19,13,0.18);">→</span>
       </a>
       <a href="#sec-work" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:9px; padding:16px 24px; border-radius:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.10); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none; cursor:pointer;">View work</a>
@@ -471,14 +481,14 @@
     <!-- companion micro-bot + scroll cue -->
     <div data-herocue="" style="position:absolute; right:clamp(20px,6vw,96px); bottom:64px; display:flex; flex-direction:column; align-items:center; gap:16px;">
       <div data-companion="" aria-hidden="true" title="hello" style="animation:botBob 4s ease-in-out infinite;">
-        <div style="position:relative; width:54px; height:42px; border-radius:16px 16px 12px 12px; background:linear-gradient(160deg,#34E6A0,#18A06A); box-shadow:0 10px 26px rgba(52,230,160,0.28);">
+        <div style="position:relative; width:54px; height:42px; border-radius:16px 16px 12px 12px; background:linear-gradient(160deg,#CBB07A,#0C1512); border:1px solid var(--rule-strong); box-shadow:0 10px 26px rgba(0,0,0,0.32);">
           <div style="position:absolute; top:-13px; left:11px; width:2px; height:13px; background:#34E6A0; transform-origin:bottom; animation:antTwitch 3s ease-in-out infinite;"><div style="position:absolute; top:-4px; left:-2px; width:6px; height:6px; border-radius:50%; background:#7DF0C2;"></div></div>
           <div style="position:absolute; top:-13px; right:11px; width:2px; height:13px; background:#34E6A0; transform-origin:bottom; animation:antTwitch 3s ease-in-out infinite reverse;"><div style="position:absolute; top:-4px; left:-2px; width:6px; height:6px; border-radius:50%; background:#7DF0C2;"></div></div>
           <div style="position:absolute; top:15px; left:13px; width:8px; height:8px; border-radius:50%; background:#04130D; animation:botEye 5s ease-in-out infinite;"></div>
           <div style="position:absolute; top:15px; right:13px; width:8px; height:8px; border-radius:50%; background:#04130D; animation:botEye 5s ease-in-out infinite;"></div>
         </div>
       </div>
-      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; color:#66756F;">
+      <div style="display:flex; flex-direction:column; align-items:center; gap:6px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.16em; color:#8A9A92;">
         SCROLL
         <span style="font-size:14px; animation:scrollBob 1.8s ease-in-out infinite;">↓</span>
       </div>
@@ -490,62 +500,63 @@
   <section id="sec-about" data-screen-label="About" aria-labelledby="about-h" style="position:relative; z-index:2; max-width:1320px; margin:0 auto; padding:clamp(70px,11vw,150px) clamp(20px,6vw,96px);">
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr)); gap:clamp(40px,6vw,80px); align-items:start;">
       <div>
-        <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; color:#34E6A0; text-transform:uppercase;">
-          <span style="width:26px; height:1px; background:#34E6A0;"></span>01 — About
+        <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); display:flex; align-items:center; gap:12px; max-width:560px;">
+          <span aria-hidden="true" style="width:8px; height:8px; background:var(--signal);"></span>
+          <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule-strong);"></span>
         </div>
         <h2 id="about-h" data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .08s, transform .9s cubic-bezier(.2,0,0,1) .08s; margin:22px 0 0; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(28px,4.4vw,52px); line-height:1.08; letter-spacing:-0.02em;">
           I build apps for <span style="color:#34E6A0;">banking, crypto &amp; fintech</span> — and make the framework to accelerate the pace of development.
         </h2>
-        <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .16s, transform .9s cubic-bezier(.2,0,0,1) .16s; margin:30px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
+        <p style="margin:30px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
           Years of experience in developing Android apps in fintech led me to impactful projects such as <span style="color:#EDF2EF;">NAP</span> — a greenfield digital-banking app for Bank Maskan.
         </p>
-        <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .18s, transform .9s cubic-bezier(.2,0,0,1) .18s; margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
+        <p style="margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
           I lead teams with a multi-module Clean Architecture codebase, and later ran the <span style="color:#EDF2EF;">Nobifi</span> DeFi suite for the largest CEX in my country.
         </p>
-        <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .20s, transform .9s cubic-bezier(.2,0,0,1) .20s; margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
+        <p style="margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
           Today I focus on agentic, <span style="color:#EDF2EF;">spec-driven</span> engineering to build deterministic code generators, and Figma plugins.
         </p>
-        <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .22s, transform .9s cubic-bezier(.2,0,0,1) .22s; margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
-          I also focus on context-engineering workflows to accelerate developers' productive workflow while retaining the structure of AI generated code.
+        <p style="margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
+          I also focus on context-engineering workflows to accelerate developers’ productive workflow while retaining the structure of AI generated code.
         </p>
-        <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .24s, transform .9s cubic-bezier(.2,0,0,1) .24s; margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
+        <p style="margin:16px 0 0; max-width:560px; font-size:clamp(15px,1.8vw,18px); line-height:1.75; color:#9FB0AA;">
           I am based in <span style="color:#EDF2EF;">Istanbul, Turkey,</span> and look for senior Android positions across Europe and other continents.
         </p>
-        <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .24s, transform .9s cubic-bezier(.2,0,0,1) .24s; display:flex; flex-wrap:wrap; gap:10px; margin-top:30px;">
+        <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:30px;">
           <!-- EDIT: about tags -->
-          <span style="padding:8px 14px; border-radius:999px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); font-size:13px; color:#9FB0AA;">🇹🇷 Istanbul</span>
-          <span style="padding:8px 14px; border-radius:999px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); font-size:13px; color:#9FB0AA;">Remote / EU</span>
+          <span style="display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:13px; color:#9FB0AA;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34E6A0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>Istanbul</span>
+          <span style="padding:8px 14px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:13px; color:#9FB0AA;">Remote / EU</span>
           <span style="padding:8px 14px; border-radius:999px; background:rgba(52,230,160,0.10); border:1px solid rgba(52,230,160,0.28); font-size:13px; color:#34E6A0;">● Open to work</span>
         </div>
       </div>
 
       <!-- spec-sheet widget -->
-      <div data-reveal="" style="opacity:0; transform:translateY(40px); transition:opacity 1s cubic-bezier(.2,0,0,1) .2s, transform 1s cubic-bezier(.2,0,0,1) .2s; position:relative; border-radius:26px; padding:28px; background:linear-gradient(160deg, rgba(24,34,31,0.92), rgba(15,21,19,0.92)); border:1px solid rgba(255,255,255,0.08); box-shadow:0 30px 80px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05); overflow:hidden;">
-        <div aria-hidden="true" style="position:absolute; top:-40%; right:-30%; width:60%; height:80%; background:radial-gradient(circle, rgba(52,230,160,0.16), transparent 70%); filter:blur(10px);"></div>
-        <div style="display:flex; align-items:center; justify-content:space-between; position:relative;">
-          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; color:#66756F;">// engineer.profile</span>
-          <span style="width:8px; height:8px; border-radius:50%; background:#34E6A0; box-shadow:0 0 10px #34E6A0;"></span>
+      <div style="position:relative; border-radius:20px; padding:28px; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); overflow:hidden;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; color:#CBB07A;">// engineer.profile</span>
+          <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule);"></span>
+          <span aria-hidden="true" style="width:8px; height:8px; border-radius:50%; background:#34E6A0;"></span>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:22px; position:relative;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; margin-top:22px; background:var(--rule-strong); border:1px solid var(--rule-strong);">
           <!-- EDIT: headline stats -->
-          <div style="border-radius:18px; padding:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+          <div style="padding:16px 14px; background:var(--paper-2);">
             <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:38px; color:#EDF2EF;"><span data-count="7" data-suffix="+">0</span></div>
             <div style="font-size:12px; color:#9FB0AA; margin-top:4px;">Years shipping Android</div>
           </div>
-          <div style="border-radius:18px; padding:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+          <div style="padding:16px 14px; background:var(--paper-2);">
             <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:38px; color:#34E6A0;"><span data-count="3" data-suffix="M+">0</span></div>
             <div style="font-size:12px; color:#9FB0AA; margin-top:4px;">Nobifi downloads · CafeBazaar</div>
           </div>
-          <div style="border-radius:18px; padding:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+          <div style="padding:16px 14px; background:var(--paper-2);">
             <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:38px; color:#E7D2A6;"><span data-count="2" data-suffix=" yrs">0</span></div>
             <div style="font-size:12px; color:#9FB0AA; margin-top:4px;">Sole Nobifi DeFi owner</div>
           </div>
-          <div style="border-radius:18px; padding:18px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06);">
+          <div style="padding:16px 14px; background:var(--paper-2);">
             <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:38px; color:#EDF2EF;"><span data-count="3" data-suffix="">0</span></div>
             <div style="font-size:12px; color:#9FB0AA; margin-top:4px;">Domains: fintech·banking·crypto</div>
           </div>
         </div>
-        <div style="margin-top:18px; padding:16px 18px; border-radius:18px; background:rgba(52,230,160,0.07); border:1px solid rgba(52,230,160,0.18); font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#9FB0AA; position:relative;">
+        <div style="margin-top:18px; padding:16px 18px; border-radius:14px; background:rgba(231,210,166,0.04); border:1px solid var(--rule); font-family:'JetBrains Mono',monospace; font-size:12.5px; line-height:1.7; color:#9FB0AA;">
           <span style="color:#CBB07A;">val</span> <span style="color:#EDF2EF;">focus</span> = listOf(<br>
           &nbsp;&nbsp;<span style="color:#34E6A0;">"Compose"</span>, <span style="color:#34E6A0;">"MVI"</span>,<br>
           &nbsp;&nbsp;<span style="color:#34E6A0;">"multi-module"</span>, <span style="color:#34E6A0;">"SDUI"</span>)
@@ -557,77 +568,64 @@
   <!-- ===== SKILLS ===== -->
   <!-- EDIT: skills -->
   <section id="sec-skills" data-screen-label="Skills" aria-labelledby="skills-h" style="position:relative; z-index:2; max-width:1320px; margin:0 auto; padding:clamp(40px,7vw,90px) clamp(20px,6vw,96px) clamp(70px,11vw,140px);">
-    <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; color:#34E6A0; text-transform:uppercase;">
-      <span style="width:26px; height:1px; background:#34E6A0;"></span>02 — Expertise
+    <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); display:flex; align-items:center; gap:12px; max-width:520px;">
+      <span aria-hidden="true" style="width:8px; height:8px; background:var(--signal);"></span>
+      <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule-strong);"></span>
     </div>
     <h2 id="skills-h" data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .08s, transform .9s cubic-bezier(.2,0,0,1) .08s; margin:22px 0 8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(28px,4.4vw,52px); letter-spacing:-0.02em;">My noteworthy skillset</h2>
-    <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .14s, transform .9s cubic-bezier(.2,0,0,1) .14s; margin:0 0 40px; color:#9FB0AA; font-size:clamp(15px,1.7vw,17px);">I proactively improve my skills to satisfy the needs of products requirements based on latest technological advancements.</p>
+    <p style="margin:0 0 34px; color:#9FB0AA; font-size:clamp(15px,1.7vw,17px);">I proactively improve my skills to satisfy the needs of products requirements based on latest technological advancements.</p>
 
-    <!-- core skill widgets with animated meters -->
+    <!-- core skills (primary marked with a green ring) -->
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#CBB07A; margin:0 0 14px;">Core</div>
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr)); gap:16px;">
       <!-- EDIT: each core skill = label / level / blurb -->
-      <div data-reveal="" data-skillwidget="" style="opacity:0; transform:translateY(34px); transition:opacity .8s cubic-bezier(.2,0,0,1), transform .8s cubic-bezier(.2,0,0,1); border-radius:24px; padding:22px; background:linear-gradient(160deg, rgba(24,34,31,0.9), rgba(15,21,19,0.9)); border:1px solid rgba(255,255,255,0.08); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:rgba(52,230,160,0.14); color:#34E6A0; font-family:'JetBrains Mono',monospace; font-weight:600;">Kt</span>
-          <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; color:#34E6A0;">95%</span>
-        </div>
-        <div style="margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px;">Kotlin</div>
-        <div style="font-size:12.5px; color:#66756F; margin-top:3px;">Coroutines · Flow · DSLs</div>
-        <div style="margin-top:16px; height:6px; border-radius:99px; background:rgba(255,255,255,0.06); overflow:hidden;"><div data-bar="95" style="width:0; height:100%; border-radius:99px; background:linear-gradient(90deg,#34E6A0,#7DF0C2); transition:width 1.3s cubic-bezier(.2,0,0,1);"></div></div>
+      <div data-skillwidget="" style="border-radius:20px; padding:22px; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;">
+        <span style="display:grid; place-items:center; width:44px; height:44px; border-radius:13px; background:rgba(52,230,160,0.12); border:1.5px solid rgba(52,230,160,0.55); color:#34E6A0; font-family:'JetBrains Mono',monospace; font-weight:600; font-size:15px;">Kt</span>
+        <div style="margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px;">Kotlin <span style="font-family:'JetBrains Mono',monospace; font-weight:500; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:#34E6A0; vertical-align:middle;">· primary</span></div>
+        <div style="font-size:12.5px; color:#8A9A92; margin-top:3px;">Coroutines · Flow · DSLs</div>
       </div>
 
-      <div data-reveal="" data-skillwidget="" style="opacity:0; transform:translateY(34px); transition:opacity .8s cubic-bezier(.2,0,0,1) .06s, transform .8s cubic-bezier(.2,0,0,1) .06s; border-radius:24px; padding:22px; background:linear-gradient(160deg, rgba(24,34,31,0.9), rgba(15,21,19,0.9)); border:1px solid rgba(255,255,255,0.08); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:rgba(52,230,160,0.14); color:#34E6A0; font-size:20px;">◳</span>
-          <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; color:#34E6A0;">93%</span>
-        </div>
+      <div data-skillwidget="" style="border-radius:20px; padding:22px; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;">
+        <span style="display:grid; place-items:center; width:44px; height:44px; border-radius:13px; background:rgba(52,230,160,0.12); border:1px solid var(--rule); color:#34E6A0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></span>
         <div style="margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px;">Jetpack Compose</div>
-        <div style="font-size:12.5px; color:#66756F; margin-top:3px;">Custom layouts · animation</div>
-        <div style="margin-top:16px; height:6px; border-radius:99px; background:rgba(255,255,255,0.06); overflow:hidden;"><div data-bar="93" style="width:0; height:100%; border-radius:99px; background:linear-gradient(90deg,#34E6A0,#7DF0C2); transition:width 1.3s cubic-bezier(.2,0,0,1) .1s;"></div></div>
+        <div style="font-size:12.5px; color:#8A9A92; margin-top:3px;">Custom layouts · animation</div>
       </div>
 
-      <div data-reveal="" data-skillwidget="" style="opacity:0; transform:translateY(34px); transition:opacity .8s cubic-bezier(.2,0,0,1) .12s, transform .8s cubic-bezier(.2,0,0,1) .12s; border-radius:24px; padding:22px; background:linear-gradient(160deg, rgba(24,34,31,0.9), rgba(15,21,19,0.9)); border:1px solid rgba(255,255,255,0.08); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:rgba(231,210,166,0.14); color:#E7D2A6; font-size:20px;">⧉</span>
-          <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; color:#E7D2A6;">92%</span>
-        </div>
+      <div data-skillwidget="" style="border-radius:20px; padding:22px; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;">
+        <span style="display:grid; place-items:center; width:44px; height:44px; border-radius:13px; background:rgba(231,210,166,0.12); border:1px solid var(--rule); color:#E7D2A6;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 9 5-9 5-9-5 9-5Z"/><path d="m3 12 9 5 9-5"/><path d="m3 17 9 5 9-5"/></svg></span>
         <div style="margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px;">MVI · Clean Arch</div>
-        <div style="font-size:12.5px; color:#66756F; margin-top:3px;">Multi-module · SOLID</div>
-        <div style="margin-top:16px; height:6px; border-radius:99px; background:rgba(255,255,255,0.06); overflow:hidden;"><div data-bar="92" style="width:0; height:100%; border-radius:99px; background:linear-gradient(90deg,#E7D2A6,#CBB07A); transition:width 1.3s cubic-bezier(.2,0,0,1) .15s;"></div></div>
+        <div style="font-size:12.5px; color:#8A9A92; margin-top:3px;">Multi-module · SOLID</div>
       </div>
 
-      <div data-reveal="" data-skillwidget="" style="opacity:0; transform:translateY(34px); transition:opacity .8s cubic-bezier(.2,0,0,1) .18s, transform .8s cubic-bezier(.2,0,0,1) .18s; border-radius:24px; padding:22px; background:linear-gradient(160deg, rgba(24,34,31,0.9), rgba(15,21,19,0.9)); border:1px solid rgba(255,255,255,0.08); box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);">
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="display:grid; place-items:center; width:42px; height:42px; border-radius:13px; background:rgba(52,230,160,0.14); color:#34E6A0; font-size:20px;">⟳</span>
-          <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:15px; color:#34E6A0;">92%</span>
-        </div>
+      <div data-skillwidget="" style="border-radius:20px; padding:22px; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;">
+        <span style="display:grid; place-items:center; width:44px; height:44px; border-radius:13px; background:rgba(52,230,160,0.12); border:1px solid var(--rule); color:#34E6A0;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></span>
         <div style="margin-top:18px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:18px;">Coroutines &amp; Flow</div>
-        <div style="font-size:12.5px; color:#66756F; margin-top:3px;">Reactive · structured async</div>
-        <div style="margin-top:16px; height:6px; border-radius:99px; background:rgba(255,255,255,0.06); overflow:hidden;"><div data-bar="92" style="width:0; height:100%; border-radius:99px; background:linear-gradient(90deg,#34E6A0,#7DF0C2); transition:width 1.3s cubic-bezier(.2,0,0,1) .2s;"></div></div>
+        <div style="font-size:12.5px; color:#8A9A92; margin-top:3px;">Reactive · structured async</div>
       </div>
     </div>
 
     <!-- supporting skill chips -->
-    <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .1s, transform .9s cubic-bezier(.2,0,0,1) .1s; display:flex; flex-wrap:wrap; gap:11px; margin-top:22px;">
+    <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#CBB07A; margin:34px 0 14px;">Fluent &amp; familiar</div>
+    <div style="display:flex; flex-wrap:wrap; gap:11px;">
       <!-- EDIT: supporting skill chips -->
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Clean Architecture</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Multi-module</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">MVVM</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Dagger / Hilt</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Room · Retrofit</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">MVI</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">WorkManager</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Server-Driven UI</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Android TV</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">TDD</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Clean Architecture</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Multi-module</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">MVVM</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Dagger / Hilt</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Room · Retrofit</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">MVI</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">WorkManager</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Server-Driven UI</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Android TV</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">TDD</span>
       <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(52,230,160,0.10); border:1px solid rgba(52,230,160,0.28); font-size:14px; color:#34E6A0; transition:transform .4s cubic-bezier(.2,0,0,1);">Agentic Code-Gen</span>
       <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(52,230,160,0.10); border:1px solid rgba(52,230,160,0.28); font-size:14px; color:#34E6A0; transition:transform .4s cubic-bezier(.2,0,0,1);">Spec-Driven Development</span>
       <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(52,230,160,0.10); border:1px solid rgba(52,230,160,0.28); font-size:14px; color:#34E6A0; transition:transform .4s cubic-bezier(.2,0,0,1);">Context Engineering</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Code Generators / Scaffolding</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Figma Plugins</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Vibe Coding</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Engineering Automation</span>
-      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.08); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Python · TypeScript</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Code Generators / Scaffolding</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Figma Plugins</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Vibe Coding</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Engineering Automation</span>
+      <span data-magnetic="" style="padding:11px 18px; border-radius:999px; background:var(--paper-2); border:1px solid var(--rule); font-size:14px; color:#9FB0AA; transition:transform .4s cubic-bezier(.2,0,0,1);">Python · TypeScript</span>
     </div>
   </section>
 
@@ -644,7 +642,7 @@
 
     <!-- caption -->
     <div style="text-align:center; max-width:1320px; margin:0 auto; padding:0 clamp(20px,6vw,96px);">
-      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.16em; color:#66756F;">// build agent · status: <span style="color:#34E6A0;">running</span></div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.16em; color:#8A9A92;">// build agent · status: <span style="color:#34E6A0;">running</span></div>
       <h3 style="margin:14px 0 0; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(22px,3.4vw,38px); letter-spacing:-0.02em; color:#EDF2EF;">Compiling something<span style="color:#34E6A0;"> delightful…</span></h3>
       <p style="margin:10px auto 0; max-width:46ch; color:#9FB0AA; font-size:14px;">Keep scrolling — a tiny green engineer is walking your résumé over.</p>
     </div>
@@ -679,7 +677,7 @@
             <span aria-hidden="true" style="position:absolute; top:15px; left:-5px; width:7px; height:20px; border-radius:5px; background:#18A06A; transform-origin:top center; animation:armA .5s ease-in-out infinite;"></span>
             <span aria-hidden="true" style="position:absolute; top:15px; right:-5px; width:7px; height:20px; border-radius:5px; background:#18A06A; transform-origin:top center; animation:armB .5s ease-in-out infinite;"></span>
             <!-- body dome -->
-            <div style="position:absolute; inset:0; border-radius:33px 33px 12px 12px; background:linear-gradient(160deg,#7DF0C2,#1AA56E); box-shadow:inset 0 2px 0 rgba(255,255,255,0.4), 0 10px 24px rgba(52,230,160,0.38);">
+            <div style="position:absolute; inset:0; border-radius:33px 33px 12px 12px; background:linear-gradient(160deg,#CBB07A,#0C1512); border:1px solid var(--rule-strong); box-shadow:inset 0 1px 0 rgba(231,210,166,0.3), 0 10px 24px rgba(0,0,0,0.4);">
               <span aria-hidden="true" style="position:absolute; top:18px; left:17px; width:8px; height:8px; border-radius:50%; background:#04130D; animation:botEye 4s ease-in-out infinite;"></span>
               <span aria-hidden="true" style="position:absolute; top:18px; right:17px; width:8px; height:8px; border-radius:50%; background:#04130D; animation:botEye 4s ease-in-out infinite;"></span>
               <span aria-hidden="true" style="position:absolute; top:28px; left:8px; width:9px; height:5px; border-radius:50%; background:rgba(231,210,166,0.5);"></span>
@@ -700,16 +698,13 @@
       <span style="width:26px; height:1px; background:#34E6A0;"></span>03 — Experience
     </div>
     <h2 id="work-h" data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .08s, transform .9s cubic-bezier(.2,0,0,1) .08s; margin:22px 0 6px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(28px,4.4vw,52px); letter-spacing:-0.02em;">The build log</h2>
-    <p data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .14s, transform .9s cubic-bezier(.2,0,0,1) .14s; margin:0 0 44px; color:#9FB0AA; font-size:clamp(15px,1.7vw,17px);">A real git log of where I've shipped — tap a commit to expand the diff.</p>
+    <p style="margin:0 0 44px; color:#9FB0AA; font-size:clamp(15px,1.7vw,17px);">A real git log of where I’ve shipped — tap a commit to expand the diff.</p>
 
-    <div data-reveal="" style="opacity:0; transform:translateY(34px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); border-radius:22px; overflow:hidden; border:1px solid rgba(255,255,255,0.08); background:rgba(9,14,12,0.66); box-shadow:0 30px 80px rgba(0,0,0,0.45);">
-      <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.02);">
-        <span style="display:flex; gap:7px;">
-          <span style="width:11px; height:11px; border-radius:50%; background:#ff5f57;"></span>
-          <span style="width:11px; height:11px; border-radius:50%; background:#febc2e;"></span>
-          <span style="width:11px; height:11px; border-radius:50%; background:#28c840;"></span>
-        </span>
-        <span style="min-width:0; font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">ehsan@portfolio:&nbsp;~/career&nbsp;$ <span style="color:#9FB0AA;">git log --graph --oneline</span></span>
+    <div style="border-radius:22px; overflow:hidden; border:1px solid var(--rule); background:var(--paper-2); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06);">
+      <div style="display:flex; align-items:center; gap:14px; padding:14px 18px; border-bottom:1px solid var(--rule); background:rgba(231,210,166,0.02);">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#CBB07A;">// build log</span>
+        <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule);"></span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#8A9A92; white-space:nowrap;">git log --oneline</span>
       </div>
       <div style="position:relative;">
         <div aria-hidden="true" style="position:absolute; top:26px; bottom:26px; left:calc(clamp(16px,3vw,24px) + 19px); width:2px; background:linear-gradient(180deg, transparent, #18A06A 6%, #34E6A0 50%, #18A06A 94%, transparent); z-index:0;"></div>
@@ -717,7 +712,7 @@
       <article data-expcard="" style="position:relative; border-bottom:1px solid rgba(255,255,255,0.05); transition:background .4s;">
         <button data-exp="" data-ripple="" style="all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:40px 1fr; align-items:start; gap:14px; width:100%; padding:18px clamp(16px,3vw,24px);">
           <span style="position:relative; display:flex; justify-content:center; padding-top:3px;">
-            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7DF0C2, #18A06A); box-shadow:0 0 0 4px rgba(52,230,160,0.10), 0 0 12px rgba(52,230,160,0.45); z-index:1;">
+            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7DF0C2, #18A06A); box-shadow:0 0 0 4px rgba(52,230,160,0.08); z-index:1;">
               <span aria-hidden="true" style="position:absolute; inset:-4px; border-radius:50%; border:1.5px solid rgba(52,230,160,0.5); animation:pulseRing 2.6s ease-out infinite;"></span>
             </span>
           </span>
@@ -725,14 +720,14 @@
             <span style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px;">
               <span style="display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px;">
                 <span style="color:#34E6A0; font-weight:600;">f2a08c4</span>
-                <span style="color:#66756F;">(<span style="color:#E7D2A6;">HEAD →</span> <span style="color:#7DF0C2;">consult/intelstream</span>)</span>
+                <span style="color:#8A9A92;">(<span style="color:#E7D2A6;">HEAD →</span> <span style="color:#7DF0C2;">consult/intelstream</span>)</span>
               </span>
               <span style="display:inline-flex; align-items:center; gap:10px;">
-                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">Dec 2025 — Present</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">Dec 2025 — Present</span>
                 <span data-expchev="" style="color:#34E6A0; font-size:16px; transition:transform .4s cubic-bezier(.2,0,0,1);">⌄</span>
               </span>
             </span>
-            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Consultant <span style="color:#66756F; font-weight:500; font-size:14px;">— Self-employed · IntelStream</span></span>
+            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Consultant <span style="color:#8A9A92; font-weight:500; font-size:14px;">— Self-employed · IntelStream</span></span>
           </span>
         </button>
         <div data-expbody="" style="max-height:0; opacity:0; overflow:hidden; transition:max-height .55s cubic-bezier(.2,0,0,1), opacity .45s ease;">
@@ -756,7 +751,7 @@
       <article data-expcard="" style="position:relative; border-bottom:1px solid rgba(255,255,255,0.05); transition:background .4s;">
         <button data-exp="" data-ripple="" style="all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:40px 1fr; align-items:start; gap:14px; width:100%; padding:18px clamp(16px,3vw,24px);">
           <span style="position:relative; display:flex; justify-content:center; padding-top:3px;">
-            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7DF0C2, #18A06A); box-shadow:0 0 0 4px rgba(52,230,160,0.10), 0 0 12px rgba(52,230,160,0.45); z-index:1;">
+            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7DF0C2, #18A06A); box-shadow:0 0 0 4px rgba(52,230,160,0.08); z-index:1;">
               <span aria-hidden="true" style="position:absolute; inset:-4px; border-radius:50%; border:1.5px solid rgba(52,230,160,0.5); animation:pulseRing 2.6s ease-out infinite;"></span>
             </span>
           </span>
@@ -764,19 +759,19 @@
             <span style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px;">
               <span style="display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px;">
                 <span style="color:#34E6A0; font-weight:600;">e7c1a9d</span>
-                <span style="color:#66756F;">(<span style="color:#7DF0C2;">feat/nobifi-defi</span>, tag: v3.0)</span>
+                <span style="color:#8A9A92;">(<span style="color:#7DF0C2;">feat/nobifi-defi</span>, tag: v3.0)</span>
               </span>
               <span style="display:inline-flex; align-items:center; gap:10px;">
-                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">Apr 2023 — Dec 2025</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">Apr 2023 — Dec 2025</span>
                 <span data-expchev="" style="color:#34E6A0; font-size:16px; transition:transform .4s cubic-bezier(.2,0,0,1);">⌄</span>
               </span>
             </span>
-            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Senior Android Engineer <span style="color:#66756F; font-weight:500; font-size:14px;">— Nobitex · Crypto Exchange</span></span>
+            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Senior Android Engineer <span style="color:#8A9A92; font-weight:500; font-size:14px;">— Nobitex · Crypto Exchange</span></span>
           </span>
         </button>
         <div data-expbody="" style="max-height:0; opacity:0; overflow:hidden; transition:max-height .55s cubic-bezier(.2,0,0,1), opacity .45s ease;">
           <div style="padding:0 clamp(20px,3vw,30px) 26px; border-top:1px solid rgba(255,255,255,0.06); margin:0 clamp(20px,3vw,30px);">
-            <p style="margin:20px 0 0; color:#9FB0AA; font-size:15px; line-height:1.7;">Sole Android owner of the Nobifi DeFi suite for nearly two years — shipping loans, credit, debit card, staking &amp; yield farming on one of Iran's largest crypto platforms (3M+ CafeBazaar downloads), while contributing as a senior in the Core Android chapter.</p>
+            <p style="margin:20px 0 0; color:#9FB0AA; font-size:15px; line-height:1.7;">Sole Android owner of the Nobifi DeFi suite for nearly two years — shipping loans, credit, debit card, staking &amp; yield farming on one of Iran’s largest crypto platforms (3M+ CafeBazaar downloads), while contributing as a senior in the Core Android chapter.</p>
             <ul style="margin:16px 0 0; padding-left:18px; color:#9FB0AA; font-size:14.5px; line-height:1.85;">
               <li>Built a Figma plugin and agentic, spec-driven scaffolding that <em style="color:#9FB0AA; font-style:normal; border-bottom:1px solid rgba(52,230,160,0.4);">deterministically</em> generates modules, screens, ViewModels, repositories &amp; APIs from design-system inputs — accelerating developers while keeping generated code correct by construction, not guessed by an AI.</li>
               <li>Engineered the client-side video-authentication flow with custom compression, lifting KYC completion and lowering verification failure rates.</li>
@@ -796,7 +791,7 @@
       <article data-expcard="" style="position:relative; border-bottom:1px solid rgba(255,255,255,0.05); transition:background .4s;">
         <button data-exp="" data-ripple="" style="all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:40px 1fr; align-items:start; gap:14px; width:100%; padding:18px clamp(16px,3vw,24px);">
           <span style="position:relative; display:flex; justify-content:center; padding-top:3px;">
-            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7DF0C2, #18A06A); box-shadow:0 0 0 4px rgba(52,230,160,0.10), 0 0 12px rgba(52,230,160,0.45); z-index:1;">
+            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #7DF0C2, #18A06A); box-shadow:0 0 0 4px rgba(52,230,160,0.08); z-index:1;">
               <span aria-hidden="true" style="position:absolute; inset:-4px; border-radius:50%; border:1.5px solid rgba(52,230,160,0.5); animation:pulseRing 2.6s ease-out infinite;"></span>
             </span>
           </span>
@@ -804,19 +799,19 @@
             <span style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px;">
               <span style="display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px;">
                 <span style="color:#34E6A0; font-weight:600;">b3f88a2</span>
-                <span style="color:#66756F;">(<span style="color:#7DF0C2;">advisory/filmnet-tv</span>)</span>
+                <span style="color:#8A9A92;">(<span style="color:#7DF0C2;">advisory/filmnet-tv</span>)</span>
               </span>
               <span style="display:inline-flex; align-items:center; gap:10px;">
-                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">Advisory</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">Advisory</span>
                 <span data-expchev="" style="color:#34E6A0; font-size:16px; transition:transform .4s cubic-bezier(.2,0,0,1);">⌄</span>
               </span>
             </span>
-            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Consultant <span style="color:#66756F; font-weight:500; font-size:14px;">— Filmnet · Video Streaming</span></span>
+            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Consultant <span style="color:#8A9A92; font-weight:500; font-size:14px;">— Filmnet · Video Streaming</span></span>
           </span>
         </button>
         <div data-expbody="" style="max-height:0; opacity:0; overflow:hidden; transition:max-height .55s cubic-bezier(.2,0,0,1), opacity .45s ease;">
           <div style="padding:0 clamp(20px,3vw,30px) 26px; border-top:1px solid rgba(255,255,255,0.06); margin:0 clamp(20px,3vw,30px);">
-            <p style="margin:20px 0 0; color:#9FB0AA; font-size:15px; line-height:1.7;">Advised Filmnet's Android team on architecture and delivery for both the mobile app and the Android TV experience on one of Iran's largest video-streaming platforms.</p>
+            <p style="margin:20px 0 0; color:#9FB0AA; font-size:15px; line-height:1.7;">Advised Filmnet’s Android team on architecture and delivery for both the mobile app and the Android TV experience on one of Iran’s largest video-streaming platforms.</p>
             <ul style="margin:16px 0 0; padding-left:18px; color:#9FB0AA; font-size:14.5px; line-height:1.85;">
               <li>Consulted on Android &amp; Android TV app architecture, navigation, and performance for large-scale streaming.</li>
               <li>Guided Compose and TV (leanback) patterns and playback UX tuned for the living-room form factor.</li>
@@ -833,7 +828,7 @@
       <article data-expcard="" style="position:relative; border-bottom:1px solid rgba(255,255,255,0.05); transition:background .4s;">
         <button data-exp="" data-ripple="" style="all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:40px 1fr; align-items:start; gap:14px; width:100%; padding:18px clamp(16px,3vw,24px);">
           <span style="position:relative; display:flex; justify-content:center; padding-top:3px;">
-            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #F0E0B8, #CBB07A); box-shadow:0 0 0 4px rgba(231,210,166,0.10), 0 0 12px rgba(231,210,166,0.45); z-index:1;">
+            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #F0E0B8, #CBB07A); box-shadow:0 0 0 4px rgba(231,210,166,0.08); z-index:1;">
               <span aria-hidden="true" style="position:absolute; inset:-4px; border-radius:50%; border:1.5px solid rgba(231,210,166,0.5); animation:pulseRing 2.6s ease-out infinite;"></span>
             </span>
           </span>
@@ -841,14 +836,14 @@
             <span style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px;">
               <span style="display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px;">
                 <span style="color:#E7D2A6; font-weight:600;">a91d4f0</span>
-                <span style="color:#66756F;">(<span style="color:#7DF0C2;">feat/nap-banking</span>, tag: v1.0)</span>
+                <span style="color:#8A9A92;">(<span style="color:#7DF0C2;">feat/nap-banking</span>, tag: v1.0)</span>
               </span>
               <span style="display:inline-flex; align-items:center; gap:10px;">
-                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">Feb 2022 — May 2023</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">Feb 2022 — May 2023</span>
                 <span data-expchev="" style="color:#34E6A0; font-size:16px; transition:transform .4s cubic-bezier(.2,0,0,1);">⌄</span>
               </span>
             </span>
-            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Developer · Team Lead <span style="color:#66756F; font-weight:500; font-size:14px;">— Navaco IT · Digital Banking</span></span>
+            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Developer · Team Lead <span style="color:#8A9A92; font-weight:500; font-size:14px;">— Navaco IT · Digital Banking</span></span>
           </span>
         </button>
         <div data-expbody="" style="max-height:0; opacity:0; overflow:hidden; transition:max-height .55s cubic-bezier(.2,0,0,1), opacity .45s ease;">
@@ -871,7 +866,7 @@
       <article data-expcard="" style="position:relative; transition:background .4s;">
         <button data-exp="" data-ripple="" style="all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:40px 1fr; align-items:start; gap:14px; width:100%; padding:18px clamp(16px,3vw,24px);">
           <span style="position:relative; display:flex; justify-content:center; padding-top:3px;">
-            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #cfd8d4, #8a978f); box-shadow:0 0 0 4px rgba(255,255,255,0.06), 0 0 10px rgba(255,255,255,0.18); z-index:1;">
+            <span style="position:relative; width:15px; height:15px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #cfd8d4, #8a978f); box-shadow:0 0 0 4px rgba(255,255,255,0.05); z-index:1;">
               <span aria-hidden="true" style="position:absolute; inset:-4px; border-radius:50%; border:1.5px solid rgba(255,255,255,0.35); animation:pulseRing 2.6s ease-out infinite;"></span>
             </span>
           </span>
@@ -879,14 +874,14 @@
             <span style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:6px 12px;">
               <span style="display:inline-flex; flex-wrap:wrap; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px;">
                 <span style="color:#9FB0AA; font-weight:600;">5d2c706</span>
-                <span style="color:#66756F;">(<span style="color:#7DF0C2;">init/android</span>)</span>
+                <span style="color:#8A9A92;">(<span style="color:#7DF0C2;">init/android</span>)</span>
               </span>
               <span style="display:inline-flex; align-items:center; gap:10px;">
-                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">Jul 2018 — Apr 2022</span>
+                <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">Jul 2018 — Apr 2022</span>
                 <span data-expchev="" style="color:#34E6A0; font-size:16px; transition:transform .4s cubic-bezier(.2,0,0,1);">⌄</span>
               </span>
             </span>
-            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Developer <span style="color:#66756F; font-weight:500; font-size:14px;">— Radib Group · Fintech &amp; Banking</span></span>
+            <span style="display:block; margin-top:8px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:clamp(16px,2.2vw,20px); color:#EDF2EF; line-height:1.25;">Android Developer <span style="color:#8A9A92; font-weight:500; font-size:14px;">— Radib Group · Fintech &amp; Banking</span></span>
           </span>
         </button>
         <div data-expbody="" style="max-height:0; opacity:0; overflow:hidden; transition:max-height .55s cubic-bezier(.2,0,0,1), opacity .45s ease;">
@@ -941,39 +936,42 @@
   <!--LATEST-NOTES:END-->
 
   <section id="sec-contact" data-screen-label="Contact" aria-labelledby="contact-h" style="position:relative; z-index:2; max-width:1120px; margin:0 auto; padding:clamp(40px,7vw,90px) clamp(20px,6vw,96px) clamp(110px,16vw,150px);">
-    <div data-reveal="" style="opacity:0; transform:translateY(40px); transition:opacity 1s cubic-bezier(.2,0,0,1), transform 1s cubic-bezier(.2,0,0,1); position:relative; border-radius:34px; overflow:hidden; padding:clamp(36px,6vw,72px); text-align:center; background:linear-gradient(160deg, rgba(24,34,31,0.94), rgba(13,18,16,0.94)); border:1px solid rgba(52,230,160,0.18); box-shadow:0 40px 100px rgba(0,0,0,0.55);">
-      <div aria-hidden="true" style="position:absolute; top:-50%; left:50%; transform:translateX(-50%); width:120%; height:120%; background:radial-gradient(circle, rgba(52,230,160,0.16), transparent 60%); pointer-events:none;"></div>
+    <div style="position:relative; border-radius:28px; overflow:hidden; padding:clamp(36px,6vw,72px); text-align:center; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06);">
       <!-- EDIT: waving companion -->
       <div aria-hidden="true" style="position:absolute; top:18px; right:20px; z-index:3;">
         <span style="position:absolute; bottom:25px; left:-7px; width:6px; height:17px; border-radius:5px; background:#18A06A; transform-origin:bottom center; animation:wave 1.1s ease-in-out infinite;"></span>
         <div style="position:relative; width:38px; height:32px; animation:botBob 4s ease-in-out infinite;">
           <span style="position:absolute; top:-8px; left:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(-20deg);"></span>
           <span style="position:absolute; top:-8px; right:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(20deg);"></span>
-          <div style="position:absolute; inset:0; border-radius:19px 19px 8px 8px; background:linear-gradient(160deg,#7DF0C2,#1AA56E); box-shadow:inset 0 2px 0 rgba(255,255,255,0.4), 0 6px 16px rgba(52,230,160,0.4);">
+          <div style="position:absolute; inset:0; border-radius:19px 19px 8px 8px; background:linear-gradient(160deg,#CBB07A,#0C1512); border:1px solid var(--rule-strong); box-shadow:inset 0 1px 0 rgba(231,210,166,0.3), 0 6px 16px rgba(0,0,0,0.4);">
             <span style="position:absolute; top:10px; left:9px; width:6px; height:6px; border-radius:50%; background:#04130D; animation:botEye 4s ease-in-out infinite;"></span>
             <span style="position:absolute; top:10px; right:9px; width:6px; height:6px; border-radius:50%; background:#04130D; animation:botEye 4s ease-in-out infinite;"></span>
           </div>
         </div>
       </div>
       <div style="position:relative;">
-        <div style="font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; color:#34E6A0; text-transform:uppercase;">05 — Let's talk</div>
-        <h2 id="contact-h" style="margin:18px auto 0; max-width:14ch; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(32px,6vw,68px); line-height:1.02; letter-spacing:-0.03em;">Let's build something <span style="color:#34E6A0;">perfect</span></h2>
-        <p style="margin:22px auto 0; max-width:48ch; color:#9FB0AA; font-size:clamp(15px,1.8vw,18px); line-height:1.7;">I'm open to senior Android positions. If you want a modern, stable Android app crafted to perfection, contact me using the links below.</p>
+        <div style="display:flex; align-items:center; justify-content:center; gap:12px; max-width:260px; margin:0 auto;">
+          <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule-strong);"></span>
+          <span aria-hidden="true" style="width:8px; height:8px; background:var(--signal);"></span>
+          <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule-strong);"></span>
+        </div>
+        <h2 id="contact-h" style="margin:18px auto 0; max-width:14ch; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(32px,6vw,68px); line-height:1.02; letter-spacing:-0.03em;">Let’s build something <span style="color:#34E6A0;">perfect</span></h2>
+        <p style="margin:22px auto 0; max-width:48ch; color:#9FB0AA; font-size:clamp(15px,1.8vw,18px); line-height:1.7;">I’m open to senior Android positions. If you want a modern, stable Android app crafted to perfection, contact me using the links below.</p>
 
         <!-- EDIT: contact links / emails -->
         <div style="display:flex; flex-wrap:wrap; justify-content:center; gap:13px; margin-top:38px;">
-          <a href="mailto:ehsankolivandeh@gmail.com" rel="me" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:16px; background:linear-gradient(135deg,#34E6A0,#18A06A); color:#04130D; font-weight:700; font-size:15px; text-decoration:none; box-shadow:0 14px 38px rgba(52,230,160,0.32);">✉ Email me</a>
-          <a href="https://github.com/ehsankolivand" target="_blank" rel="me noopener" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 24px; border-radius:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none;">⌥ GitHub</a>
-          <a href="https://www.linkedin.com/in/ehsan-koolivand" target="_blank" rel="me noopener" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 24px; border-radius:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none;">in LinkedIn</a>
-          <a href="https://t.me/eksapps" target="_blank" rel="me noopener" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 24px; border-radius:16px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.1); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none;">✈ Telegram</a>
+          <a href="mailto:ehsankolivandeh@gmail.com" rel="me" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 26px; border-radius:16px; background:linear-gradient(135deg,#34E6A0,#18A06A); color:#04130D; font-weight:700; font-size:15px; text-decoration:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 8 9 5 9-5"/></svg>Email me</a>
+          <a href="https://github.com/ehsankolivand" target="_blank" rel="me noopener" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 24px; border-radius:16px; background:var(--paper-2); border:1px solid var(--rule); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2S17 3.6 14.5 5.3a12 12 0 0 0-6 0C6 3.6 5.1 3.9 5.1 3.9A4.2 4.2 0 0 0 5 7.1 4.6 4.6 0 0 0 3.7 10.3c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V22"/></svg>GitHub</a>
+          <a href="https://www.linkedin.com/in/ehsan-koolivand" target="_blank" rel="me noopener" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 24px; border-radius:16px; background:var(--paper-2); border:1px solid var(--rule); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 10v6M8 7v.01M12 16v-3a2 2 0 0 1 4 0v3"/></svg>LinkedIn</a>
+          <a href="https://t.me/eksapps" target="_blank" rel="me noopener" data-ripple="" data-magnetic="" style="position:relative; overflow:hidden; display:inline-flex; align-items:center; gap:10px; padding:15px 24px; border-radius:16px; background:var(--paper-2); border:1px solid var(--rule); color:#EDF2EF; font-weight:600; font-size:15px; text-decoration:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13"/><path d="m22 2-7 20-4-9-9-4Z"/></svg>Telegram</a>
         </div>
       </div>
     </div>
 
     <!-- footer -->
-    <footer style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:40px; padding-top:24px; border-top:1px solid rgba(255,255,255,0.06);">
-      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">© 2026 Ehsan Kolivand · Built with Compose-grade care</span>
-      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#66756F;">Istanbul · 41.0082° N, 28.9784° E</span>
+    <footer role="contentinfo" style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; margin-top:40px; padding-top:24px; border-top:1px solid var(--rule);">
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">© 2026 Ehsan Kolivand · Built with Compose-grade care</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:12px; color:#8A9A92;">Istanbul · 41.0082° N, 28.9784° E</span>
     </footer>
   </section>
   </main>
@@ -981,7 +979,7 @@
   <!-- SECTIONS -->
 
   <!-- ===== MOBILE BOTTOM NAVIGATION ===== -->
-  <nav data-bottomnav="" style="position:fixed; left:0; right:0; bottom:0; z-index:125; display:none; align-items:center; justify-content:space-around; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); background:rgba(10,14,12,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,0.07);">
+  <nav data-bottomnav="" aria-label="Section navigation" style="position:fixed; left:0; right:0; bottom:0; z-index:125; display:none; align-items:center; justify-content:space-around; padding:8px 6px calc(8px + env(safe-area-inset-bottom,0px)); background:rgba(10,14,12,0.82); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-top:1px solid rgba(255,255,255,0.07);">
     <!-- wired in JS -->
   </nav>
 
@@ -1038,7 +1036,7 @@ class Component extends DCLogic {
     SECTIONS.forEach(s=>{
       const a = document.createElement('a');
       a.href='#'+s.id; a.dataset.bnav=s.id; a.dataset.ripple='';
-      a.style.cssText='position:relative;overflow:hidden;flex:1;max-width:84px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:14px;text-decoration:none;color:#66756F;transition:color .25s;min-height:48px;';
+      a.style.cssText='position:relative;overflow:hidden;flex:1;max-width:84px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 4px;border-radius:14px;text-decoration:none;color:#8A9A92;transition:color .25s;min-height:48px;';
       a.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="'+s.icon+'"/></svg><span style="font-size:10px;font-weight:600;letter-spacing:.02em;">'+s.label+'</span>';
       bottomnav.appendChild(a);
     });
@@ -1119,7 +1117,7 @@ class Component extends DCLogic {
     const spy=new IntersectionObserver((ents)=>{
       ents.forEach(en=>{ if(!en.isIntersecting) return; const id=en.target.id;
         topnav.querySelectorAll('[data-navlink]').forEach(a=>{ const on=a.dataset.navlink===id; a.dataset.active=on?'1':''; a.style.color=on?'#34E6A0':'#9FB0AA'; a.style.background=on?'rgba(52,230,160,0.08)':'transparent'; if(!on) delete a.dataset.active; });
-        bottomnav.querySelectorAll('[data-bnav]').forEach(a=>{ const on=a.dataset.bnav===id; a.style.color=on?'#34E6A0':'#66756F'; });
+        bottomnav.querySelectorAll('[data-bnav]').forEach(a=>{ const on=a.dataset.bnav===id; a.style.color=on?'#34E6A0':'#8A9A92'; });
       });
     },{threshold:0.4});
     SECTIONS.forEach(s=>{ const el=document.getElementById(s.id); if(el) spy.observe(el); });
@@ -1405,7 +1403,7 @@ class Component extends DCLogic {
       const panel=mkEl("div","position:relative; width:min(680px,94vw); height:min(520px,86vh); border-radius:26px; overflow:hidden; background:linear-gradient(160deg,#0E1714,#0A0F0D); border:1px solid rgba(52,230,160,0.25); box-shadow:0 40px 110px rgba(0,0,0,0.6); transform:scale(.92); transition:transform .4s cubic-bezier(.34,1.56,.64,1);");
       panel.appendChild(mkEl("div","position:absolute; bottom:-30%; left:-10%; width:60%; height:70%; background:radial-gradient(circle, rgba(52,230,160,0.12), transparent 70%); pointer-events:none; z-index:0;"));
       const field=mkEl("div","position:absolute; left:0; right:0; bottom:0; top:108px; z-index:1; overflow:hidden;");
-      const head=mkEl("div","position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.02);","<div style='font-family:\"Space Grotesk\",sans-serif; font-weight:700; font-size:18px; color:#EDF2EF;'>\uD83D\uDC1E Bug Hunt <span style='font-family:JetBrains Mono,monospace; font-size:12px; color:#66756F; font-weight:500;'>\u2014 squash before ship</span></div>");
+      const head=mkEl("div","position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.02);","<div style='font-family:\"Space Grotesk\",sans-serif; font-weight:700; font-size:18px; color:#EDF2EF;'>\uD83D\uDC1E Bug Hunt <span style='font-family:JetBrains Mono,monospace; font-size:12px; color:#8A9A92; font-weight:500;'>\u2014 squash before ship</span></div>");
       const closeBtn=mkEl("button","all:unset; cursor:pointer; width:34px; height:34px; border-radius:10px; display:grid; place-items:center; background:rgba(255,255,255,0.05); color:#9FB0AA; font-size:17px;","\u2715"); head.appendChild(closeBtn);
       const hud=mkEl("div","position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; gap:14px; padding:12px 20px; font-family:'JetBrains Mono',monospace; font-size:13px; color:#9FB0AA;","<span>score: <b data-score style='color:#34E6A0;'>0</b></span><span>time: <b data-time style='color:#E7D2A6;'>25</b>s</span>");
       const center=mkEl("div","position:absolute; inset:0; z-index:3; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; padding:24px; background:rgba(8,12,11,0.45);");
@@ -1428,7 +1426,7 @@ class Component extends DCLogic {
       };
       const endGame=()=>{ stop(); center.style.display="flex"; center.innerHTML="";
         const rank=score>=20?"\uD83C\uDFC6 Staff-level debugger!":score>=12?"\uD83D\uDE80 Ship it!":score>=5?"\uD83D\uDE0E Solid pass":"\uD83D\uDC23 Keep practicing";
-        center.appendChild(mkEl("div","font-family:'JetBrains Mono',monospace; font-size:13px; color:#66756F;","$ git commit -m \"fixed "+score+" bugs\""));
+        center.appendChild(mkEl("div","font-family:'JetBrains Mono',monospace; font-size:13px; color:#8A9A92;","$ git commit -m \"fixed "+score+" bugs\""));
         center.appendChild(mkEl("div","font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:clamp(26px,5vw,40px); color:#EDF2EF;",score+" <span style='color:#34E6A0;'>squashed</span>"));
         center.appendChild(mkEl("div","font-size:15px; color:#9FB0AA;",rank));
         const again=mkEl("button","all:unset; cursor:pointer; margin-top:6px; padding:12px 22px; border-radius:14px; background:linear-gradient(135deg,#34E6A0,#18A06A); color:#04130D; font-weight:700; font-size:14px;","\u21BB Play again"); again.onclick=startGame; center.appendChild(again);

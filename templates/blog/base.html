@@ -10,9 +10,9 @@
 
   <!-- ===== AMBIENT LIVING BACKGROUND ===== -->
   <div data-ambient="" aria-hidden="true" style="position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;">
-    <div style="position:absolute; top:-20%; left:-10%; width:70vw; height:70vw; background:radial-gradient(circle, rgba(52,230,160,0.16), rgba(52,230,160,0) 62%); filter:blur(20px); animation:meshDrift 26s ease-in-out infinite;"></div>
-    <div style="position:absolute; bottom:-30%; right:-15%; width:75vw; height:75vw; background:radial-gradient(circle, rgba(231,210,166,0.10), rgba(231,210,166,0) 60%); filter:blur(24px); animation:meshDrift2 32s ease-in-out infinite;"></div>
-    <div style="position:absolute; top:30%; right:18%; width:38vw; height:38vw; background:radial-gradient(circle, rgba(24,160,106,0.12), rgba(24,160,106,0) 64%); filter:blur(26px); animation:meshDrift 38s ease-in-out infinite reverse;"></div>
+    <div style="position:absolute; top:-20%; left:-10%; width:70vw; height:70vw; background:radial-gradient(circle, rgba(52,230,160,0.055), rgba(52,230,160,0) 62%); filter:blur(20px); animation:meshDrift 26s ease-in-out infinite;"></div>
+    <div style="position:absolute; bottom:-30%; right:-15%; width:75vw; height:75vw; background:radial-gradient(circle, rgba(231,210,166,0.035), rgba(231,210,166,0) 60%); filter:blur(24px); animation:meshDrift2 32s ease-in-out infinite;"></div>
+    <div style="position:absolute; top:30%; right:18%; width:38vw; height:38vw; background:radial-gradient(circle, rgba(24,160,106,0.042), rgba(24,160,106,0) 64%); filter:blur(26px); animation:meshDrift 38s ease-in-out infinite reverse;"></div>
     <div style="position:absolute; inset:0; opacity:.5; background-image:radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px); background-size:22px 22px;"></div>
     <div style="position:absolute; inset:0; opacity:.55; background:radial-gradient(120% 90% at 50% 40%, transparent 55%, rgba(0,0,0,0.55) 100%);"></div>
   </div>
@@ -31,13 +31,13 @@
         <span style="display:block; width:10px; height:2px; border-radius:2px; background:rgba(52,230,160,0.5); margin-left:6px;"></span>
         <span style="display:block; width:14px; height:2px; border-radius:2px; background:rgba(52,230,160,0.6);"></span>
       </div>
-      <div data-reactor-shout="" style="position:absolute; bottom:42px; left:50%; transform:translateX(-50%) scale(0); white-space:nowrap; padding:4px 9px; border-radius:10px 10px 10px 4px; background:rgba(18,26,24,0.96); border:1px solid rgba(52,230,160,0.4); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:#34E6A0; opacity:0; transition:opacity .12s;">!!</div>
+      <div data-reactor-shout="" style="position:absolute; bottom:42px; left:50%; transform:translateX(-50%) scale(0); white-space:nowrap; padding:4px 9px; border-radius:10px 10px 10px 4px; background:var(--paper-2); border:1px solid var(--rule-strong); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:600; color:var(--sand); opacity:0; transition:opacity .12s;">!!</div>
       <span data-reactor-arm="l" style="position:absolute; top:13px; left:-4px; width:5px; height:14px; border-radius:4px; background:#18A06A; transform-origin:top center; transform:rotate(-22deg);"></span>
       <span data-reactor-arm="r" style="position:absolute; top:13px; right:-4px; width:5px; height:14px; border-radius:4px; background:#18A06A; transform-origin:top center; transform:rotate(22deg);"></span>
       <div data-reactor-head="" style="position:relative; width:40px; height:34px; transform-origin:center bottom;">
         <span style="position:absolute; top:-8px; left:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(-20deg);"></span>
         <span style="position:absolute; top:-8px; right:9px; width:2px; height:9px; background:#7DF0C2; border-radius:2px; transform-origin:bottom; transform:rotate(20deg);"></span>
-        <div style="position:absolute; inset:0; border-radius:20px 20px 9px 9px; background:linear-gradient(160deg,#7DF0C2,#1AA56E); box-shadow:inset 0 2px 0 rgba(255,255,255,0.4), 0 6px 16px rgba(52,230,160,0.4);">
+        <div style="position:absolute; inset:0; border-radius:20px 20px 9px 9px; background:linear-gradient(160deg,#CBB07A,#0C1512); box-shadow:inset 0 2px 0 rgba(255,255,255,0.4), 0 6px 16px rgba(52,230,160,0.4);">
           <span data-reactor-eye="l" style="position:absolute; top:10px; left:9px; width:7px; height:7px; border-radius:50%; background:#04130D; transform-origin:center;"><span style="position:absolute; top:1px; right:1px; width:2.4px; height:2.4px; border-radius:50%; background:#EDF2EF;"></span></span>
           <span data-reactor-eye="r" style="position:absolute; top:10px; right:9px; width:7px; height:7px; border-radius:50%; background:#04130D; transform-origin:center;"><span style="position:absolute; top:1px; right:1px; width:2.4px; height:2.4px; border-radius:50%; background:#EDF2EF;"></span></span>
           <span data-reactor-mouth="" style="position:absolute; bottom:6px; left:50%; transform:translateX(-50%) scaleY(0.2); width:9px; height:9px; border-radius:50%; background:#04130D; opacity:0;"></span>
@@ -66,7 +66,7 @@
   </div>
 
   <!-- ===== TOP STATUS BAR ===== -->
-  <header style="position:fixed; top:0; left:0; right:0; z-index:120; display:flex; align-items:center; justify-content:space-between; padding:14px clamp(16px,4vw,48px); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:linear-gradient(180deg, rgba(7,9,10,0.72), rgba(7,9,10,0));">
+  <header style="position:fixed; top:0; left:0; right:0; z-index:120; display:flex; align-items:center; justify-content:space-between; padding:14px clamp(16px,4vw,48px); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); background:linear-gradient(180deg, rgba(7,9,10,0.82), rgba(7,9,10,0.55)); border-bottom:1px solid var(--rule);">
     <div style="display:flex; align-items:center; gap:14px;">
     <div data-logo="" title="✦ tap me a few times…" style="display:flex; align-items:center; gap:11px; cursor:pointer; user-select:none; -webkit-user-select:none;">
       <div style="position:relative; width:30px; height:30px; border-radius:9px; background:linear-gradient(140deg,#34E6A0,#18A06A); display:grid; place-items:center; box-shadow:0 6px 18px rgba(52,230,160,0.30);">

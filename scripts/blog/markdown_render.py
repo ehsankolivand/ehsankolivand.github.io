@@ -189,13 +189,28 @@ _CALLOUT_SYNONYMS = {
     "important": "important",
     "caution": "caution", "danger": "caution", "error": "caution", "bug": "caution", "failure": "caution", "fail": "caution",
 }
-# (visible label, aria-hidden glyph) — glyphs are decorative; the label conveys meaning.
+# (visible label, aria-hidden icon SVG) — the icons are single-stroke line marks drawn in the
+# ink `currentColor` (the wrapping span is aria-hidden); the label conveys the meaning. 005:
+# replaced the dingbat glyphs with a consistent 16px line-icon set (Field-Almanac fingerprint).
+def _icon(inner: str) -> str:
+    return ('<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+            + inner + '</svg>')
+
+
 _CALLOUT_META = {
-    "note": ("Note", "ℹ"),        # information sign
-    "tip": ("Tip", "✓"),          # check mark
-    "warning": ("Warning", "⚠"),  # warning sign
-    "important": ("Important", "★"),  # star
-    "caution": ("Caution", "‼"),  # double exclamation
+    "note": ("Note", _icon('<circle cx="12" cy="12" r="9"/>'
+                           '<line x1="12" y1="11" x2="12" y2="16"/>'
+                           '<line x1="12" y1="8" x2="12.01" y2="8"/>')),                 # info circle
+    "tip": ("Tip", _icon('<polyline points="20 6 9 17 4 12"/>')),                        # check
+    "warning": ("Warning", _icon('<path d="M12 4 3 20h18z"/>'
+                                 '<line x1="12" y1="10" x2="12" y2="14"/>'
+                                 '<line x1="12" y1="17" x2="12.01" y2="17"/>')),           # triangle-!
+    "important": ("Important", _icon('<polygon points="12 3 14.6 8.6 21 9.3 16.5 13.6 '
+                                     '17.7 20 12 16.8 6.3 20 7.5 13.6 3 9.3 9.4 8.6 12 3"/>')),  # star
+    "caution": ("Caution", _icon('<polygon points="8 3 16 3 21 8 21 16 16 21 8 21 3 16 3 8 8 3"/>'
+                                 '<line x1="12" y1="8" x2="12" y2="13"/>'
+                                 '<line x1="12" y1="16" x2="12.01" y2="16"/>')),          # octagon-!
 }
 
 
@@ -345,11 +360,19 @@ def parse_info_string(info: str):
 
 
 def _code_block(code: str, language, filename, emphasized, caption) -> str:
-    # highlight (or escape-only fallback) -> CONTENT; title-bar label precedence:
+    # highlight (or escape-only fallback) -> CONTENT; frame-bar label precedence:
     # filename -> legacy caption -> language token -> "" (preserves the pre-004 caption behavior).
     content, _recognized, _lang = highlight.highlight_code(code, language, emphasized)
     label = filename or caption or language or ""
-    return _fill("block-code.html", CAPTION=esc(label), CONTENT=content)
+    # 005: the `.cf` typographic frame carries a bar ONLY when there is something to name
+    # (a filename/caption or a language) — a bare fence gets a clean, chromeless frame. esc()
+    # keeps the label safe; single-pass sub_tokens stops any `{{TOKEN}}` in it being re-scanned.
+    if label or language:
+        bar = (f'<div class="cf__bar"><span class="cf__name">{esc(label)}</span>'
+               f'<span class="cf__lang">{esc(language or "")}</span></div>')
+    else:
+        bar = ""
+    return _fill("block-code.html", BAR=bar, CONTENT=content)
 
 
 def _image(alt: str, src: str, image_resolver) -> str:

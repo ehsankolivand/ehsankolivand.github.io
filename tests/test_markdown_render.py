@@ -250,6 +250,35 @@ class TestCallouts(unittest.TestCase):
         self.assertIn("<strong", out)
         self.assertIn("<code", out)
 
+    def test_callout_icon_is_svg_not_emoji(self):
+        # feature 005: callout kind-marks are single-stroke SVG, not dingbats/emoji.
+        out = render("> [!warning] Heads up\n> body")
+        icon = re.search(r'<span class="callout__icon"[^>]*>(.*?)</span>', out, re.S)
+        self.assertIsNotNone(icon)
+        self.assertIn("<svg", icon.group(1))
+        for glyph in ("ℹ", "✓", "⚠", "★", "‼"):
+            self.assertNotIn(glyph, out)
+
+
+class TestCodeFrame(unittest.TestCase):
+    """feature 005: typographic code frame replaces the fake macOS window chrome."""
+    def test_no_traffic_light_window_chrome(self):
+        out = render("```python\nx = 1\n```")
+        self.assertIn('class="cf"', out)                 # typographic frame
+        for dot in ("#ff5f57", "#febc2e", "#28c840"):    # macOS traffic-light dots
+            self.assertNotIn(dot, out)
+
+    def test_filename_bar(self):
+        out = render('```python title="main.py"\nx = 1\n```')
+        self.assertIn('class="cf__bar"', out)
+        self.assertIn('class="cf__name"', out)
+        self.assertIn("main.py", out)
+
+    def test_bare_fence_has_frame_but_no_empty_bar(self):
+        out = render("```\nplain\n```")
+        self.assertIn('class="cf"', out)
+        self.assertNotIn('class="cf__bar"', out)         # no label/lang -> no empty bar
+
 
 class TestFootnotes(unittest.TestCase):
     def test_defined_reference(self):
