@@ -78,5 +78,5 @@ Amendments to these principles are bounded exceptions logged in the constitution
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
 shell commands, and other important information, read the current plan
-at specs/005-design-fingerprint/plan.md
+at specs/006-seo-geo-optimization/plan.md
 <!-- SPECKIT END -->
