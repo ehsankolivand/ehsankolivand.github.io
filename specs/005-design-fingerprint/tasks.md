@@ -58,9 +58,9 @@
 ## Phase 5 — Validation (maps to quickstart + Success Criteria)
 
 - [x] T025 [US3] Run `python -m unittest discover -s tests` → `python scripts/build_blog.py` → `python scripts/verify_build.py`. Acceptance: all three green (SC-006); `LATEST-NOTES` regenerated (SC-007).
-- [ ] T026 [US1] Re-run `hallmark audit templates/blog` + `hallmark audit index.html` and the ui-ux-pro-max checks. Acceptance: no slop-gate failures; every Slop-Tell Ledger item absent; no-emoji/contrast/minimal-glow pass (SC-001/SC-002).
-- [ ] T027 [US2] Exercise every robot on both surfaces (scroll speed, hover, cursor, logo-tap) incl. `prefers-reduced-motion` collapse and 320/375/414/768px no-horizontal-scroll. Any design-tool flag against a robot/cursor/mesh/reveal is **recorded as a sanctioned false positive, not acted on** (FR-008). Acceptance: 100% robots present + reactive; reduced-motion settles (SC-005).
-- [ ] T028 [US1] Confirm the 5-dimension before→after record (plan §D1–D6) and the shared token layer (T001≡T002). Acceptance: all five dimensions changed on both surfaces; token layers identical (SC-003).
+- [x] T026 [US1] Re-run `hallmark audit templates/blog` + `hallmark audit index.html` and the ui-ux-pro-max checks. Acceptance: no slop-gate failures; every Slop-Tell Ledger item absent; no-emoji/contrast/minimal-glow pass (SC-001/SC-002).
+- [x] T027 [US2] Exercise every robot on both surfaces (scroll speed, hover, cursor, logo-tap) incl. `prefers-reduced-motion` collapse and 320/375/414/768px no-horizontal-scroll. Any design-tool flag against a robot/cursor/mesh/reveal is **recorded as a sanctioned false positive, not acted on** (FR-008). Acceptance: 100% robots present + reactive; reduced-motion settles (SC-005).
+- [x] T028 [US1] Confirm the 5-dimension before→after record (plan §D1–D6) and the shared token layer (T001≡T002). Acceptance: all five dimensions changed on both surfaces; token layers identical (SC-003).
 
 ---
 
