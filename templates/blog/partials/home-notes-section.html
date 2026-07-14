@@ -1,6 +1,18 @@
 <section id="sec-notes" data-screen-label="Writing" aria-labelledby="notes-h" style="position:relative; z-index:2; max-width:1120px; margin:0 auto; padding:clamp(70px,11vw,140px) clamp(20px,6vw,96px) clamp(40px,6vw,70px);">
       <style>
         #sec-notes [data-morelink]:hover{ transform:translateY(-2px); box-shadow:0 14px 34px rgba(52,230,160,0.35); }
+        /* 005: this section is injected into the portfolio homepage (#ek-root), which does NOT
+           load blog.css — so the editorial-index rows are styled self-contained here (literal
+           values, no dependency on blog.css or a specific #ek-root token set). */
+        #sec-notes .ei{ display:flex; flex-direction:column; border-top:1px solid rgba(231,210,166,0.16); }
+        #sec-notes .ei__row{ all:unset; box-sizing:border-box; cursor:pointer; display:grid; grid-template-columns:1fr auto; gap:6px 24px; align-items:baseline; padding:22px 6px; border-bottom:1px solid rgba(231,210,166,0.16); transition:background .22s cubic-bezier(.16,1,.3,1); }
+        #sec-notes .ei__row:hover{ background:rgba(12,21,18,0.7); }
+        #sec-notes .ei__row:focus-visible{ outline:2px solid #34E6A0 !important; outline-offset:-2px; }
+        #sec-notes .ei__title{ grid-column:1; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.15rem; line-height:1.3; letter-spacing:-.015em; color:#EDF2EF; }
+        #sec-notes .ei__row:hover .ei__title{ color:#7DF0C2; }
+        #sec-notes .ei__dek{ grid-column:1; color:#9FB0AA; font-size:.94rem; line-height:1.55; }
+        #sec-notes .ei__meta{ grid-column:2; grid-row:1; font-family:'JetBrains Mono',monospace; font-size:12px; font-variant-numeric:tabular-nums; color:#CBB07A; white-space:nowrap; }
+        @media (max-width:560px){ #sec-notes .ei__meta{ grid-column:1; grid-row:auto; } }
       </style>
       <noscript><style>#sec-notes [data-reveal]{opacity:1!important;transform:none!important;}</style></noscript>
       <div data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1), transform .9s cubic-bezier(.2,0,0,1); display:inline-flex; align-items:center; gap:10px; font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.18em; color:#34E6A0; text-transform:uppercase;">
