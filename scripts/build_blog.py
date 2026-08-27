@@ -153,6 +153,12 @@ def main(argv=None) -> int:
             "og-image.png MUST be reused). Add them to the repo root before building."
         )
 
+    # 3c. Copy the portfolio's own asset directories (portrait media) verbatim.
+    for rel in config.ROOT_ASSET_DIRS:
+        src_dir = config.REPO_ROOT / rel
+        if src_dir.exists():
+            copytree(src_dir, out / rel)
+
     # 3b. Auto-sync the homepage "Field notes" section (latest 3 posts) between markers.
     idx_path = out / "index.html"
     if idx_path.exists():

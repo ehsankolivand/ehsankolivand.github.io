@@ -425,6 +425,15 @@ def main(argv=None) -> int:
                 titles.append(mt.group(1))
     ok(len(titles) == len(set(titles)), "duplicate <title> among built blog pages")
 
+    # ---- portfolio media: every /assets/ URL the committed index.html references must ship ----
+    if repo_idx_path.exists():
+        ptext = repo_idx_path.read_text(encoding="utf-8")
+        refs = sorted(set(re.findall(r'(?:src|href)="(/assets/[^"]+)"', ptext)))
+        ok(bool(refs), "portfolio: no /assets/ media referenced by index.html (portrait missing?)")
+        for ref in refs:
+            ok((out / ref.lstrip("/")).is_file(),
+               f"portfolio: index.html references {ref} but it is missing from the output")
+
     # ---- feature 003: grounded identity EQUALS the portfolio (FR-002/FR-004/FR-017) ----
     repo_index = repo / "index.html"
     if repo_index.exists():

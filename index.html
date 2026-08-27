@@ -52,7 +52,10 @@
       "@id": "https://ehsankolivand.github.io/#person",
       "name": "Ehsan Kolivand",
       "url": "https://ehsankolivand.github.io/",
-      "image": "https://ehsankolivand.github.io/og-image.png",
+      "image": [
+        "https://ehsankolivand.github.io/assets/portrait/portrait-source.webp",
+        "https://ehsankolivand.github.io/og-image.png"
+      ],
       "jobTitle": "Senior Android Engineer",
       "description": "Senior Android Engineer with 7+ years across banking, fintech, and crypto. Led the greenfield Android build of the NAP digital-banking app (Bank Maskan / Navaco) and owned the Nobifi DeFi suite at Nobitex. Open to senior Android roles across Europe.",
       "email": "mailto:ehsankolivandeh@gmail.com",
@@ -354,6 +357,27 @@
   @keyframes partyHue{ 0%{ filter:hue-rotate(0deg) saturate(1);} 50%{ filter:hue-rotate(160deg) saturate(1.45);} 100%{ filter:hue-rotate(360deg) saturate(1);} }
   @media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; } }
 
+  /* ===== PORTRAIT LENS =====
+     Two aligned layers of the same frame: the photograph (mono, graded to the page) and a
+     rendered study of it. A bead reveals the render through a circular window — it falls on
+     its own while the plate is idle, and snaps to the pointer the moment one is over it.
+     Lens and inner layer both move on transform ONLY (compositor; Principle VI): the lens
+     scales, the inner layer counter-scales, so the render stays pixel-locked to the photo.
+     With JS off the lens keeps opacity 0 and the photograph alone is what ships. */
+  [data-portrait]{ --lens:190px; }
+  [data-portrait-stage]{ position:relative; touch-action:pan-y; }
+  [data-portrait-stage] img{ display:block; width:100%; height:auto; -webkit-user-drag:none; user-select:none; }
+  [data-portrait-lens]{ position:absolute; left:0; top:0; width:var(--lens); height:var(--lens); margin:calc(var(--lens) / -2) 0 0 calc(var(--lens) / -2); border-radius:50%; overflow:hidden; opacity:0; pointer-events:none; will-change:transform,opacity; box-shadow:0 0 0 1px rgba(52,230,160,0.42), 0 0 30px rgba(52,230,160,0.16), 0 20px 44px rgba(0,0,0,0.5); }
+  /* transform-origin 0 0 is what makes the counter-scale in _portrait() exact */
+  [data-portrait-lens] > div{ position:absolute; left:0; top:0; width:var(--sw); height:var(--sh); transform-origin:0 0; will-change:transform; }
+  /* one pseudo-element carries both the water highlight and the inner rim */
+  [data-portrait-lens]::after{ content:''; position:absolute; inset:0; border-radius:50%; background:radial-gradient(circle at 31% 21%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.07) 21%, rgba(255,255,255,0) 47%); box-shadow:inset 0 0 24px rgba(4,19,13,0.5), inset 0 0 0 1px rgba(231,210,166,0.16); }
+  [data-portrait][data-on="1"] [data-portrait-hint]{ opacity:0; }
+  [data-portrait-hint]{ transition:opacity var(--dur-2) var(--ease-out); }
+  [data-portrait-label]{ transition:color var(--dur-2) var(--ease-out); }
+  [data-portrait][data-on="1"] [data-portrait-label]{ color:#34E6A0; }
+  @media (prefers-reduced-motion: reduce){ [data-portrait-hint],[data-portrait-label]{ transition-duration:.001ms; } }
+
   /* ===== MOBILE REFINEMENTS ===== */
   @media (max-width: 760px){
     /* leave room above the bottom nav bar */
@@ -520,6 +544,23 @@
         </div>
       </div>
 
+      <div style="display:grid; gap:clamp(22px,3vw,30px);">
+      <!-- EDIT: portrait — the photograph is the source layer; portrait-render.webp is the
+           pixel-aligned study revealed inside the pointer lens. Replace both together. -->
+      <figure data-portrait="" data-reveal="" style="opacity:0; transform:translateY(30px); transition:opacity .9s cubic-bezier(.2,0,0,1) .1s, transform .9s cubic-bezier(.2,0,0,1) .1s; margin:0; position:relative; border-radius:20px; padding:20px 20px 0; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); overflow:hidden;">
+        <div style="display:flex; align-items:center; gap:12px; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.14em; color:#CBB07A;">
+          <span data-portrait-label="">// portrait.source</span>
+          <span aria-hidden="true" style="flex:1; height:1px; background:var(--rule);"></span>
+          <span data-portrait-hint="" aria-hidden="true" style="color:#8A9A92; letter-spacing:.08em;">hover to render</span>
+        </div>
+        <div data-portrait-stage="" style="margin-top:14px; background:radial-gradient(70% 52% at 50% 24%, rgba(52,230,160,0.11) 0%, rgba(52,230,160,0) 64%), radial-gradient(120% 80% at 50% 100%, rgba(231,210,166,0.05) 0%, rgba(231,210,166,0) 62%);">
+          <img src="/assets/portrait/portrait-source.webp" width="613" height="634" alt="Ehsan Kolivand" loading="lazy" decoding="async">
+          <div data-portrait-lens="" aria-hidden="true">
+            <div><img src="/assets/portrait/portrait-render.webp" width="1226" height="1268" alt="" loading="lazy" decoding="async"></div>
+          </div>
+        </div>
+      </figure>
+
       <!-- spec-sheet widget -->
       <div style="position:relative; border-radius:20px; padding:28px; background:var(--paper-2); border:1px solid var(--rule); box-shadow:inset 0 1px 0 rgba(231,210,166,0.06); overflow:hidden;">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px;">
@@ -551,6 +592,7 @@
           &nbsp;&nbsp;<span style="color:#34E6A0;">"Compose"</span>, <span style="color:#34E6A0;">"MVI"</span>,<br>
           &nbsp;&nbsp;<span style="color:#34E6A0;">"multi-module"</span>, <span style="color:#34E6A0;">"SDUI"</span>)
         </div>
+      </div>
       </div>
     </div>
   </section>
@@ -1072,6 +1114,9 @@ class Component extends DCLogic {
       this._observeAll=observeAll;
     }
 
+    /* ---------- portrait lens ---------- */
+    this._portrait(root, reduce, isTouch);
+
     /* ---------- parallax on ambient (light) ---------- */
     if(!reduce && !isTouch){
       let ticking=false;
@@ -1439,6 +1484,80 @@ class Component extends DCLogic {
     /* responsive nav visibility */
     const applyResp=()=>{ const m=window.innerWidth<=760; topnav.style.display=m?'none':'flex'; bottomnav.style.display=m?'flex':'none'; if(reactorEl) reactorEl.style.display=(m||reduce)?'none':'block'; };
     applyResp(); window.addEventListener('resize',applyResp);
+  }
+
+  _portrait(root, reduce, isTouch){
+    const fig=root.querySelector('[data-portrait]'); if(!fig) return;
+    const stage=fig.querySelector('[data-portrait-stage]');
+    const lens=fig.querySelector('[data-portrait-lens]');
+    const inner=lens&&lens.firstElementChild;
+    const label=fig.querySelector('[data-portrait-label]');
+    const hint=fig.querySelector('[data-portrait-hint]');
+    if(!stage||!lens||!inner) return;
+    if(hint&&isTouch) hint.textContent='drag to render';
+
+    let W=0, H=0, R=95, mode='idle', inView=false, loop=0, praf=0, lane=0, startAt=0, resumeT=0, px=0, py=0;
+    const DROP=0.62;      // the bead is smaller than the pointer lens
+    const FALL=5200;      // one pass down the plate
+    const REST=2400;      // pause before the next bead forms
+    const LANES=[0.46,0.63,0.34,0.55,0.42];   // where each bead runs (fraction of the width)
+
+    // The ONLY write path for both modes. Lens scales about its centre; the inner layer
+    // counter-scales from its 0 0 origin, so the render never drifts off the photograph.
+    const place=(x,y,sx,sy)=>{
+      lens.style.transform='translate3d('+x+'px,'+y+'px,0) scale('+sx+','+sy+')';
+      inner.style.transform='translate3d('+(R-x/sx)+'px,'+(R-y/sy)+'px,0) scale('+(1/sx)+','+(1/sy)+')';
+    };
+    // layout is read here only — never inside the per-frame path
+    const measure=()=>{ const w=stage.clientWidth, h=stage.clientHeight; if(!w||!h) return;
+      W=w; H=h; stage.style.setProperty('--sw',w+'px'); stage.style.setProperty('--sh',h+'px');
+      const d=Math.max(132,Math.min(224,Math.round(w*0.46)));
+      fig.style.setProperty('--lens',d+'px'); R=d/2;
+      if(mode!=='user') place(W*0.46,H*0.2,DROP,DROP); };
+
+    /* ---------- idle: a bead of water runs down the plate, revealing as it goes ---------- */
+    const drip=(t)=>{
+      loop=0; if(mode!=='idle') return;
+      if(!startAt) startAt=t;
+      const p=(t-startAt)/FALL;
+      if(p>=1){ startAt=t+REST; lane=(lane+1)%LANES.length; lens.style.opacity='0'; }
+      else if(p>=0){
+        const sway=Math.sin(p*6.0+lane)*0.045;          // it wanders as it falls
+        const wob=Math.sin(p*13.0+lane*1.7)*0.05;       // and jiggles like a real bead
+        place((LANES[lane]+sway)*W, (-0.10+1.20*p)*H, DROP*(1+wob), DROP*(1-wob));
+        lens.style.opacity=String(Math.max(0,Math.min(1,Math.min(p,1-p)/0.14)));
+      }
+      loop=requestAnimationFrame(drip); };
+    const startIdle=()=>{ if(reduce||mode==='user'||!inView||loop) return;
+      lens.style.transition='none'; startAt=0; loop=requestAnimationFrame(drip); };
+    const stopIdle=()=>{ if(loop){ cancelAnimationFrame(loop); loop=0; } };
+
+    /* ---------- pointer takes over the moment it is on the plate ---------- */
+    const paintUser=()=>{ praf=0; place(px,py,1,1); };
+    const move=(e)=>{ const r=stage.getBoundingClientRect(); px=e.clientX-r.left; py=e.clientY-r.top;
+      if(mode!=='user'){ mode='user'; stopIdle(); clearTimeout(resumeT);
+        lens.style.transition='opacity var(--dur-2) var(--ease-out)'; lens.style.opacity='1';
+        fig.dataset.on='1'; if(label) label.textContent='// portrait.render'; }
+      if(!praf) praf=requestAnimationFrame(paintUser); };
+    const off=()=>{ if(mode!=='user') return; mode='idle';
+      lens.style.opacity='0'; fig.dataset.on='';
+      if(label) label.textContent='// portrait.source';
+      clearTimeout(resumeT); resumeT=setTimeout(startIdle,900); };
+
+    lens.style.transition='none'; lens.style.opacity='0';
+    stage.addEventListener('pointermove',move,{passive:true});
+    stage.addEventListener('pointerleave',off);
+    stage.addEventListener('pointercancel',off);
+    // the source image decodes lazily; re-measure once it lands so the lens maps 1:1
+    const img=stage.querySelector('img');
+    if(img&&!img.complete) img.addEventListener('load',measure,{once:true});
+    measure();
+    window.addEventListener('resize',measure);
+    // never animate a plate nobody is looking at (rAF already idles on a hidden tab)
+    const io=new IntersectionObserver((es)=>{ inView=es[0].isIntersecting;
+      if(inView) startIdle(); else stopIdle(); },{threshold:0.15});
+    io.observe(fig);
+    this._portraitIO=io;
   }
 
   _count(el){

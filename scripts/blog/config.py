@@ -113,6 +113,14 @@ ROOT_REQUIRED = [
     "og-image.png",
 ]
 
+# Root asset DIRECTORIES copied verbatim into the deployed site. Kept explicit (not a
+# blanket copy of assets/) so repo-only material under assets/ — the portfolio font
+# baseline — never ships. index.html references these paths, and verify_build.py asserts
+# every /assets/ URL in the committed portfolio resolves in the output (Principle VIII).
+ROOT_ASSET_DIRS = [
+    "assets/portrait",   # portrait.source + the pixel-aligned render revealed under the lens
+]
+
 # Tag palette (mirrors the design's _tagStyle). Categories may override via
 # `palette: mint|sand` in categories.yml; default below preserves the design.
 PALETTES = {
